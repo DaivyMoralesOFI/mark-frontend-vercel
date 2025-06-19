@@ -1,5 +1,35 @@
 # Marketin Agent
 
+## Installation
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (version 18 or higher recommended)
+- [pnpm](https://pnpm.io/) (package manager, version 7 or higher)
+
+You can install pnpm globally with:
+
+```bash
+npm install -g pnpm
+```
+
+### Steps to install and run the project
+
+1. Clone this repository:
+   ```bash
+   git clone <repository-url>
+   cd marketing-project-ai-summer
+   ```
+2. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+3. Start the development server:
+   ```bash
+   pnpm dev
+   ```
+4. Open your browser at [http://localhost:5173](http://localhost:5173) to view the application.
+
 ## Project Structure
 
 This project follows a modular architecture, organized primarily by feature (modules) with a shared layer for reusable elements. The structure is designed for scalability, maintainability, and effective team collaboration.
