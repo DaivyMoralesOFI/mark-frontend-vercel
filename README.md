@@ -26,7 +26,7 @@ npm install -g pnpm
    ```
 3. Start the development server:
    ```bash
-   pnpm dev
+   pnpm run dev
    ```
 4. Open your browser at [http://localhost:5173](http://localhost:5173) to view the application.
 
