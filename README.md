@@ -1,4 +1,4 @@
-# Marketin Agent
+# Marketing Agent
 
 ## Installation
 
