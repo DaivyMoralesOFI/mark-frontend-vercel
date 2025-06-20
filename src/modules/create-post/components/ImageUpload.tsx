@@ -4,7 +4,8 @@
 // Users can upload an image from their device or generate one using AI. The component displays a preview, loading state,
 // and allows removing the image. It is styled with Tailwind CSS and designed for use in post creation flows.
 
-import { Upload, Loader } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Upload } from "lucide-react";
 import { Label } from "@/shared/components/ui/label";
 import { Button } from "@/shared/components/ui/button";
 
@@ -66,6 +67,29 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
     }
   };
 
+  // Progress bar controlled by estimated time
+  const [progress, setProgress] = useState(0);
+  const ESTIMATED_TIME = 20000; // miliseconds (20 seconds, adjust as needed)
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+    if (loadingImage) {
+      setProgress(0);
+      const start = Date.now();
+      interval = setInterval(() => {
+        const elapsed = Date.now() - start;
+        const percent = Math.min((elapsed / ESTIMATED_TIME) * 100, 99);
+        setProgress(percent);
+      }, 100);
+    } else {
+      setProgress(0);
+      if (interval) clearInterval(interval);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [loadingImage]);
+
   return (
     <div className="space-y-2">
       {/* Label and AI Image Generation Button */}
@@ -81,14 +105,18 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
           onClick={onImageGeneration}
         >
           {loadingImage ? (
-            <Loader className="animate-spin w-4 h-4 text-green-600" />
+            <div className="relative w-7 h-7 flex items-center justify-center">
+              <div className="absolute inset-0 rounded-full bg-green-400/80 flex items-center justify-center">
+                <span className="text-xs text-white font-bold">{Math.round(progress)}%</span>
+              </div>
+            </div>
           ) : (
             <img src="/mark.svg" alt="Mark icon" className="w-8 h-8" />
           )}
           <span className="sr-only">Suggest image with AI</span>
         </Button>
       </Label>
-      
+
       {/* Hidden file input for uploading images */}
       <input
         type="file"
@@ -97,10 +125,27 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         style={{ display: "none" }}
         onChange={handleFileChange}
       />
-      
+
       {/* Image preview or drag-and-drop/upload UI */}
       <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
-        {hasImage && (generatedImage || uploadedImage) ? (
+        {loadingImage ? (
+          <div className="flex flex-col items-center w-full">
+            <div className="w-full max-w-xs bg-gray-100 rounded-full overflow-hidden shadow-inner h-7">
+              <div
+                className="bg-green-400/60 h-7 rounded-full text-white text-center transition-all duration-200"
+                style={{
+                  width: `${progress}%`,
+                  minWidth: "2rem",
+                }}
+              >
+                {progress > 15 && (
+                  <span className="text-xs font-medium">{Math.round(progress)}%</span>
+                )}
+              </div>
+            </div>
+            <p className="text-sm text-green-600 font-medium mt-2">Generating image...</p>
+          </div>
+        ) : hasImage && (generatedImage || uploadedImage) ? (
           <div className="space-y-2">
             {/* Preview of the uploaded or generated image */}
             <img
