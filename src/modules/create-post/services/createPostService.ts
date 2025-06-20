@@ -76,4 +76,21 @@ export const createPostService = {
     const response = await postApi.get('/cf9342f3-c24d-4fd6-a677-53389bd7cc49');
     return response.data;
   },
+
+  /**
+   * Get trending hashtags for TikTok
+   * @returns {Promise<TrendItem[]>} - Array of trending hashtags
+   */
+  getTikTokTrends: async (): Promise<TrendItem[]> => {
+    const response = await postApi.get('/3224401f-49ba-4317-94c2-68594728e451');
+    return response.data;
+  },
+  /**
+   * Get trending hashtags for Twitter
+   * @returns {Promise<TrendItem[]>} - Array of trending hashtags
+   */
+  getXTrends: async (): Promise<TrendItem[]> => {
+    const response = await postApi.get('/aa47f758-048d-4414-81d2-46d4e1ff422a');
+    return response.data;
+  },
 };

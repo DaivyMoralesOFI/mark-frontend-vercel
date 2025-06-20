@@ -38,7 +38,9 @@ export const TrendsSection: React.FC<TrendsSectionProps> = ({
 }) => {
   // Only show trends if Instagram or LinkedIn is selected
   const shouldShowTrends = selectedPlatforms.includes("instagram") || 
-                          selectedPlatforms.includes("linkedin");
+                          selectedPlatforms.includes("linkedin") ||
+                          selectedPlatforms.includes("tiktok") ||
+                          selectedPlatforms.includes("twitter");
 
   // If neither platform is selected, render nothing
   if (!shouldShowTrends) return null;

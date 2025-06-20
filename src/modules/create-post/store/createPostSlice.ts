@@ -79,6 +79,12 @@ const initialState: PostState = {
       if (platforms.includes("linkedin")) {
         requests.push(createPostService.getLinkedInTrends());
       }
+      if (platforms.includes("tiktok")) {
+        requests.push(createPostService.getTikTokTrends());
+      }
+      if (platforms.includes("twitter")) {
+        requests.push(createPostService.getXTrends());
+      }
   
       if (requests.length === 0) return [];
   
