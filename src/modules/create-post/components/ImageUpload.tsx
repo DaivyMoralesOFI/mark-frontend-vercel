@@ -105,6 +105,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
           onClick={onImageGeneration}
         >
           {loadingImage ? (
+            // Progress bar
             <div className="relative w-7 h-7 flex items-center justify-center">
               <div className="absolute inset-0 rounded-full bg-green-400/80 flex items-center justify-center">
                 <span className="text-xs text-white font-bold">{Math.round(progress)}%</span>
