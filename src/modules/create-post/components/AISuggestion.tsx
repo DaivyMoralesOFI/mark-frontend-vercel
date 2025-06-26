@@ -6,7 +6,7 @@ export const AISuggestion: React.FC = () => {
     return (
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div className="flex items-start space-x-3">
-          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+          <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
             <span className="text-white text-xs font-bold">M</span>
           </div>
           <div>

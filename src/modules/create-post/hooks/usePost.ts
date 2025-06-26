@@ -6,11 +6,12 @@
 // The hook exposes state, actions, setters, and validators for use in the UI.
 
 import { RootState } from "@/core/store/rootReducer";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "@/core/store/store";
 import { CreatePostRequest, PostType } from "../types/createPostTypes";
-import { addHashtagToDescription, createPost, fetchTrends, generateImage, getSuggestion, removeImage, setDescription, setPostType, setShowScheduleModal, setShowSuccess, setUploadedImage, togglePlatform, setScheduledDate, setScheduledTime, resetForm } from "../store/createPostSlice";
+import { addHashtagToDescription, createPost, fetchTrends, getSuggestion, setDescription, setPostType, setShowScheduleModal, setShowSuccess, togglePlatform, setScheduledDate, setScheduledTime, resetForm } from "../store/createPostSlice";
+import { createPostService } from "../services/createPostService";
 
 /**
  * usePost
@@ -33,6 +34,11 @@ export const usePost = () => {
     const postState = useSelector((state: RootState) => state.createPost);
     // Ref for the file input element (used for image upload)
     const fileInputRef = useRef<HTMLInputElement>(null);
+  
+    // Estado local para imágenes subidas y generadas
+    const [uploadedImages, setUploadedImages] = useState<File[]>([]);
+    const [generatedImage, setGeneratedImage] = useState<Blob | null>(null);
+    const [loadingImage, setLoadingImage] = useState(false);
   
     // Fetch trends whenever the selected platforms change
     useEffect(() => {
@@ -105,23 +111,25 @@ export const usePost = () => {
           postState.selectedPlatforms.length === 0 || 
           !postState.description.trim()) return;
       
-      dispatch(generateImage({
-        postType: postState.postType,
-        platforms: postState.selectedPlatforms,
-        description: postState.description,
-      }));
+      setLoadingImage(true);
+      try {
+        const blob = await createPostService.generateImage({
+          postType: postState.postType,
+          platforms: postState.selectedPlatforms,
+          description: postState.description,
+        });
+        setGeneratedImage(blob);
+      } finally {
+        setLoadingImage(false);
+      }
     };
   
     /**
-     * Handler for uploading an image file
-     * @param {File} file - The uploaded file
+     * Handler for uploading image files (multiple)
+     * @param {FileList} files - The uploaded files
      */
-    const handleFileUpload = (file: File) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        dispatch(setUploadedImage(e.target?.result as string));
-      };
-      reader.readAsDataURL(file);
+    const handleFileUpload = (files: FileList) => {
+      setUploadedImages(prev => [...prev, ...Array.from(files)]);
     };
   
     /**
@@ -129,23 +137,47 @@ export const usePost = () => {
      * Also resets the file input value
      */
     const handleRemoveImage = () => {
-      dispatch(removeImage());
+      setGeneratedImage(null);
+      setUploadedImages([]);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
     };
   
     /**
+     * Handler for removing a specific uploaded image
+     */
+    const handleRemoveUploadedImage = (file: File) => {
+      setUploadedImages(prev => prev.filter(f => f !== file));
+    };
+  
+    /**
      * Handler for submitting the post (immediate publish)
      */
     const handleSubmit = async () => {
+      let imageUrls: string[] = [];
+      if (uploadedImages.length > 0) {
+        imageUrls = await Promise.all(
+          uploadedImages.map(file => createPostService.uploadToCloudinary(file))
+        );
+      }
+      let generatedImageUrl: string | null = null;
+      if (generatedImage) {
+        generatedImageUrl = await createPostService.uploadToCloudinary(generatedImage);
+      }
+      const images: string[] = [
+        ...(generatedImageUrl ? [generatedImageUrl] : []),
+        ...imageUrls,
+      ];
       const payload: CreatePostRequest = {
         description: postState.description,
-        hasImage: !!(postState.generatedImage || postState.uploadedImage),
+        hasImage: images.length > 0,
+        images,
       };
-  
       await dispatch(createPost(payload));
       dispatch(resetForm());
+      setGeneratedImage(null);
+      setUploadedImages([]);
     };
   
     /**
@@ -161,14 +193,30 @@ export const usePost = () => {
       scheduledAt.setSeconds(0);
       scheduledAt.setMilliseconds(0);
   
+      let imageUrls: string[] = [];
+      if (uploadedImages.length > 0) {
+        imageUrls = await Promise.all(
+          uploadedImages.map(file => createPostService.uploadToCloudinary(file))
+        );
+      }
+      let generatedImageUrl: string | null = null;
+      if (generatedImage) {
+        generatedImageUrl = await createPostService.uploadToCloudinary(generatedImage);
+      }
+      const images: string[] = [
+        ...(generatedImageUrl ? [generatedImageUrl] : []),
+        ...imageUrls,
+      ];
       const payload: CreatePostRequest = {
         description: postState.description,
-        hasImage: !!(postState.generatedImage || postState.uploadedImage),
+        hasImage: images.length > 0,
+        images,
         scheduledAt: scheduledAt.toISOString(),
       };
-  
       await dispatch(createPost(payload));
       dispatch(resetForm());
+      setGeneratedImage(null);
+      setUploadedImages([]);
     };
   
     /**
@@ -193,6 +241,9 @@ export const usePost = () => {
       // State (spread from Redux slice)
       ...postState,
       fileInputRef,
+      uploadedImages,
+      generatedImage,
+      loadingImage,
       
       // Actions
       handlePostTypeChange,
@@ -203,6 +254,7 @@ export const usePost = () => {
       handleImageGeneration,
       handleFileUpload,
       handleRemoveImage,
+      handleRemoveUploadedImage,
       handleSubmit,
       handleSchedule,
       

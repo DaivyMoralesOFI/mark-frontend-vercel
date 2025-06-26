@@ -12,24 +12,26 @@ import { Button } from "@/shared/components/ui/button";
 /**
  * Props for ImageUpload
  * @property {boolean} hasImage - Whether an image (uploaded or generated) is present.
- * @property {string | null} generatedImage - The URL of the AI-generated image, if any.
- * @property {string | null} uploadedImage - The URL of the user-uploaded image, if any.
+ * @property {Blob | null} generatedImage - La imagen generada por IA (Blob), si existe.
+ * @property {File[]} uploadedImages - Los archivos de imagen subidos por el usuario.
  * @property {boolean} loadingImage - Whether an image is currently being generated or uploaded.
  * @property {React.RefObject<HTMLInputElement | null>} fileInputRef - Ref for the hidden file input element.
  * @property {() => void} onImageGeneration - Callback to trigger AI image generation.
- * @property {(file: File) => void} onFileUpload - Callback for when a file is uploaded.
+ * @property {(files: FileList) => void} onFileUpload - Callback for when files are uploaded.
  * @property {() => void} onRemoveImage - Callback to remove the current image.
+ * @property {(file: File) => void} onRemoveUploadedImage - Callback to remove a specific uploaded image.
  * @property {boolean} canGenerateImage - Whether the AI image generation button should be enabled.
  */
 interface ImageUploadProps {
   hasImage: boolean;
-  generatedImage: string | null;
-  uploadedImage: string | null;
+  generatedImage: Blob | null;
+  uploadedImages: File[];
   loadingImage: boolean;
   fileInputRef: React.RefObject<HTMLInputElement | null>;
   onImageGeneration: () => void;
-  onFileUpload: (file: File) => void;
+  onFileUpload: (files: FileList) => void;
   onRemoveImage: () => void;
+  onRemoveUploadedImage: (file: File) => void;
   canGenerateImage: boolean;
 }
 
@@ -46,30 +48,30 @@ interface ImageUploadProps {
  * Used in the CreatePostModal to allow users to add media to their post.
  */
 export const ImageUpload: React.FC<ImageUploadProps> = ({
-  hasImage,
   generatedImage,
-  uploadedImage,
+  uploadedImages,
   loadingImage,
   fileInputRef,
   onImageGeneration,
   onFileUpload,
   onRemoveImage,
+  onRemoveUploadedImage,
   canGenerateImage,
 }) => {
   /**
    * Handles file selection from the hidden file input.
-   * Calls onFileUpload with the selected file.
+   * Calls onFileUpload with the selected files.
    */
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      onFileUpload(file);
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      onFileUpload(files);
     }
   };
 
   // Progress bar controlled by estimated time
   const [progress, setProgress] = useState(0);
-  const ESTIMATED_TIME = 20000; // miliseconds (20 seconds, adjust as needed)
+  const ESTIMATED_TIME = 40000; // miliseconds (40 seconds, adjust as needed)
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -122,63 +124,69 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
       <input
         type="file"
         accept="image/*"
+        multiple
         ref={fileInputRef}
         style={{ display: "none" }}
         onChange={handleFileChange}
       />
 
-      {/* Image preview or drag-and-drop/upload UI */}
-      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
-        {loadingImage ? (
-          <div className="flex flex-col items-center w-full">
-            <div className="w-full max-w-xs bg-gray-100 rounded-full overflow-hidden shadow-inner h-7">
-              <div
-                className="bg-green-400/60 h-7 rounded-full text-white text-center transition-all duration-200"
-                style={{
-                  width: `${progress}%`,
-                  minWidth: "2rem",
-                }}
+      {/* Galería de imágenes y área de upload */}
+      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50 hover:border-blue-400 transition-colors">
+        {/* Galería de imágenes */}
+        <div className="flex flex-wrap gap-4 mb-4">
+          {/* Imagen generada por IA */}
+          {generatedImage && (
+            <div className="relative group">
+              <img
+                src={URL.createObjectURL(generatedImage)}
+                alt="Generated"
+                className="w-28 h-28 object-cover rounded-lg border-2 border-blue-400 shadow-md"
+              />
+              <span className="absolute top-1 left-1 bg-yellow-500 text-white text-xs px-2 py-0.5 rounded">AI</span>
+              <button
+                className="absolute top-1 right-1 bg-white/80 hover:bg-red-500 hover:text-white text-gray-700 rounded-full w-6 h-6 transition-opacity opacity-0 group-hover:opacity-100"
+                onClick={onRemoveImage}
+                title="Remove"
               >
-                {progress > 15 && (
-                  <span className="text-xs font-medium">{Math.round(progress)}%</span>
-                )}
-              </div>
+                &#10005;
+              </button>
             </div>
-            <p className="text-sm text-green-600 font-medium mt-2">Generating image...</p>
-          </div>
-        ) : hasImage && (generatedImage || uploadedImage) ? (
-          <div className="space-y-2">
-            {/* Preview of the uploaded or generated image */}
-            <img
-              src={generatedImage || uploadedImage || undefined}
-              alt="Preview"
-              className="mx-auto max-h-40 rounded"
-              style={{ maxWidth: "100%" }}
-            />
-            <p className="text-sm text-green-600 font-medium">
-              Image {generatedImage ? "generated" : "uploaded"} successfully
-            </p>
-            {/* Button to remove the current image */}
-            <Button variant="outline" size="sm" onClick={onRemoveImage}>
-              Remove Image
-            </Button>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {/* Drag-and-drop/upload UI when no image is present */}
-            <Upload className="w-12 h-12 text-gray-400 mx-auto" />
-            <p className="text-sm text-gray-600">
-              Drag and drop an image here, or click to browse
-            </p>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              Upload Image
-            </Button>
-          </div>
-        )}
+          )}
+          {/* Uploaded images */}
+          {uploadedImages.map((file) => {
+            const objectUrl = URL.createObjectURL(file);
+            return (
+              <div key={file.name + file.size + file.lastModified} className="relative group">
+                <img
+                  src={objectUrl}
+                  alt="Uploaded"
+                  className="w-28 h-28 object-cover rounded-lg border border-gray-300 shadow"
+                />
+                <button
+                  className="absolute top-1 right-1 bg-red-100 hover:bg-red-500 hover:text-white text-gray-700 rounded-full w-6 h-6 transition-opacity opacity-0 group-hover:opacity-100"
+                  onClick={() => onRemoveUploadedImage(file)}
+                  title="Remove"
+                >
+                  &#10005;
+                </button>
+              </div>
+            );
+          })}
+        </div>
+        {/* Upload area */}
+        <div className="flex flex-col items-center justify-center">
+          <Upload className="w-14 h-14 text-blue-400 mb-2" />
+          <p className="text-sm text-gray-600 mb-2">
+            Drag and drop images here or click to upload
+          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            Upload images
+          </Button>
+        </div>
       </div>
     </div>
   );

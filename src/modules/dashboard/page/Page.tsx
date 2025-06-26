@@ -4,13 +4,15 @@ import { RecentActivity } from "@/modules/dashboard/RecentActivity";
 import { PerformanceChart } from "@/modules/dashboard/PerformaceChart";
 import { AppHeaderActions } from "@/shared/types/types";
 import PageOutletLayout from "@/shared/layout/page-outlet-layout";
-import { Plus, Bot } from "lucide-react";
+import { Plus, Bot, Mail } from "lucide-react";
 import { CreatePostModal } from "@/modules/create-post/components/CreatePostModal";
 import { AiChatModal } from "@/modules/chat-coach-modal/page/AiChatModal";
+import { SendEmailModal } from "@/modules/send-email/SendEmail";
 
 export default function Dashboard() {
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [showAskMark, setShowAskMark] = useState(false);
+  const [showSendEmail, setShowSendEmail] = useState(false);
 
   const pageActions: AppHeaderActions[] = [
     {
@@ -20,11 +22,17 @@ export default function Dashboard() {
       variant: "default",
     },
     {
+      label: "Send Email",
+      icon: Mail,
+      onClick: () => setShowSendEmail(true),
+      variant: "default",
+    },
+    {
       label: "Ask Mark",
       icon: Bot,
       onClick: () => setShowAskMark(true),
       variant: "secondary",
-    }
+    },
   ];
 
   return (
@@ -46,7 +54,9 @@ export default function Dashboard() {
         </div>
       </PageOutletLayout>
       <CreatePostModal isOpen={showCreatePost} onClose={() => setShowCreatePost(false)} />
+      <SendEmailModal isOpen={showSendEmail} onClose={() => setShowSendEmail(false)} />
       <AiChatModal isOpen={showAskMark} onClose={() => setShowAskMark(false)} />
+      
     </>
   );
 }

@@ -15,7 +15,7 @@ const initialState: PostState = {
     description: "",
     hasImage: false,
     generatedImage: null,
-    uploadedImage: null,
+    uploadedImages: [],
     scheduledDate: undefined,
     scheduledTime: "",
     loadingSuggestion: false,
@@ -53,13 +53,13 @@ const initialState: PostState = {
   
   /**
    * Async thunk to generate an image using AI
-   * Calls the backend API and returns a URL for the generated image
+   * Calls the backend API and returns a Blob for the generated image
    */
   export const generateImage = createAsyncThunk(
     'post/generateImage',
     async (data: ImageGenerationRequest) => {
       const blob = await createPostService.generateImage(data);
-      return URL.createObjectURL(blob);
+      return blob;
     }
   );
   
@@ -137,26 +137,33 @@ const initialState: PostState = {
         state.hasImage = action.payload;
       },
       /** Set the generated image and update image state */
-      setGeneratedImage: (state, action: PayloadAction<string | null>) => {
+      setGeneratedImage: (state, action: PayloadAction<Blob | null>) => {
         state.generatedImage = action.payload;
         if (action.payload) {
           state.hasImage = true;
-          state.uploadedImage = null;
+        } else if (state.uploadedImages.length === 0) {
+          state.hasImage = false;
         }
       },
-      /** Set the uploaded image and update image state */
-      setUploadedImage: (state, action: PayloadAction<string | null>) => {
-        state.uploadedImage = action.payload;
-        if (action.payload) {
+      /** Add uploaded images (array) */
+      addUploadedImages: (state, action: PayloadAction<File[]>) => {
+        state.uploadedImages = [...state.uploadedImages, ...action.payload];
+        if (state.uploadedImages.length > 0) {
           state.hasImage = true;
-          state.generatedImage = null;
+        }
+      },
+      /** Remove a specific uploaded image by URL */
+      removeUploadedImage: (state, action: PayloadAction<File>) => {
+        state.uploadedImages = state.uploadedImages.filter(file => file !== action.payload);
+        if (state.uploadedImages.length === 0 && !state.generatedImage) {
+          state.hasImage = false;
         }
       },
       /** Remove any image from the state */
       removeImage: (state) => {
         state.hasImage = false;
         state.generatedImage = null;
-        state.uploadedImage = null;
+        state.uploadedImages = [];
       },
       /** Set the scheduled date for the post */
       setScheduledDate: (state, action: PayloadAction<Date | undefined>) => {
@@ -181,7 +188,7 @@ const initialState: PostState = {
         state.description = "";
         state.hasImage = false;
         state.generatedImage = null;
-        state.uploadedImage = null;
+        state.uploadedImages = [];
         state.scheduledDate = undefined;
         state.scheduledTime = "";
       },
@@ -221,7 +228,6 @@ const initialState: PostState = {
           state.loadingImage = false;
           state.generatedImage = action.payload;
           state.hasImage = true;
-          state.uploadedImage = null;
         })
         .addCase(generateImage.rejected, (state) => {
           state.loadingImage = false;
@@ -248,7 +254,8 @@ const initialState: PostState = {
     addHashtagToDescription,
     setHasImage,
     setGeneratedImage,
-    setUploadedImage,
+    addUploadedImages,
+    removeUploadedImage,
     removeImage,
     setScheduledDate,
     setScheduledTime,

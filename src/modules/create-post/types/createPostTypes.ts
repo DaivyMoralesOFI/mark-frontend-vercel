@@ -21,6 +21,7 @@ export interface Platform {
   export interface CreatePostRequest {
     description: string;
     hasImage: boolean;
+    images?: string[];
     scheduledAt?: string; // ISO string for scheduled date/time (optional)
   }
   
@@ -81,8 +82,8 @@ export interface Platform {
     selectedPlatforms: string[];
     description: string;
     hasImage: boolean;
-    generatedImage: string | null;
-    uploadedImage: string | null;
+    generatedImage: Blob | null;
+    uploadedImages: File[];
     scheduledDate?: Date;
     scheduledTime: string;
   }

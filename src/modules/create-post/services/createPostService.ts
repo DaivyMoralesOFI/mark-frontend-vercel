@@ -93,4 +93,23 @@ export const createPostService = {
     const response = await postApi.get('/aa47f758-048d-4414-81d2-46d4e1ff422a');
     return response.data;
   },
+
+  /**
+   * Sube una imagen a Cloudinary y retorna la URL pública
+   * @param {Blob} file - El archivo de imagen a subir
+   * @returns {Promise<string>} - URL pública de la imagen en Cloudinary
+   */
+  uploadToCloudinary: async (file: Blob): Promise<string> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "mark_cloudinary");
+
+    const response = await fetch("https://api.cloudinary.com/v1_1/dz7zt5ump/image/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json();
+    return data.secure_url; // URL pública de la imagen
+  },
 };
