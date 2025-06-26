@@ -130,11 +130,11 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         onChange={handleFileChange}
       />
 
-      {/* Galería de imágenes y área de upload */}
+      {/* Gallery and upload area */}
       <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50 hover:border-blue-400 transition-colors">
-        {/* Galería de imágenes */}
+        {/* Gallery */}
         <div className="flex flex-wrap gap-4 mb-4">
-          {/* Imagen generada por IA */}
+          {/* Generated image by AI */}
           {generatedImage && (
             <div className="relative group">
               <img
