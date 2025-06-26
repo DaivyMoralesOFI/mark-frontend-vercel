@@ -187,7 +187,6 @@ interface SendEmailModalProps {
                 <Button
                   onClick={handleSendEmail}
                   disabled={!isEmailValid || isSending}
-                  className="bg-purple-600 hover:bg-purple-700 text-white"
                 >
                   {isSending ? (
                     <>
