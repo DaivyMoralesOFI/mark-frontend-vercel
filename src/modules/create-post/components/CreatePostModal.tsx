@@ -44,6 +44,7 @@ interface CreatePostModalProps {
   onClose: () => void;
 }
 
+
 /**
  * CreatePostModal
  *
@@ -80,10 +81,11 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
     showSuccess, // Boolean to show success notification
     showScheduleModal, // Boolean to show schedule modal
     fileInputRef, // Ref for file input element
-    
+    selectedAccountsByPlatform, // NUEVO: Estado de cuentas seleccionadas
+    handleSelectAccountForPlatform, // NUEVO: Handler para seleccionar cuenta
+    handlePlatformToggle,
     // Actions
     handlePostTypeChange, // Change post type
-    handlePlatformToggle, // Toggle platform selection
     handleDescriptionChange, // Change description
     handleAddHashtag, // Add hashtag from trends
     handleSuggestion, // Trigger AI suggestion
@@ -93,12 +95,10 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
     handleRemoveUploadedImage, // Eliminar imagen subida
     handleSubmit, // Submit post
     handleSchedule, // Confirm scheduling
-    
     // Setters
     setScheduledDate, // Set scheduled date
     setScheduledTime, // Set scheduled time
     setShowScheduleModal, // Show/hide schedule modal
-    
     // Validators
     isFormValid, // Validate form for submission
     isScheduleValid, // Validate schedule fields
@@ -108,6 +108,8 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
   const canSuggest = !!postType && selectedPlatforms.length > 0;
   // Determines if image can be generated (requires canSuggest and non-empty description)
   const canGenerateImage = canSuggest && !!description.trim();
+
+
 
   return (
     <>
@@ -146,6 +148,8 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
               <PlatformSelector
                 selectedPlatforms={selectedPlatforms}
                 onTogglePlatform={handlePlatformToggle}
+                selectedAccountsByPlatform={selectedAccountsByPlatform}
+                onSelectAccount={handleSelectAccountForPlatform}
               />
 
               {/* Post Description with AI Suggestion button */}

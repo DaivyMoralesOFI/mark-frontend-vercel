@@ -18,6 +18,7 @@ const initialState: PostState = {
     uploadedImages: [],
     scheduledDate: undefined,
     scheduledTime: "",
+    selectedAccountsByPlatform: {},
     loadingSuggestion: false,
     loadingImage: false,
     loadingSubmit: false,
@@ -191,6 +192,22 @@ const initialState: PostState = {
         state.uploadedImages = [];
         state.scheduledDate = undefined;
         state.scheduledTime = "";
+        state.selectedAccountsByPlatform = {};
+      },
+      /** Set the selected account for a platform */
+      setSelectedAccountForPlatform: (state, action: PayloadAction<{ platformId: string; accountId: string }>) => {
+        const { platformId, accountId } = action.payload;
+        const arr = state.selectedAccountsByPlatform[platformId] || [];
+        if (arr.includes(accountId)) {
+          const newArr = arr.filter(id => id !== accountId);
+          if (newArr.length === 0) {
+            delete state.selectedAccountsByPlatform[platformId];
+          } else {
+            state.selectedAccountsByPlatform[platformId] = newArr;
+          }
+        } else {
+          state.selectedAccountsByPlatform[platformId] = [...arr, accountId];
+        }
       },
     },
     extraReducers: (builder) => {
@@ -262,6 +279,7 @@ const initialState: PostState = {
     setShowScheduleModal,
     setShowSuccess,
     resetForm,
+    setSelectedAccountForPlatform,
   } = createPostSlice.actions;
   
   export default createPostSlice.reducer;

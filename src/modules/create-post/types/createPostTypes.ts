@@ -74,6 +74,23 @@ export interface Platform {
     | "user-generated";
   
 /**
+ * Mock: Linked accounts per platform
+ */
+export interface LinkedAccount {
+  id: string;
+  username: string;
+  displayName: string;
+}
+
+export type AccountsByPlatform = {
+  [platformId: string]: LinkedAccount[];
+};
+
+export type SelectedAccountsByPlatform = {
+  [platformId: string]: string[]; // accountIds
+};
+
+/**
  * PostFormData
  * Shape of the form data for creating a post.
  */
@@ -86,6 +103,7 @@ export interface Platform {
     uploadedImages: File[];
     scheduledDate?: Date;
     scheduledTime: string;
+    selectedAccountsByPlatform: SelectedAccountsByPlatform;
   }
   
 /**

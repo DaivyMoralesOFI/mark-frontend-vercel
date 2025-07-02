@@ -10,7 +10,7 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "@/core/store/store";
 import { CreatePostRequest, PostType } from "../types/createPostTypes";
-import { addHashtagToDescription, createPost, fetchTrends, getSuggestion, setDescription, setPostType, setShowScheduleModal, setShowSuccess, togglePlatform, setScheduledDate, setScheduledTime, resetForm } from "../store/createPostSlice";
+import { addHashtagToDescription, createPost, fetchTrends, getSuggestion, setDescription, setPostType, setShowScheduleModal, setShowSuccess, togglePlatform, setScheduledDate, setScheduledTime, resetForm, setSelectedAccountForPlatform } from "../store/createPostSlice";
 import { createPostService } from "../services/createPostService";
 
 /**
@@ -40,12 +40,17 @@ export const usePost = () => {
     const [generatedImage, setGeneratedImage] = useState<Blob | null>(null);
     const [loadingImage, setLoadingImage] = useState(false);
   
-    // Fetch trends whenever the selected platforms change
+    // Fetch trends whenever there is at least one selected account for any platform
     useEffect(() => {
-      if (postState.selectedPlatforms.length > 0) {
-        dispatch(fetchTrends(postState.selectedPlatforms));
+      const platformsWithAccounts = Object.entries(postState.selectedAccountsByPlatform)
+        .filter(([_, accounts]) => accounts.length > 0)
+        .map(([platformId]) => platformId);
+      if (platformsWithAccounts.length > 0) {
+        dispatch(fetchTrends(platformsWithAccounts));
+      } else {
+        dispatch({ type: 'post/setTrends', payload: [] });
       }
-    }, [postState.selectedPlatforms, dispatch]);
+    }, [postState.selectedAccountsByPlatform, dispatch]);
   
     // Handle hiding the success notification after a timeout
     useEffect(() => {
@@ -237,6 +242,14 @@ export const usePost = () => {
       return isFormValid() && postState.scheduledDate && postState.scheduledTime;
     };
   
+    /**
+     * Handler para seleccionar una cuenta vinculada para una plataforma
+     */
+    const handleSelectAccountForPlatform = (platformId: string, accountId: string) => {
+      dispatch(setSelectedAccountForPlatform({ platformId, accountId }));
+      // No need to fetch trends here, useEffect will handle it
+    };
+  
     return {
       // State (spread from Redux slice)
       ...postState,
@@ -257,6 +270,7 @@ export const usePost = () => {
       handleRemoveUploadedImage,
       handleSubmit,
       handleSchedule,
+      handleSelectAccountForPlatform,
       
       // Setters
       setScheduledDate: (date: Date | undefined) => dispatch(setScheduledDate(date)),
