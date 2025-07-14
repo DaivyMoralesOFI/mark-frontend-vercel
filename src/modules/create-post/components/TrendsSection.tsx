@@ -59,7 +59,7 @@ export const TrendsSection: React.FC<TrendsSectionProps> = ({
             <button
               key={hashtag}
               type="button"
-              className="px-2 py-1 rounded bg-gray-100 hover:bg-blue-100 text-blue-700 text-xs border border-blue-200 transition"
+              className="px-2 py-1 rounded bg-gray-100 hover:bg-purple-100 text-purple-700 text-xs border border-purple-200 transition"
               onClick={() => onAddHashtag(hashtag)}
             >
               {hashtag}

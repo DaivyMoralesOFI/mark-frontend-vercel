@@ -148,12 +148,21 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
       {/* Badges para plataformas con cuentas seleccionadas */}
       {Object.entries(selectedAccountsByPlatform).length > 0 && (
         <div className="flex flex-wrap gap-1 mt-2 text-white">
-          {Object.entries(selectedAccountsByPlatform).flatMap(([platformId]) => {
+          {Object.entries(selectedAccountsByPlatform).flatMap(([platformId, accountIds]) => {
             const platform = PLATFORMS.find((p) => p.id === platformId);
             if (!platform) return null;
+            // Obtener los nombres de las cuentas seleccionadas
+            const linkedAccounts = MOCK_ACCOUNTS[platformId] || [];
+            const selectedAccountNames = accountIds
+              .map(accountId => {
+                const acc = linkedAccounts.find(a => a.id === accountId);
+                return acc ? acc.displayName : null;
+              })
+              .filter(Boolean)
+              .join(", ");
             return (
               <Badge key={platformId} variant="secondary" className="text-xs bg-purple-500">
-                {platform.name}
+                {platform.name}{selectedAccountNames ? ` - ${selectedAccountNames}` : ""}
               </Badge>
             );
           })}

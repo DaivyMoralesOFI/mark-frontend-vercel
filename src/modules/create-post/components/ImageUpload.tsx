@@ -131,7 +131,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
       />
 
       {/* Gallery and upload area */}
-      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50 hover:border-blue-400 transition-colors">
+      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50 hover:border-purple-400 transition-colors">
         {/* Gallery */}
         <div className="flex flex-wrap gap-4 mb-4">
           {/* Generated image by AI */}
@@ -140,7 +140,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
               <img
                 src={URL.createObjectURL(generatedImage)}
                 alt="Generated"
-                className="w-28 h-28 object-cover rounded-lg border-2 border-blue-400 shadow-md"
+                className="w-28 h-28 object-cover rounded-lg border-2 border-purple-400 shadow-md"
               />
               <span className="absolute top-1 left-1 bg-yellow-500 text-white text-xs px-2 py-0.5 rounded">AI</span>
               <button
@@ -175,7 +175,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         </div>
         {/* Upload area */}
         <div className="flex flex-col items-center justify-center">
-          <Upload className="w-14 h-14 text-blue-400 mb-2" />
+          <Upload className="w-14 h-14 text-purple-400 mb-2" />
           <p className="text-sm text-gray-600 mb-2">
             Drag and drop images here or click to upload
           </p>

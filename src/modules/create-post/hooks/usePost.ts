@@ -45,12 +45,14 @@ export const usePost = () => {
       const platformsWithAccounts = Object.entries(postState.selectedAccountsByPlatform)
         .filter(([_, accounts]) => accounts.length > 0)
         .map(([platformId]) => platformId);
-      if (platformsWithAccounts.length > 0) {
-        dispatch(fetchTrends(platformsWithAccounts));
-      } else {
+  
+      // Si no hay ninguna plataforma seleccionada, limpia los trends
+      if (postState.selectedPlatforms.length === 0 || platformsWithAccounts.length === 0) {
         dispatch({ type: 'post/setTrends', payload: [] });
+      } else {
+        dispatch(fetchTrends(platformsWithAccounts));
       }
-    }, [postState.selectedAccountsByPlatform, dispatch]);
+    }, [postState.selectedAccountsByPlatform, postState.selectedPlatforms, dispatch]);
   
     // Handle hiding the success notification after a timeout
     useEffect(() => {

@@ -200,7 +200,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
             <Button
               onClick={() => setShowScheduleModal(true)}
               disabled={!isFormValid() || loadingSubmit}
-              className="bg-blue-600 text-white"
+              className="bg-purple-600 text-white"
             >
               Schedule
             </Button>
