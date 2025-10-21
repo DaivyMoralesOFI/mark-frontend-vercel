@@ -38,19 +38,34 @@ const navigationItems = [
  */
 export function Sidebar() {
   return (
-    <SidebarComponent className="border-r border-surface-container" collapsible="offcanvas">
-      <SidebarHeader className="p-6">
-        <div className="flex items-center space-x-3">
-          {/* App logo/mark */}
-          <div className="w-8 h-8 bg-gradient-to-r from-pink-600 to-purple-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">M</span>
-          </div>
-          <div>
-            {/* App name and subtitle */}
-            <h2 className="font-semibold text-gray-900">Mark AI</h2>
-            <p className="text-xs text-gray-500">Marketing Dashboard</p>
-          </div>
-        </div>
+    <SidebarComponent className="border-r border-border" variant="sidebar" collapsible="icon">
+      <SidebarHeader>
+      <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              size="lg"
+              className="data-[state=open]:bg-[var(--sidebar-accent)]"
+            >
+              <div
+                className="flex aspect-square header-gradient size-8 items-center justify-center rounded-lg border border-sidebar-accent"
+              >
+                <img src="/mark.svg" alt="Mark" className="w-6 h-6" />
+              </div>
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <span
+                  className="truncate font-semibold text-sidebar-foreground"
+                >
+                  Mark AI
+                </span>
+                <span
+                  className="truncate text-xs text-sidebar-accent-foreground"
+                >
+                  Marketing Dashboard
+                </span>
+              </div>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
 
       <SidebarContent>
@@ -62,14 +77,14 @@ export function Sidebar() {
               {navigationItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   {item.to ? (
-                    <SidebarMenuButton asChild isActive={item.isActive}>
+                    <SidebarMenuButton asChild isActive={item.isActive} tooltip={item.title}>
                       <Link to={item.to}>
                         <item.icon className="w-4 h-4" />
                         <span>{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
                   ) : (
-                    <SidebarMenuButton isActive={item.isActive}>
+                    <SidebarMenuButton isActive={item.isActive} tooltip={item.title}>
                       <item.icon className="w-4 h-4" />
                       <span>{item.title}</span>
                     </SidebarMenuButton>
@@ -99,7 +114,7 @@ export function Sidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4">
+      <SidebarFooter>
         {/* Settings button */}
         <SidebarMenu>
           <SidebarMenuItem>
@@ -111,10 +126,10 @@ export function Sidebar() {
         </SidebarMenu>
 
         {/* User/company profile card */}
-        <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+        <div className=" bg-gray-50 rounded-lg">
           <div className="flex items-center space-x-3">
             <Avatar className="w-8 h-8">
-              <AvatarImage src="https://media.licdn.com/dms/image/v2/D4E0BAQHtuU6xP83E8g/company-logo_200_200/B4EZcqrPTBHAAI-/0/1748767668295/ofi_services_logo?e=1755129600&v=beta&t=Tg0EKOZiblV0wudSZ0L4LfscqosDQVUPq4l7d8tmygM" />
+              <AvatarImage src="https://i.pravatar.cc/150?img=8" />
               <AvatarFallback></AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
