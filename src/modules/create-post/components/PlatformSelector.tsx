@@ -161,7 +161,7 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
               .filter(Boolean)
               .join(", ");
             return (
-              <Badge key={platformId} variant="secondary" className="text-xs bg-purple-500">
+              <Badge key={platformId}>
                 {platform.name}{selectedAccountNames ? ` - ${selectedAccountNames}` : ""}
               </Badge>
             );

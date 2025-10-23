@@ -38,9 +38,9 @@ interface PostCardProps {
             <div className="flex items-center gap-2">
               {/* Author avatar */}
               <img
-                src="https://media.licdn.com/dms/image/v2/D4E0BAQHtuU6xP83E8g/company-logo_200_200/B4EZcqrPTBHAAI-/0/1748767668295/ofi_services_logo?e=1755129600&v=beta&t=Tg0EKOZiblV0wudSZ0L4LfscqosDQVUPq4l7d8tmygM"
+                src="ofi-dark.svg"
                 alt="Ofi Services Logo"
-                className="w-10 h-10 rounded-full object-cover border border-purple-200"
+                className="w-10 h-10 rounded-full object-cover"
               />
               <div>
                 {/* Author name and post date */}

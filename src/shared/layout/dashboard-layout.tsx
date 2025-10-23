@@ -23,7 +23,7 @@ const DashboardLayout = () => {
   // State for sidebar open/close
   const [isOpen, setIsOpen] = useState(true);
   return (
-    <div className="dashboard-layout bg-background text-foreground min-w-screen min-h-screen max-w-svw">
+    <div className="dashboard-layout bg-sidebar text-foreground min-w-screen min-h-screen max-w-svw">
       <SidebarProvider open={isOpen} onOpenChange={setIsOpen}>
         <Sidebar />
         <div className="flex flex-row w-full max-h-svh h-full overflow-hidden">

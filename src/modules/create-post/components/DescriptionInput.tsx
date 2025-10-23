@@ -62,7 +62,7 @@ export const DescriptionInput: React.FC<DescriptionInputProps> = ({
             {loadingSuggestion ? (
               <Loader className="animate-spin w-4 h-4 text-green-600" />
             ) : (
-              <img src="/mark.svg" alt="Mark icon" className="w-8 h-8" />
+              <img src="/mark-yellow.svg" alt="Mark icon" className="w-6 h-6" />
             )}
             <span className="sr-only">Suggest description with AI</span>
           </Button>

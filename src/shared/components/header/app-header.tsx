@@ -17,7 +17,7 @@ import { Button } from "@/shared/components/ui/button";
  */
 export default function AppHeader() {
   return (
-    <header className="bg-background group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 w-full transition-[width,height] ease-linear">
+    <header className="bg-sidebar group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 w-full transition-[width,height] ease-linear">
       <div className="flex flex-row items-center justify-between px-3 py-2 w-auto max-w-svw">
         {/* Search and assistant section */}
         <div className="command-container flex-2 flex flex-row justify-center items-center">

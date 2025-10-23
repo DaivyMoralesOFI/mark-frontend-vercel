@@ -13,8 +13,7 @@ import { Middleware } from '@reduxjs/toolkit';
  * Useful for debugging Redux state changes.
  */
 export const loggerMiddleware: Middleware = (storeAPI) => (next) => (action) => {
-  console.log('Dispatching:', action); // Log the action being dispatched
   const result = next(action);
-  console.log('Next state:', storeAPI.getState()); // Log the next state after the action
+  storeAPI.getState()
   return result;
 };

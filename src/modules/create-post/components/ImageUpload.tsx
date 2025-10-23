@@ -95,8 +95,8 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   return (
     <div className="space-y-2">
       {/* Label and AI Image Generation Button */}
-      <Label className="flex items-center gap-2">
-        Media
+      <div className="flex items-center gap-2">
+        <Label className="flex items-center gap-2">Media</Label>
         <Button
           type="button"
           size="icon"
@@ -109,16 +109,18 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
           {loadingImage ? (
             // Progress bar
             <div className="relative w-7 h-7 flex items-center justify-center">
-              <div className="absolute inset-0 rounded-full bg-green-400/80 flex items-center justify-center">
-                <span className="text-xs text-white font-bold">{Math.round(progress)}%</span>
+              <div className="absolute inset-0 rounded-full bg-green-400 flex items-center justify-center">
+                <span className="text-xs text-white font-bold">
+                  {Math.round(progress)}%
+                </span>
               </div>
             </div>
           ) : (
-            <img src="/mark.svg" alt="Mark icon" className="w-8 h-8" />
+            <img src="/mark-yellow.svg" alt="Mark icon" className="w-6 h-6" />
           )}
           <span className="sr-only">Suggest image with AI</span>
         </Button>
-      </Label>
+      </div>
 
       {/* Hidden file input for uploading images */}
       <input
@@ -142,7 +144,9 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                 alt="Generated"
                 className="w-28 h-28 object-cover rounded-lg border-2 border-purple-400 shadow-md"
               />
-              <span className="absolute top-1 left-1 bg-yellow-500 text-white text-xs px-2 py-0.5 rounded">AI</span>
+              <span className="absolute top-1 left-1 bg-yellow-500 text-white text-xs px-2 py-0.5 rounded">
+                AI
+              </span>
               <button
                 className="absolute top-1 right-1 bg-white/80 hover:bg-red-500 hover:text-white text-gray-700 rounded-full w-6 h-6 transition-opacity opacity-0 group-hover:opacity-100"
                 onClick={onRemoveImage}
@@ -156,7 +160,10 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
           {uploadedImages.map((file) => {
             const objectUrl = URL.createObjectURL(file);
             return (
-              <div key={file.name + file.size + file.lastModified} className="relative group">
+              <div
+                key={file.name + file.size + file.lastModified}
+                className="relative group"
+              >
                 <img
                   src={objectUrl}
                   alt="Uploaded"

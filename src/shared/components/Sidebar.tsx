@@ -47,9 +47,9 @@ export function Sidebar() {
               className="data-[state=open]:bg-[var(--sidebar-accent)]"
             >
               <div
-                className="flex aspect-square header-gradient size-8 items-center justify-center rounded-lg border border-sidebar-accent"
+                className="flex aspect-square bg-linear-to-r/oklab from-pink-300 to-purple-300 size-8 items-center justify-center rounded-lg border border-sidebar-accent"
               >
-                <img src="/mark-new.png" alt="Mark" className="w-6 h-6" />
+                <img src="/mark-dark.svg" alt="Mark" className="w-5 h-5" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span

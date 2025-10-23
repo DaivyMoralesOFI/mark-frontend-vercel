@@ -124,7 +124,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
           </DialogHeader>
 
           {/* Scrollable area for form fields */}
-          <ScrollArea className="max-h-[70vh] pr-2">
+          <ScrollArea className="max-h-[70vh] pr-4">
             <div className="space-y-6 text-gray-900">
               {/* Post Type Selection */}
               <div className="space-y-2">
@@ -191,8 +191,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
           {/* Action Buttons: Cancel, Schedule, Create Post */}
           <div className="flex justify-end space-x-3 pt-4 border-t">
             <Button
-              className="bg-red-500 text-white"
-              variant="outline"
+              variant="destructive"
               onClick={onClose}
             >
               Cancel
@@ -200,7 +199,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
             <Button
               onClick={() => setShowScheduleModal(true)}
               disabled={!isFormValid() || loadingSubmit}
-              className="bg-purple-600 text-white"
+              variant="secondary"
             >
               Schedule
             </Button>
