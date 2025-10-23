@@ -49,7 +49,7 @@ export function Sidebar() {
               <div
                 className="flex aspect-square header-gradient size-8 items-center justify-center rounded-lg border border-sidebar-accent"
               >
-                <img src="/mark.svg" alt="Mark" className="w-6 h-6" />
+                <img src="/mark-new.png" alt="Mark" className="w-6 h-6" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span
