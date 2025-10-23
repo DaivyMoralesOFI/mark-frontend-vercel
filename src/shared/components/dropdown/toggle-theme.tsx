@@ -12,7 +12,7 @@ export default function ToggleTheme() {
         <Button
           variant="ghost"
           size="icon"
-          className="cursor-pointer p-0 px-0 h-7 text-on-secondary-container"
+          className="cursor-pointer p-0 px-0 h-7 text-secondary-foreground"
         >
           <Sun
             className="rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"

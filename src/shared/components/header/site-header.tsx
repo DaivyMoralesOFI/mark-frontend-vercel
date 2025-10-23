@@ -29,7 +29,7 @@ interface SiteHeaderProps {
 const SiteHeader = ({ title, actions }: SiteHeaderProps) => {
   const { toggleSidebar } = useSidebar();
   return (
-    <div className="page-hader w-full flex flex-row justify-between items-end py-2 pr-4 pl-2 border-b border-outline">
+    <div className="page-hader w-full flex flex-row justify-between items-end py-2 pr-4 pl-2 border-b border-border">
       <div className="title-content flex flex-row">
         {/* Sidebar toggle button */}
         <Button
