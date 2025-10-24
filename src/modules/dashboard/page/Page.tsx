@@ -4,13 +4,15 @@ import { RecentActivity } from "@/modules/dashboard/RecentActivity";
 import { PerformanceChart } from "@/modules/dashboard/PerformaceChart";
 import { AppHeaderActions } from "@/shared/types/types";
 import PageOutletLayout from "@/shared/layout/page-outlet-layout";
-import { Plus, Bot, Mail } from "lucide-react";
+import { Plus,  Mail, Video, MessageCircle } from "lucide-react";
 import { CreatePostModal } from "@/modules/create-post/components/CreatePostModal";
+import { CreateVideoModal } from "@/modules/create-video/createVideoModal";
 import { AiChatModal } from "@/modules/chat-coach-modal/page/AiChatModal";
 import { SendEmailModal } from "@/modules/send-email/SendEmail";
 
 export default function Dashboard() {
   const [showCreatePost, setShowCreatePost] = useState(false);
+  const [showCreateVideo, setShowCreateVideo] = useState(false);
   const [showAskMark, setShowAskMark] = useState(false);
   const [showSendEmail, setShowSendEmail] = useState(false);
 
@@ -22,6 +24,12 @@ export default function Dashboard() {
       variant: "default",
     },
     {
+      label: "Create Video",
+      icon: Video,
+      onClick: () => setShowCreateVideo(true),
+      variant: "default",
+    },
+    {
       label: "Send Email",
       icon: Mail,
       onClick: () => setShowSendEmail(true),
@@ -29,7 +37,7 @@ export default function Dashboard() {
     },
     {
       label: "Ask Mark",
-      icon: Bot,
+      icon: MessageCircle,
       onClick: () => setShowAskMark(true),
       variant: "secondary",
     },
@@ -54,6 +62,7 @@ export default function Dashboard() {
         </div>
       </PageOutletLayout>
       <CreatePostModal isOpen={showCreatePost} onClose={() => setShowCreatePost(false)} />
+      <CreateVideoModal isOpen={showCreateVideo} onClose={() => setShowCreateVideo(false)} />
       <SendEmailModal isOpen={showSendEmail} onClose={() => setShowSendEmail(false)} />
       <AiChatModal isOpen={showAskMark} onClose={() => setShowAskMark(false)} />
       
