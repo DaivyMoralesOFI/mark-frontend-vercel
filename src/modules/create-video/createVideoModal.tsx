@@ -20,6 +20,7 @@ import { Input } from "@/shared/components/ui/Input";
 import {
   videoSuggestionService,
   VideoSuggestionRequest,
+  GenerateVideoRequest,
 } from "./services/videoSuggestionService";
 import { ScrollArea } from "@/shared/components/ui/scroll-area";
 
@@ -29,7 +30,7 @@ interface CreateVideoModalProps {
 }
 
 type VideoModel = "sora-2" | "sora-2-pro";
-type VideoDuration = 2 | 4 | 8;
+type VideoDuration = 4 | 8 | 12;
 type VideoSize = "1280x720" | "720x1280" | "1024x1792" | "1792x1024";
 
 const ALLOWED_SIZES: VideoSize[] = [
@@ -49,6 +50,7 @@ export function CreateVideoModal({ isOpen, onClose }: CreateVideoModalProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [sizeError, setSizeError] = useState("");
   const [loadingSuggestion, setLoadingSuggestion] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   /**
@@ -61,20 +63,24 @@ export function CreateVideoModal({ isOpen, onClose }: CreateVideoModalProps) {
 
     try {
       const requestData: VideoSuggestionRequest = {
-        prompt: prompt,
-        model: model,
-        duration: duration,
+        seconds: duration.toString(),
+        user_prompt: prompt,
       };
 
-      const suggestions = await videoSuggestionService.getSuggestion(
+      const suggestion = await videoSuggestionService.getSuggestion(
         requestData
       );
 
-      if (suggestions && suggestions.length > 0) {
-        setPrompt(suggestions[0].suggestion);
+      // Handle the response (supporting both "improved_prompt" and potential typo "improved_promt")
+      const improvedPrompt = suggestion.improved_prompt || suggestion.improved_promt;
+      
+      if (improvedPrompt) {
+        setPrompt(improvedPrompt);
+        setSizeError(""); // Clear any previous errors
       }
-    } catch (error) {
-      console.error("Error getting video suggestion:", error);
+    } catch {
+      setSizeError("Failed to get suggestion. Please try again.");
+      setTimeout(() => setSizeError(""), 3000);
     } finally {
       setLoadingSuggestion(false);
     }
@@ -125,34 +131,55 @@ export function CreateVideoModal({ isOpen, onClose }: CreateVideoModalProps) {
   };
 
   const handleGenerateVideo = async () => {
-    if (!imageFile || !prompt || !size) {
+    if (!prompt) {
+      setSizeError("Please enter a video prompt");
+      return;
+    }
+
+    // If image is provided, we need size. Otherwise, use empty string
+    let videoSize = size || "";
+
+    if (imageFile && !size) {
+      setSizeError("Please upload an image with a supported size");
       return;
     }
 
     setIsGenerating(true);
 
-    // Simulate video generation
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    try {
+      const requestData: GenerateVideoRequest = {
+        imageFile: imageFile || null,
+        prompt,
+        model,
+        size: videoSize,
+        seconds: duration,
+      };
 
-    console.log("Generating video with:", {
-      image: imageFile.name,
-      prompt,
-      model,
-      duration,
-      size,
-    });
+      await videoSuggestionService.generateVideo(requestData);
 
-    // Reset form
-    setImageFile(null);
-    setImagePreview("");
-    setPrompt("");
-    setModel("sora-2");
-    setDuration(4);
-    setSize("");
-    setSizeError("");
-    setIsGenerating(false);
-    setLoadingSuggestion(false);
-    onClose();
+      // Show success message
+      setShowSuccess(true);
+      setSizeError("");
+
+      // Auto-close after 2 seconds
+      setTimeout(() => {
+        // Reset form
+        setImageFile(null);
+        setImagePreview("");
+        setPrompt("");
+        setModel("sora-2");
+        setDuration(4);
+        setSize("");
+        setSizeError("");
+        setShowSuccess(false);
+        setLoadingSuggestion(false);
+        onClose();
+      }, 2000);
+    } catch {
+      setSizeError("Failed to send video generation request. Please try again.");
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleClose = () => {
@@ -164,6 +191,7 @@ export function CreateVideoModal({ isOpen, onClose }: CreateVideoModalProps) {
     setSize("");
     setSizeError("");
     setLoadingSuggestion(false);
+    setShowSuccess(false);
     onClose();
   };
 
@@ -181,12 +209,27 @@ export function CreateVideoModal({ isOpen, onClose }: CreateVideoModalProps) {
     }
   };
 
-  const canGenerate = imageFile && prompt && size && !sizeError;
+  // Can generate if there's a prompt, and if there's an image, it must be valid (no sizeError)
+  const canGenerate = 
+    prompt.trim().length > 0 && 
+    !isGenerating && 
+    !showSuccess && 
+    !(imageFile && sizeError && sizeError !== ""); // Si hay imagen con error de tamaño, no puede generar
+  
   const canSuggest = prompt.trim().length > 0 && !loadingSuggestion;
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-3xl">
+        {/* Success notification */}
+        {showSuccess && (
+          <div className="mb-4">
+            <div className="bg-green-100 border border-green-300 text-green-800 px-4 py-2 rounded-md text-center font-medium animate-fade-in">
+              Request sent successfully!
+            </div>
+          </div>
+        )}
+        
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
             <Video className="w-5 h-5 text-primary" />
@@ -199,7 +242,7 @@ export function CreateVideoModal({ isOpen, onClose }: CreateVideoModalProps) {
               {/* Left Column - Image Upload */}
               <div className="space-y-4">
                 <div>
-                  <Label>Upload Image *</Label>
+                  <Label>Upload Image (Optional)</Label>
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -211,11 +254,11 @@ export function CreateVideoModal({ isOpen, onClose }: CreateVideoModalProps) {
                   {!imagePreview ? (
                     <div
                       onClick={handleUploadClick}
-                      className="mt-2 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-purple-400 hover:bg-purple-50 transition-colors"
+                      className="mt-2 border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-purple-400 hover:bg-purple-50 transition-colors"
                     >
-                      <Upload className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                      <Upload className="w-12 h-12 text-primary mx-auto mb-3" />
                       <p className="text-sm text-muted-foreground font-medium">
-                        Click to upload image
+                        Click to upload image (Optional)
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
                         PNG, JPG, or WEBP
@@ -224,6 +267,9 @@ export function CreateVideoModal({ isOpen, onClose }: CreateVideoModalProps) {
                         Supported sizes:
                         <br />
                         {ALLOWED_SIZES.join(", ")}
+                      </p>
+                      <p className="text-xs text-amber-600 mt-2 font-medium">
+                        * You can also generate video without an image
                       </p>
                     </div>
                   ) : (
@@ -283,7 +329,7 @@ export function CreateVideoModal({ isOpen, onClose }: CreateVideoModalProps) {
                 <div className="space-y-2">
                   <Label>Video Duration *</Label>
                   <div className="grid grid-cols-3 gap-2">
-                    {[2, 4, 8].map((seconds) => (
+                    {[4, 8, 12].map((seconds) => (
                       <button
                         key={seconds}
                         onClick={() => setDuration(seconds as VideoDuration)}
@@ -389,13 +435,17 @@ export function CreateVideoModal({ isOpen, onClose }: CreateVideoModalProps) {
 
             {/* Action Buttons */}
             <div className="flex justify-between items-center pt-4 border-t">
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-muted-foreground">
                 {canGenerate ? (
                   <span className="text-green-600 font-medium">
                     ✓ Ready to generate
                   </span>
+                ) : imageFile && sizeError && sizeError !== "" ? (
+                  <span className="text-red-600">Please fix the image error</span>
+                ) : !prompt ? (
+                  <span>Please enter a prompt to generate video</span>
                 ) : (
-                  <span>Please fill all required fields</span>
+                  <span>Please complete the form</span>
                 )}
               </div>
               <div className="flex space-x-3">
