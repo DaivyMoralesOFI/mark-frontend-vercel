@@ -3,9 +3,11 @@
 // This file defines the AppHeader component, which renders the main application header bar.
 // It includes search, assistant, notifications, theme toggle, filters, and user profile actions, styled with Tailwind CSS.
 
-import { Bell, Filter, Search, Store } from "lucide-react";
+import { useState } from "react";
+import { Bell, Filter, Search, Store, GraduationCap } from "lucide-react";
 import { AvatarDropdown, ToggleTheme, TooltipHover } from "@/shared/router";
 import { Button } from "@/shared/components/ui/button";
+import { TrainModelModal } from "@/modules/train-model-modal/TrainModelModal";
 
 /**
  * AppHeader
@@ -16,6 +18,7 @@ import { Button } from "@/shared/components/ui/button";
  * - Responsive and styled for a modern UI
  */
 export default function AppHeader() {
+  const [isTrainModalOpen, setIsTrainModalOpen] = useState(false);
   return (
     <header className="bg-sidebar group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 w-full transition-[width,height] ease-linear">
       <div className="flex flex-row items-center justify-between px-3 py-2 w-auto max-w-svw">
@@ -51,6 +54,21 @@ export default function AppHeader() {
         </div>
         {/* Actions section: marketplace, notifications, theme, filters, profile */}
         <div className="appbar-cta flex items-center justify-between gap-2">
+          <TooltipHover
+            title="Train your AI model"
+            content=""
+            className=""
+          >
+            <Button
+              variant="default"
+              size="icon"
+              onClick={() => setIsTrainModalOpen(true)}
+              className="cursor-pointer pr-3 pl-2 py-1 border-1 border-secondary w-auto h-7 rounded-sm"
+            >
+              <GraduationCap strokeWidth={2} size={16} />
+              <span>Train</span>
+            </Button>
+          </TooltipHover>
           <TooltipHover
             title="Integrate new agents"
             content=""
@@ -99,6 +117,7 @@ export default function AppHeader() {
           </TooltipHover>
         </div>
       </div>
+      <TrainModelModal isOpen={isTrainModalOpen} onClose={() => setIsTrainModalOpen(false)} />
     </header>
   );
 }
