@@ -41,11 +41,10 @@ const Extractor = () => {
         }}
       />
       <div className="wrapper w-svw h-svh m-0 flex justify-center items-center relative z-[999] flex-col gap-12">
-        <Card className="main-input bg-card py-4 px-8 rounded-lg border-border">
-          <div className="flex flex-col justify-center items-center py-4 px-16">
-            
+        <Card className="main-input bg-card py-16 md:py-4 px-8 rounded-lg border-border max-w-[90%]">
+          <div className="flex flex-col justify-center items-center">
             <div className="text-center w-full">
-              <h1 className="mb-3 text-[4cqw] title text-title leading-[3.2rem]">
+              <h1 className="mb-3 text-[10cqw] md:text-[4cqw] title text-title leading-[2.4rem] md:leading-[3.2rem]">
                 From your website <br /> to your Brand DNA
               </h1>
               <h3 className="mb-4 text-gray-500">
