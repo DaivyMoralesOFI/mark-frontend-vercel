@@ -17,14 +17,14 @@ interface Message {
   timestamp: Date
 }
 
-// Generate random image URLs from Unsplash
-const generateImageUrl = (index: number) => {
-  const categories = ['design', 'art', 'marketing', 'business', 'technology', 'creative', 'branding', 'advertising', 'graphic-design', 'minimalist']
-  const category = categories[index % categories.length]
-  return `https://source.unsplash.com/800x800/?${category}&sig=${index}`
-}
-
-const SAMPLE_IMAGES = Array.from({ length: 6 }, (_, i) => generateImageUrl(i))
+const SAMPLE_IMAGES = [
+  "/image1.jpg",
+  "/image2.jpg",
+  "/image3.jpg",
+  "/image4.jpg",
+  "/image5.jpg",
+  "/image6.jpg",
+]
 
 const TOTAL_TRAINING_IMAGES = 18
 

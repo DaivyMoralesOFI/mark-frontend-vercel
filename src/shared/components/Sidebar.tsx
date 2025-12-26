@@ -3,7 +3,7 @@
 // This file defines the Sidebar component, which renders the main navigation sidebar for the application.
 // It includes navigation links, an AI assistant section, settings, and a user/company profile card, all styled with Tailwind CSS.
 
-import { BarChart3, FileText, Home, Settings, TrendingUp, Bot, Dna } from "lucide-react"
+import { BarChart3, FileText, Home, Settings, TrendingUp, Bot, Dna, User } from "lucide-react"
 import {
   Sidebar as SidebarComponent,
   SidebarContent,
@@ -25,14 +25,15 @@ const navigationItems = [
   { title: "Analytics", icon: BarChart3, isActive: false, to: "/analytics" },
   { title: "Content", icon: FileText, isActive: false, to: "/content" },
   { title: "Campaigns", icon: TrendingUp, isActive: false, to: "/campaigns" },
-  { title: "Brand DNA", icon: Dna, isActive: false, to: "/brand-dna" }
+  { title: "Brand DNA", icon: Dna, isActive: false, to: "/brand-dna" },
+  { title: "Style Profile", icon: User, isActive: false, to: "/style-profile" }
 ]
 
 /**
  * Sidebar
  *
  * Renders the main navigation sidebar for the application, including:
- * - Navigation links (Dashboard, Analytics, Content, Campaigns, Brand DNA)
+ * - Navigation links (Dashboard, Analytics, Content, Campaigns, Brand DNA, Style Profile)
  * - AI Assistant section (Chat with Mark)
  * - Settings and user/company profile card
  * - Responsive and styled for a modern UI

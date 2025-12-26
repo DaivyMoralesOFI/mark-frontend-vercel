@@ -15,6 +15,7 @@ import { BrandDashboard } from "./modules/brand-dna/page/Brand-DNA-Page";
 import AuthPage from "./modules/auth/page/authPage";
 import { AuthProvider } from "./modules/auth/store/authProvider";
 import RequireAuth from "./modules/auth/components/RequireAuth";
+import { StyleProfilePage } from "./modules/style-profile/StyleProfilePage";
 
 /**
  * App
@@ -51,6 +52,7 @@ export default function App() {
             <Route path="/analytics" element={<AnalyticsPage />} />
             <Route path="/campaigns" element={<CampaingnPage />} />
             <Route path="/brand-dna" element={<BrandDashboard />} />
+            <Route path="/style-profile" element={<StyleProfilePage />} />
           </Route>
         </Routes>
       </BrowserRouter>
