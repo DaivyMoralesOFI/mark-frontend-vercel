@@ -23,6 +23,7 @@ export interface Platform {
     hasImage: boolean;
     images?: string[];
     scheduledAt?: string; // ISO string for scheduled date/time (optional)
+    use_brand_dna?: boolean; // Optional - applies brand DNA (logo, colors, tone) to the post
   }
   
 /**
@@ -97,6 +98,8 @@ export type SelectedAccountsByPlatform = {
   export interface PostFormData {
     postType: PostType | "";
     selectedPlatforms: string[];
+    useBrandDna: boolean;
+    useBrandDna: boolean;
     description: string;
     hasImage: boolean;
     generatedImage: Blob | null;
