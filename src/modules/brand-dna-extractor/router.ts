@@ -1,0 +1,1 @@
+export {default as Extractor} from "@/modules/brand-dna-extractor/pages/brand-extractor"
