@@ -2,8 +2,28 @@ import { z } from "zod";
 
 export const extractorSchema = z.object({
   brandUrl: z
-    .url()
-    .min(10, { message: "Brand URL muts be www.example.com" })
+    .string()
+    .min(1, "Please enter a URL")
+    .transform((val) => {
+      // Si la URL no comienza con http:// o https://, agregar https://
+      if (!val.startsWith('http://') && !val.startsWith('https://')) {
+        return `https://${val}`;
+      }
+      return val;
+    })
+    .pipe(
+      z.string().refine(
+        (val) => {
+          try {
+            new URL(val);
+            return true;
+          } catch {
+            return false;
+          }
+        },
+        { message: "Please enter a valid URL" }
+      )
+    )
 });
 
 export type ExtractorFormData = z.infer<typeof extractorSchema>;
