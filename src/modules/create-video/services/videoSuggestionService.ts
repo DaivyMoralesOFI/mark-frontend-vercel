@@ -56,7 +56,7 @@ export const videoSuggestionService = {
     formData.append('user_prompt', data.user_prompt);
 
     const response = await axios.post(
-      'https://n8n.sofiatechnology.ai/webhook/https://n8n.sofiatechnology.ai/webhook/bce175f3-c495-4dab-a562-13d91cf0815a',
+      'https://n8n.sofiatechnology.ai/webhook/bce175f3-c495-4dab-a562-13d91cf0815a',
       formData,
       {
         headers: {
