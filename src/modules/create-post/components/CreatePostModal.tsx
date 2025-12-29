@@ -69,17 +69,34 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
   const [companies, setCompanies] = useState<Array<{ name: string; url: string }>>([]);
   const [selectedCompany, setSelectedCompany] = useState<string>("");
 
-  // Fetch companies list on mount
+  // Fetch companies list from API when modal opens
   useEffect(() => {
-    fetch('/company-list.json')
-      .then(response => response.json())
-      .then(data => {
-        setCompanies(data.brands || []);
-      })
-      .catch(error => {
-        console.error('Failed to load companies:', error);
-      });
-  }, []);
+    if (isOpen) {
+      fetch('https://n8n.sofiatechnology.ai/webhook/brands-list')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.text();
+        })
+        .then(text => {
+          if (!text || text.trim() === '') {
+            console.warn('Empty response from brands API');
+            setCompanies([]);
+            return;
+          }
+          const data = JSON.parse(text);
+          setCompanies(data.brands || []);
+        })
+        .catch(error => {
+          console.error('Failed to load companies:', error);
+          setCompanies([]);
+        });
+    }
+  }, [isOpen]);
+
+  // Get the URL of the selected company
+  const selectedCompanyUrl = companies.find(c => c.name === selectedCompany)?.url;
 
   // usePost hook provides all state, actions, and validators for the post creation flow
   const {
@@ -124,7 +141,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
     // Validators
     isFormValid, // Validate form for submission
     isScheduleValid, // Validate schedule fields
-  } = usePost();
+  } = usePost(selectedCompanyUrl);
 
   // Determines if AI suggestion can be requested (requires post type and at least one platform)
   const canSuggest = !!postType && selectedPlatforms.length > 0;

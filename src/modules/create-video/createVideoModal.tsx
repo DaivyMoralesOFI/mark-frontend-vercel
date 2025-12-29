@@ -57,17 +57,31 @@ export function CreateVideoModal({ isOpen, onClose }: CreateVideoModalProps) {
   const [selectedCompany, setSelectedCompany] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Fetch companies list on mount
+  // Fetch companies list from API when modal opens
   useEffect(() => {
-    fetch('/company-list.json')
-      .then(response => response.json())
-      .then(data => {
-        setCompanies(data.brands || []);
-      })
-      .catch(error => {
-        console.error('Failed to load companies:', error);
-      });
-  }, []);
+    if (isOpen) {
+      fetch('https://n8n.sofiatechnology.ai/webhook/brands-list')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.text();
+        })
+        .then(text => {
+          if (!text || text.trim() === '') {
+            console.warn('Empty response from brands API');
+            setCompanies([]);
+            return;
+          }
+          const data = JSON.parse(text);
+          setCompanies(data.brands || []);
+        })
+        .catch(error => {
+          console.error('Failed to load companies:', error);
+          setCompanies([]);
+        });
+    }
+  }, [isOpen]);
 
   /**
    * Handler for requesting an AI-generated suggestion for the video prompt
@@ -163,12 +177,17 @@ export function CreateVideoModal({ isOpen, onClose }: CreateVideoModalProps) {
     setIsGenerating(true);
 
     try {
+      // Get the URL of the selected company
+      const selectedCompanyUrl = companies.find(c => c.name === selectedCompany)?.url;
+      
       const requestData: GenerateVideoRequest = {
         imageFile: imageFile || null,
         prompt,
         model,
         size: videoSize,
         seconds: duration,
+        company_url: selectedCompanyUrl,
+        use_brand_dna: useBrandDNA,
       };
 
       await videoSuggestionService.generateVideo(requestData);

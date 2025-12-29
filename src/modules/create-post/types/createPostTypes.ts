@@ -24,6 +24,7 @@ export interface Platform {
     images?: string[];
     scheduledAt?: string; // ISO string for scheduled date/time (optional)
     use_brand_dna?: boolean; // Optional - applies brand DNA (logo, colors, tone) to the post
+    company_url?: string; // Optional - URL of the selected company for brand DNA
   }
   
 /**

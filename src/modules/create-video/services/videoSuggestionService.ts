@@ -33,6 +33,8 @@ export interface GenerateVideoRequest {
   model: string;
   size: string;
   seconds: number;
+  company_url?: string;
+  use_brand_dna: boolean;
 }
 
 /**
@@ -54,7 +56,7 @@ export const videoSuggestionService = {
     formData.append('user_prompt', data.user_prompt);
 
     const response = await axios.post(
-      'https://n8n.sofiatechnology.ai/webhook/bce175f3-c495-4dab-a562-13d91cf0815a',
+      'https://n8n.sofiatechnology.ai/webhook/https://n8n.sofiatechnology.ai/webhook/bce175f3-c495-4dab-a562-13d91cf0815a',
       formData,
       {
         headers: {
@@ -87,6 +89,12 @@ export const videoSuggestionService = {
     formData.append('model', data.model);
     formData.append('size', data.size); // Can be empty string if no image
     formData.append('seconds', data.seconds.toString());
+    formData.append('use_brand_dna', data.use_brand_dna.toString());
+    
+    // Add company_url if provided
+    if (data.company_url) {
+      formData.append('company_url', data.company_url);
+    }
 
     // Send POST request with FormData
     await axios.post(
