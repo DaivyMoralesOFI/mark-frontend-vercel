@@ -1,0 +1,18 @@
+
+{
+  "total_brands": 3,
+  "brands": [
+    {
+      "name": "Acme Corp",
+      "url": "https://www.acme-example.com"
+    },
+    {
+      "name": "Global Tech",
+      "url": "https://www.globaltech.io"
+    },
+    {
+      "name": "Mark AI",
+      "url": "https://www.mark-ai.com"
+    }
+  ]
+}
