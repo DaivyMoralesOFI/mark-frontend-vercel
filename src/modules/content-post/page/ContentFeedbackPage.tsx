@@ -14,6 +14,7 @@ import { ErrorState } from "@/shared/components/error-state/ErrorState";
 import { PostGrid } from "../components/PostGrid";
 import { CreatePostModal } from "@/modules/create-post/components/CreatePostModal";
 import { AiChatModal } from "@/modules/chat-coach-modal/page/AiChatModal";
+import { VideoPostCarrousel } from "../components/carousels/video-post-carousel";
 
 /**
  * ContentFeedbackPage
@@ -63,6 +64,7 @@ export default function ContentFeedbackPage() {
       <PageOutletLayout pageTitle="Content Feedback" actions={pageActions}>
         {/* Grid of posts with feedback */}
         <PostGrid posts={posts} />
+        <VideoPostCarrousel />
       </PageOutletLayout>
       {/* Modal for creating a new post */}
       <CreatePostModal isOpen={showCreatePost} onClose={closeCreatePost} />

@@ -40,7 +40,7 @@ const PageOutletLayout: React.FC<PageOutletLayoutProps> = ({
     <div className="h-full w-full flex flex-col">
       <SiteHeader actions={actions} title={pageTitle} />
       <main className={`main-content w-full py-2 px-4 max-sm:px-2 ${className}`}>
-        <ScrollArea className="h-[87svh] md:h-[80svh] xl:h-[86svh] w-full">
+        <ScrollArea className="h-[87svh] md:h-[80svh] xl:h-[86svh] w-full pr-4">
           <div className="wrapper-main grid grid-cols-12 gap-2">
             {children}
           </div>

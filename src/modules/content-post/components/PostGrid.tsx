@@ -6,30 +6,56 @@
 
 import { Post } from "../types/postTypes";
 import { PostCard } from "./PostCard";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/shared/components/ui/carousel";
 
 /**
  * Props for PostGrid
  * @property {Post[]} posts - Array of post objects to display
  */
 interface PostGridProps {
-    posts: Post[];
-  }
-  
+  posts: Post[];
+}
+
 /**
  * PostGrid
  *
  * Renders a responsive grid of PostCard components for each post in the list.
  * Used to display all posts in a section or page.
  */
-  export const PostGrid = ({ posts }: PostGridProps) => {
-    return (
-      <div className="col-span-12 flex justify-center">
-        <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
-          {/* Render a PostCard for each post */}
-          {posts.map((post, idx) => (
-            <PostCard key={idx} post={post} />
-          ))}
-        </div>
+export const PostGrid = ({ posts }: PostGridProps) => {
+  return (
+    <div className="col-span-12 py-2 flex flex-col justify-start items-start gap-2">
+      <div>
+        <h2 className="font-bold pl-2">Post Collection</h2>
       </div>
-    );
-  };
+      <div className="w-full min-h-60 p-0">
+        <Carousel
+          className="w-full group"
+          opts={{
+            align: "start",
+            loop: false,
+            skipSnaps: false,
+            dragFree: false, // Permite arrastre libre como Netflix
+          }}
+        >
+          <CarouselContent className="p-0">
+            {posts.map((post, idx) => (
+              <CarouselItem key={idx}
+                className="pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
+                <PostCard post={post} />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
+      </div>
+    </div>
+  );
+};
