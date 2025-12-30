@@ -45,7 +45,13 @@ const brandDnaSlice = createSlice({
     },
     /** Set the selected company */
     setSelectedCompany: (state, action: PayloadAction<Company | null>) => {
-      state.selectedCompany = action.payload;
+      const newCompany = action.payload;
+      // If changing to a different company, clear the previous data
+      if (state.selectedCompany?.id !== newCompany?.id) {
+        state.data = null;
+        state.error = null;
+      }
+      state.selectedCompany = newCompany;
     },
     /** Set an error message */
     setError: (state, action: PayloadAction<string | null>) => {
@@ -58,6 +64,8 @@ const brandDnaSlice = createSlice({
       .addCase(fetchBrandDna.pending, (state) => {
         state.loading = true;
         state.error = null;
+        // Clear previous data when starting a new fetch to avoid showing stale data
+        state.data = null;
       })
       .addCase(fetchBrandDna.fulfilled, (state, action) => {
         state.loading = false;

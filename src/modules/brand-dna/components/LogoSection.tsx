@@ -21,7 +21,7 @@ export function LogoSection() {
           {loading ? (
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           ) : data?.brand_identity?.logo?.url ? (
-            <div className="relative w-full h-full flex items-center justify-center">
+            <div className="relative w-full h-full flex items-center justify-center bg-muted border border-border rounded-lg">
               <img 
                 src={data.brand_identity.logo.url} 
                 alt={data.brand_identity.name || "Brand Logo"} 

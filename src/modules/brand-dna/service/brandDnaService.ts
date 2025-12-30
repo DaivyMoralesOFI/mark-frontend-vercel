@@ -4,7 +4,7 @@
 // It uses Axios for HTTP requests and is designed to interact with the backend endpoint for Brand DNA information.
 
 import axios from "axios";
-import { BrandDnaResponse, BrandDnaApiResponse, CompaniesResponse, CompaniesApiResponse, ColorAnalysis } from "../types/brandDnaTypes";
+import { BrandDnaResponse, BrandDnaApiResponse, CompaniesResponse, CompaniesApiResponse, ColorAnalysis, ColorObject } from "../types/brandDnaTypes";
 
 // Base URL for the API endpoints
 const API_BASE_URL = 'https://n8n.sofiatechnology.ai/webhook';
@@ -50,25 +50,48 @@ export const brandDnaService = {
     const response = await brandDnaApi.get<BrandDnaApiResponse>('/dna', config);
     const apiData = response.data.data;
 
+    // Helper function to extract color string from either string or ColorObject
+    const extractColor = (item: string | ColorObject): string => {
+      if (typeof item === 'string') {
+        return item;
+      }
+      return item?.color || '';
+    };
+
     // Map color_analysis to color_palette structure
     const mapColorAnalysisToPalette = (colorAnalysis: ColorAnalysis) => {
+      const primaryColors = colorAnalysis.Primary || [];
+      const secondaryColors = colorAnalysis.Secondary || [];
+      const tertiaryColors = colorAnalysis.Tertiary || [];
+
+      // Extract color strings from arrays (handles both string[] and ColorObject[])
+      const primaryColorStrings = primaryColors.map(extractColor).filter(Boolean);
+      const secondaryColorStrings = secondaryColors.map(extractColor).filter(Boolean);
+      const tertiaryColorStrings = tertiaryColors.map(extractColor).filter(Boolean);
+
       return {
-        primary: colorAnalysis.Primary?.[0] || '',
-        secondary: colorAnalysis.Secondary?.[0] || '',
-        accent: colorAnalysis.Primary?.[1] || colorAnalysis.Primary?.[0] || '',
-        background: colorAnalysis.Tertiary?.find(c => c.startsWith('#F')) || colorAnalysis.Tertiary?.[0] || '',
+        primary: primaryColorStrings[0] || '',
+        secondary: secondaryColorStrings[0] || '',
+        accent: primaryColorStrings[1] || primaryColorStrings[0] || '',
+        background: tertiaryColorStrings.find(c => c.startsWith('#F')) || tertiaryColorStrings[0] || '',
         complementary: [
-          ...(colorAnalysis.Primary?.slice(1) || []),
-          ...(colorAnalysis.Secondary || []),
-          ...(colorAnalysis.Tertiary || [])
+          ...primaryColorStrings.slice(1),
+          ...secondaryColorStrings,
+          ...tertiaryColorStrings
         ].filter(Boolean),
       };
     };
 
-    // Map brand_tone object to brand_tone_mood structure
-    const mapBrandTone = (brandTone: Record<string, string>) => {
-      // Extract the first value from the object (the description)
-      const toneDescription = Object.values(brandTone)[0] || '';
+    // Map brand_tone (can be string or object) to brand_tone_mood structure
+    const mapBrandTone = (brandTone: Record<string, string> | string) => {
+      let toneDescription = '';
+      
+      if (typeof brandTone === 'string') {
+        toneDescription = brandTone;
+      } else if (typeof brandTone === 'object' && brandTone !== null) {
+        // Extract the first value from the object (the description)
+        toneDescription = Object.values(brandTone)[0] || '';
+      }
       
       return {
         brand_tone: toneDescription,

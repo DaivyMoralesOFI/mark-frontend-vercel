@@ -15,13 +15,22 @@ export interface BrandIdentity {
 }
 
 /**
+ * Color object structure (when API returns objects with color and name)
+ */
+export interface ColorObject {
+  color: string;
+  name: string;
+}
+
+/**
  * Color Analysis structure from backend
+ * Supports both string arrays and object arrays with {color, name}
  */
 export interface ColorAnalysis {
   total_detected: number;
-  Primary: string[];
-  Secondary: string[];
-  Tertiary: string[];
+  Primary: string[] | ColorObject[];
+  Secondary: string[] | ColorObject[];
+  Tertiary: string[] | ColorObject[];
 }
 
 /**
@@ -70,7 +79,7 @@ export interface BrandDnaApiResponse {
     brand_identity: BrandIdentity;
     typography: Typography;
     color_analysis: ColorAnalysis;
-    brand_tone: Record<string, string>; // Object with company name as key and description as value
+    brand_tone: Record<string, string> | string; // Can be an object with company name as key and description as value, or a direct string
   };
 }
 
