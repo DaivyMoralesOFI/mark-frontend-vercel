@@ -6,6 +6,7 @@
 //
 // The component leverages custom hooks and modular subcomponents for a clean, maintainable structure.
 
+import { useState, useEffect } from "react";
 import { Loader, Info } from "lucide-react";
 import {
   Dialog,
@@ -64,6 +65,39 @@ interface CreatePostModalProps {
  * State and actions are managed via the usePost custom hook.
  */
 export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
+  // Local state for company dropdown
+  const [companies, setCompanies] = useState<Array<{ name: string; url: string }>>([]);
+  const [selectedCompany, setSelectedCompany] = useState<string>("");
+
+  // Fetch companies list from API when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      fetch('https://n8n.sofiatechnology.ai/webhook/brands-list')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.text();
+        })
+        .then(text => {
+          if (!text || text.trim() === '') {
+            console.warn('Empty response from brands API');
+            setCompanies([]);
+            return;
+          }
+          const data = JSON.parse(text);
+          setCompanies(data.brands || []);
+        })
+        .catch(error => {
+          console.error('Failed to load companies:', error);
+          setCompanies([]);
+        });
+    }
+  }, [isOpen]);
+
+  // Get the URL of the selected company
+  const selectedCompanyUrl = companies.find(c => c.name === selectedCompany)?.url;
+
   // usePost hook provides all state, actions, and validators for the post creation flow
   const {
     // State
@@ -107,7 +141,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
     // Validators
     isFormValid, // Validate form for submission
     isScheduleValid, // Validate schedule fields
-  } = usePost();
+  } = usePost(selectedCompanyUrl);
 
   // Determines if AI suggestion can be requested (requires post type and at least one platform)
   const canSuggest = !!postType && selectedPlatforms.length > 0;
@@ -170,6 +204,28 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
                   </TooltipHover>
                 </div>
               </div>
+
+              {/* Company Selection - Only shown when Use Brand DNA is checked */}
+              {useBrandDna && (
+                <div className="space-y-2">
+                  <Label htmlFor="company">Select Company *</Label>
+                  <Select
+                    value={selectedCompany}
+                    onValueChange={(value) => setSelectedCompany(value)}
+                  >
+                    <SelectTrigger id="company">
+                      <SelectValue placeholder="Choose a company" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {companies.map((company) => (
+                        <SelectItem key={company.name} value={company.name}>
+                          {company.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
 
               {/* Platform Selection (e.g., Facebook, Twitter) */}
               <PlatformSelector

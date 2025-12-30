@@ -29,7 +29,7 @@ import { createPostService } from "../services/createPostService";
  * Also handles side effects such as fetching trends when platforms change and showing success notifications.
  * Returns all state, actions, setters, and validators needed for the post creation UI.
  */
-export const usePost = () => {
+export const usePost = (selectedCompanyUrl?: string) => {
     const dispatch = useDispatch<AppDispatch>();
     const postState = useSelector((state: RootState) => state.createPost);
     // Ref for the file input element (used for image upload)
@@ -188,6 +188,7 @@ export const usePost = () => {
         hasImage: images.length > 0,
         images,
         use_brand_dna: postState.useBrandDna,
+        company_url: selectedCompanyUrl,
       };
       await dispatch(createPost(payload));
       dispatch(resetForm());
@@ -228,6 +229,7 @@ export const usePost = () => {
         images,
         scheduledAt: scheduledAt.toISOString(),
         use_brand_dna: postState.useBrandDna,
+        company_url: selectedCompanyUrl,
       };
       await dispatch(createPost(payload));
       dispatch(resetForm());

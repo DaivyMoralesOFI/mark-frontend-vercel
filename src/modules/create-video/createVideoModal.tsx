@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Video, Upload, ImageIcon, Loader } from "lucide-react";
 import {
   Dialog,
@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/shared/components/ui/select";
 import { Input } from "@/shared/components/ui/Input";
+import { Checkbox } from "@/shared/components/ui/checkbox";
 import {
   videoSuggestionService,
   VideoSuggestionRequest,
@@ -51,7 +52,36 @@ export function CreateVideoModal({ isOpen, onClose }: CreateVideoModalProps) {
   const [sizeError, setSizeError] = useState("");
   const [loadingSuggestion, setLoadingSuggestion] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [useBrandDNA, setUseBrandDNA] = useState(false);
+  const [companies, setCompanies] = useState<Array<{ name: string; url: string }>>([]);
+  const [selectedCompany, setSelectedCompany] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch companies list from API when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      fetch('https://n8n.sofiatechnology.ai/webhook/brands-list')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.text();
+        })
+        .then(text => {
+          if (!text || text.trim() === '') {
+            console.warn('Empty response from brands API');
+            setCompanies([]);
+            return;
+          }
+          const data = JSON.parse(text);
+          setCompanies(data.brands || []);
+        })
+        .catch(error => {
+          console.error('Failed to load companies:', error);
+          setCompanies([]);
+        });
+    }
+  }, [isOpen]);
 
   /**
    * Handler for requesting an AI-generated suggestion for the video prompt
@@ -147,12 +177,17 @@ export function CreateVideoModal({ isOpen, onClose }: CreateVideoModalProps) {
     setIsGenerating(true);
 
     try {
+      // Get the URL of the selected company
+      const selectedCompanyUrl = companies.find(c => c.name === selectedCompany)?.url;
+      
       const requestData: GenerateVideoRequest = {
         imageFile: imageFile || null,
         prompt,
         model,
         size: videoSize,
         seconds: duration,
+        company_url: selectedCompanyUrl,
+        use_brand_dna: useBrandDNA,
       };
 
       await videoSuggestionService.generateVideo(requestData);
@@ -192,6 +227,8 @@ export function CreateVideoModal({ isOpen, onClose }: CreateVideoModalProps) {
     setSizeError("");
     setLoadingSuggestion(false);
     setShowSuccess(false);
+    setUseBrandDNA(false);
+    setSelectedCompany("");
     onClose();
   };
 
@@ -347,6 +384,45 @@ export function CreateVideoModal({ isOpen, onClose }: CreateVideoModalProps) {
                     ))}
                   </div>
                 </div>
+
+                {/* Use Brand DNA Checkbox */}
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="useBrandDNA"
+                      checked={useBrandDNA}
+                      onCheckedChange={(checked) => setUseBrandDNA(checked as boolean)}
+                    />
+                    <Label
+                      htmlFor="useBrandDNA"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                    >
+                      Use Brand DNA
+                    </Label>
+                  </div>
+                </div>
+
+                {/* Company Selection - Only shown when Use Brand DNA is checked */}
+                {useBrandDNA && (
+                  <div className="space-y-2">
+                    <Label htmlFor="company">Select Company *</Label>
+                    <Select
+                      value={selectedCompany}
+                      onValueChange={(value) => setSelectedCompany(value)}
+                    >
+                      <SelectTrigger id="company">
+                        <SelectValue placeholder="Choose a company" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {companies.map((company) => (
+                          <SelectItem key={company.name} value={company.name}>
+                            {company.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
 
                 {/* Size Display */}
                 <div className="space-y-2">

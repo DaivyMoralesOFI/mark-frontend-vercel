@@ -33,6 +33,8 @@ export interface GenerateVideoRequest {
   model: string;
   size: string;
   seconds: number;
+  company_url?: string;
+  use_brand_dna: boolean;
 }
 
 /**
@@ -87,6 +89,12 @@ export const videoSuggestionService = {
     formData.append('model', data.model);
     formData.append('size', data.size); // Can be empty string if no image
     formData.append('seconds', data.seconds.toString());
+    formData.append('use_brand_dna', data.use_brand_dna.toString());
+    
+    // Add company_url if provided
+    if (data.company_url) {
+      formData.append('company_url', data.company_url);
+    }
 
     // Send POST request with FormData
     await axios.post(
