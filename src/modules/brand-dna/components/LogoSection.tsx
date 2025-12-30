@@ -1,8 +1,11 @@
 import { Card } from "@/shared/components/ui/card"
 import { Button } from "@/shared/components/ui/button"
-import { Upload } from "lucide-react"
+import { Upload, Loader2 } from "lucide-react"
+import { useBrandDna } from "../hooks/useBrandDna"
 
 export function LogoSection() {
+  const { data, loading } = useBrandDna()
+
   return (
     <Card className="overflow-hidden w-full">
       <div className="p-6">
@@ -15,13 +18,19 @@ export function LogoSection() {
         </div>
 
         <div className="aspect-square rounded-lg flex items-center justify-center p-8 border border-border">
-          <div className="relative w-full h-full flex items-center justify-center">
-            <img 
-              src="/ofi-original.svg" 
-              alt="OFI Logo" 
-              className="w-full h-full object-contain"
-            />
-          </div>
+          {loading ? (
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          ) : data?.brand_identity?.logo?.url ? (
+            <div className="relative w-full h-full flex items-center justify-center">
+              <img 
+                src={data.brand_identity.logo.url} 
+                alt={data.brand_identity.name || "Brand Logo"} 
+                className="w-full h-full object-contain"
+              />
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground text-center">No logo available</p>
+          )}
         </div>
       </div>
     </Card>
