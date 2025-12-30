@@ -15,6 +15,7 @@ interface PageOutletLayoutProps {
   children: React.ReactNode;
   actions: AppHeaderActions[];
   className?: string;
+  headerContent?: React.ReactNode;
 }
 
 /**
@@ -35,10 +36,11 @@ const PageOutletLayout: React.FC<PageOutletLayoutProps> = ({
   children,
   actions,
   className,
+  headerContent,
 }) => {
   return (
     <div className="h-full w-full flex flex-col">
-      <SiteHeader actions={actions} title={pageTitle} />
+      <SiteHeader actions={actions} title={pageTitle} headerContent={headerContent} />
       <main className={`main-content w-full py-2 px-4 max-sm:px-2 ${className}`}>
         <ScrollArea className="h-[87svh] md:h-[80svh] xl:h-[86svh] w-full">
           <div className="wrapper-main grid grid-cols-12 gap-2">
