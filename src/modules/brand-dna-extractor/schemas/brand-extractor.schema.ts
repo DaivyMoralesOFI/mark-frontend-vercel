@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const extractorSchema = z.object({
+export const extractorFormSchema = z.object({
   brandUrl: z
     .string()
     .min(1, "Please enter a URL")
@@ -26,7 +26,7 @@ export const extractorSchema = z.object({
     )
 });
 
-export type ExtractorFormData = z.infer<typeof extractorSchema>;
+export type ExtractorFormData = z.infer<typeof extractorFormSchema>;
 
 export const defaultExtractorForm: ExtractorFormData = {
   brandUrl: "", 

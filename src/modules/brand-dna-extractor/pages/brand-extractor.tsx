@@ -10,14 +10,22 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   defaultExtractorForm,
   ExtractorFormData,
-  extractorSchema,
+  extractorFormSchema,
 } from "../schemas/brand-extractor.schema";
 import { Button } from "@/shared/components/ui/button";
-import { Sparkles } from "lucide-react";
+import { Sparkles, ArrowRight } from "lucide-react";
 import { Card } from "@/shared/components/ui/card";
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { cn } from "@/core/lib/utils";
+import { brandExtractorWorkFlow } from "../services/brand-extractor.api";
+import {
+  calculateTimePerMessage,
+  scheduleMessages,
+  cleanupTimers,
+} from "../utils/timer-utils";
+import { getRandomMessage } from "../utils/message-utils";
+import { isSuccessfulResponse } from "../utils/response-utils";
 
 const loadingMessages = [
   "Checking the URL...",
@@ -28,44 +36,72 @@ const loadingMessages = [
   "Crafting your DNA...",
 ];
 
+const successMessages = [
+  "Ta-da! Your brand is ready! 🎨",
+  "Voilà! We've decoded your style! ✨",
+  "Success! Your DNA is extracted! 🧬",
+  "All done! Your brand awaits! 🎉",
+  "Boom! Your identity is ready! 💫",
+];
+
 const Extractor = () => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-
-    if (isLoading) {
-      interval = setInterval(() => {
-        setCurrentMessageIndex((prev) => (prev + 1) % loadingMessages.length);
-      }, 1000); // 12 segundos
-    } else {
-      setCurrentMessageIndex(0);
-    }
-
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [isLoading]);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const onSubmit = async (data: ExtractorFormData) => {
     console.log({ data });
     setIsLoading(true);
     setIsAnimating(true);
+    setCurrentMessageIndex(0);
+    setIsSuccess(false);
 
-    // Simular llamada a API que tarda 1 minuto
+    const startTime = Date.now();
+    let messageTimers: NodeJS.Timeout[] = [];
+
     try {
-      await new Promise((resolve) => setTimeout(resolve, 6000)); // 60 segundos
-      console.log("API call completed");
+      const response = await brandExtractorWorkFlow(data.brandUrl);
+      console.log("Brand DNA extracted:", response);
+      const apiDuration = Date.now() - startTime;
+      const timePerMessage = calculateTimePerMessage(
+        apiDuration,
+        30000,
+        loadingMessages.length
+      );
+      messageTimers = scheduleMessages(
+        timePerMessage,
+        loadingMessages.length,
+        setCurrentMessageIndex
+      );
+      await new Promise((resolve) => setTimeout(resolve, 20000));
+      if (isSuccessfulResponse(response)) {
+        setIsSuccess(true);
+      }
+    } catch (error) {
+      console.error("Error extracting brand DNA:", error);
+      const apiDuration = Date.now() - startTime;
+      const timePerMessage = calculateTimePerMessage(
+        apiDuration,
+        30000,
+        loadingMessages.length
+      );
+      messageTimers = scheduleMessages(
+        timePerMessage,
+        loadingMessages.length,
+        setCurrentMessageIndex
+      );
+      await new Promise((resolve) => setTimeout(resolve, 20000));
     } finally {
+      cleanupTimers(messageTimers);
       setIsLoading(false);
       setIsAnimating(false);
+      setCurrentMessageIndex(0);
     }
   };
 
   const _form = useForm<ExtractorFormData>({
-    resolver: zodResolver(extractorSchema),
+    resolver: zodResolver(extractorFormSchema),
     defaultValues: defaultExtractorForm,
   });
 
@@ -95,95 +131,130 @@ const Extractor = () => {
               </h3>
             </div>
             <div className="w-full flex flex-col gap-3">
-              <form
-                onSubmit={_form.handleSubmit(onSubmit)}
-                noValidate
-                id="brand-extractor-form"
-                className="w-full"
-              >
-                <FieldSet>
-                  <FieldGroup>
-                    <Controller
-                      name="brandUrl"
-                      control={_form.control}
-                      render={({ field, fieldState }) => (
-                        <motion.div
-                          initial={{ height: "auto", opacity: 1 }}
-                          animate={
-                            isAnimating
-                              ? { height: 0, opacity: 0 }
-                              : { height: "auto", opacity: 1 }
-                          }
-                          transition={{
-                            duration: 0.5,
-                            ease: "easeInOut",
-                          }}
-                          className="overflow-hidden"
-                        >
-                          <Field data-invalid={fieldState.invalid}>
-                            <Input
-                              {...field}
-                              id={`input-url-form`}
-                              aria-invalid={fieldState.invalid}
-                              placeholder="www.example.com"
-                              type="url"
-                              required
-                              className="py-7"
-                            />
-                            {fieldState.invalid && (
-                              <FieldError errors={[fieldState.error]} />
-                            )}
-                          </Field>
-                        </motion.div>
-                      )}
-                    />
-                  </FieldGroup>
-                </FieldSet>
-              </form>
-              <Field orientation="horizontal" className="justify-end">
-                <div
-                  className={cn(
-                    "relative w-full overflow-hidden border-primary duration-300",
-                    isAnimating ? "rounded-4xl" : "rounded-md"
-                  )}
-                >
-                  <Button
-                    type="submit"
-                    form={`brand-extractor-form`}
-                    className={cn(
-                      "py-8 w-full relative",
-                      isAnimating ? "rounded-4xl" : "rounded-md"
-                    )}
-                    variant="agent"
-                    disabled={isLoading}
+              {!isSuccess ? (
+                <>
+                  <form
+                    onSubmit={_form.handleSubmit(onSubmit)}
+                    noValidate
+                    id="brand-extractor-form"
+                    className="w-full"
                   >
-                    <Sparkles />
-                    <motion.span
-                      key={currentMessageIndex}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{ duration: 0.1 }}
+                    <FieldSet>
+                      <FieldGroup>
+                        <Controller
+                          name="brandUrl"
+                          control={_form.control}
+                          render={({ field, fieldState }) => (
+                            <motion.div
+                              initial={{ height: "auto", opacity: 1 }}
+                              animate={
+                                isAnimating
+                                  ? { height: 0, opacity: 0 }
+                                  : { height: "auto", opacity: 1 }
+                              }
+                              transition={{
+                                duration: 0.5,
+                                ease: "easeInOut",
+                              }}
+                              className="overflow-hidden"
+                            >
+                              <Field data-invalid={fieldState.invalid}>
+                                <Input
+                                  {...field}
+                                  id={`input-url-form`}
+                                  aria-invalid={fieldState.invalid}
+                                  placeholder="www.example.com"
+                                  type="url"
+                                  required
+                                  className="py-7"
+                                />
+                                {fieldState.invalid && (
+                                  <FieldError errors={[fieldState.error]} />
+                                )}
+                              </Field>
+                            </motion.div>
+                          )}
+                        />
+                      </FieldGroup>
+                    </FieldSet>
+                  </form>
+                  <Field orientation="horizontal" className="justify-end">
+                    <div
+                      className={cn(
+                        "relative w-full overflow-hidden border-primary duration-300",
+                        isAnimating ? "rounded-4xl" : "rounded-md"
+                      )}
                     >
-                      {isLoading ? loadingMessages[currentMessageIndex] : "Discover now"}
-                    </motion.span>
-                  </Button>
+                      <Button
+                        type="submit"
+                        form={`brand-extractor-form`}
+                        className={cn(
+                          "py-8 w-full relative",
+                          isAnimating ? "rounded-4xl" : "rounded-md"
+                        )}
+                        variant="agent"
+                        disabled={isLoading}
+                      >
+                        <Sparkles />
+                        <motion.span
+                          key={currentMessageIndex}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.1 }}
+                        >
+                          {isLoading ? loadingMessages[currentMessageIndex] : "Discover now"}
+                        </motion.span>
+                      </Button>
+                      <motion.div
+                        className="absolute inset-0 pointer-events-none"
+                        initial={{ x: "-100%" }}
+                        animate={isAnimating ? { x: "100%" } : { x: "-100%" }}
+                        transition={{
+                          duration: 0.8,
+                          ease: "easeInOut",
+                          repeat: isLoading ? Infinity : 0,
+                        }}
+                        style={{
+                          background:
+                            "linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent)",
+                        }}
+                      />
+                    </div>
+                  </Field>
+                </>
+              ) : (
+                <>
                   <motion.div
-                    className="absolute inset-0 pointer-events-none"
-                    initial={{ x: "-100%" }}
-                    animate={isAnimating ? { x: "100%" } : { x: "-100%" }}
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
                     transition={{
-                      duration: 0.8,
+                      duration: 0.5,
                       ease: "easeInOut",
-                      repeat: isLoading ? Infinity : 0,
                     }}
-                    style={{
-                      background:
-                        "linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent)",
-                    }}
-                  />
-                </div>
-              </Field>
+                    className="overflow-hidden"
+                  >
+                    <div className="text-center py-4">
+                      <p className="text-lg font-medium text-foreground">
+                        {getRandomMessage(successMessages)}
+                      </p>
+                    </div>
+                  </motion.div>
+                  <Field orientation="horizontal" className="justify-end">
+                    <Button
+                      className="py-8 w-full relative rounded-md"
+                      variant="agent"
+                      onClick={() => {
+                        // Aquí puedes navegar a la página de resultados
+                        console.log("Explorando Brand DNA...");
+                      }}
+                    >
+                      Explore your Brand DNA
+                      <ArrowRight />
+                    </Button>
+                  </Field>
+                </>
+              )}
             </div>
           </div>
         </Card>

@@ -1,12 +1,12 @@
-import axios, { AxiosInstance } from "axios";
+import z from "zod";
 
-const API_BASE_URL = "https://n8n.sofiatechnology.ai/webhook";
+export const extractorSchema = z.object({
+  target_url:z.string()
+})
 
-const apiDevClient: AxiosInstance = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 30000, // Increased to 30s for slower connections
-  headers: {
-    Accept: "application/json",
-    "Content-Type": "application/json",
-  },
-});
+export const extractorResponse = z.object({
+  message: z.string()
+})
+
+export type ExtractorFormData = z.infer<typeof extractorSchema>;
+export type ExtractorResponse = z.infer<typeof extractorResponse>;
