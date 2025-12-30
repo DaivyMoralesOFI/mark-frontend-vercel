@@ -10,7 +10,7 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "@/core/store/store";
 import { CreatePostRequest, PostType } from "../types/createPostTypes";
-import { addHashtagToDescription, createPost, fetchTrends, getSuggestion, setDescription, setPostType, setShowScheduleModal, setShowSuccess, togglePlatform, setScheduledDate, setScheduledTime, resetForm, setSelectedAccountForPlatform } from "../store/createPostSlice";
+import { addHashtagToDescription, createPost, fetchTrends, getSuggestion, setDescription, setPostType, setShowScheduleModal, setShowSuccess, togglePlatform, toggleUseBrandDna, setScheduledDate, setScheduledTime, resetForm, setSelectedAccountForPlatform } from "../store/createPostSlice";
 import { createPostService } from "../services/createPostService";
 
 /**
@@ -29,7 +29,7 @@ import { createPostService } from "../services/createPostService";
  * Also handles side effects such as fetching trends when platforms change and showing success notifications.
  * Returns all state, actions, setters, and validators needed for the post creation UI.
  */
-export const usePost = () => {
+export const usePost = (selectedCompanyUrl?: string) => {
     const dispatch = useDispatch<AppDispatch>();
     const postState = useSelector((state: RootState) => state.createPost);
     // Ref for the file input element (used for image upload)
@@ -79,6 +79,13 @@ export const usePost = () => {
      */
     const handlePlatformToggle = (platformId: string) => {
       dispatch(togglePlatform(platformId));
+    };
+  
+    /**
+     * Handler for toggling the Brand DNA flag
+     */
+    const handleToggleUseBrandDna = () => {
+      dispatch(toggleUseBrandDna());
     };
   
     /**
@@ -180,6 +187,8 @@ export const usePost = () => {
         description: postState.description,
         hasImage: images.length > 0,
         images,
+        use_brand_dna: postState.useBrandDna,
+        company_url: selectedCompanyUrl,
       };
       await dispatch(createPost(payload));
       dispatch(resetForm());
@@ -219,6 +228,8 @@ export const usePost = () => {
         hasImage: images.length > 0,
         images,
         scheduledAt: scheduledAt.toISOString(),
+        use_brand_dna: postState.useBrandDna,
+        company_url: selectedCompanyUrl,
       };
       await dispatch(createPost(payload));
       dispatch(resetForm());
@@ -263,6 +274,7 @@ export const usePost = () => {
       // Actions
       handlePostTypeChange,
       handlePlatformToggle,
+      handleToggleUseBrandDna,
       handleDescriptionChange,
       handleAddHashtag,
       handleSuggestion,

@@ -13,7 +13,7 @@ const metrics = [
   },
   {
     title: "Engagement Rate",
-    value: "8.2%",
+    value: "6.9%",
     change: "+2.1%",
     trend: "up",
     icon: MousePointer,

@@ -1,0 +1,23 @@
+{
+  "total_brands": 5,
+  "brands": [
+    {
+      "name": "Ofiservices",
+      "url": "https://www.ofiservices.com",
+      "logo": "/ofi-original.svg",
+      "industry": "Technology"
+    },
+    {
+      "name": "Apple",
+      "url": "https://www.apple.com",
+      "logo": "https://www.apple.com/ac/structured-data/images/knowledge_graph_logo.png?202208051838",
+      "industry": "Technology"
+    },
+    {
+      "name": "Celonis",
+      "url": "https://www.celonis.com",
+      "logo": "https://www.mckinsey.com/~/media/mckinsey/about%20us/overview/alliances%20and%20acquisitions/celonis-thumb_1536x864%20(1).png?cq=50&mw=767&car=16:9&cpy=Center",
+      "industry": "Process Mining & Execution Management"
+    }
+  ]
+}

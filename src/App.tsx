@@ -11,15 +11,17 @@ import MarketingCoachChat from "@/modules/chat-coach/page/MarketingCoachChatPage
 import ContentFeedbackPage from "./modules/content-post/page/ContentFeedbackPage";
 import AnalyticsPage from "./modules/analytics/AnalyticsPage";
 import CampaingnPage from "./modules/campaigns/CampaingnPage";
+import { BrandDashboard } from "./modules/brand-dna/page/Brand-DNA-Page";
 import AuthPage from "./modules/auth/page/authPage";
 import { AuthProvider } from "./modules/auth/store/authProvider";
 import RequireAuth from "./modules/auth/components/RequireAuth";
 import { lazy } from "react";
-
+import { StyleProfilePage } from "./modules/style-profile/StyleProfilePage";
 
 const ExtractorDNAPage = lazy(
   () => import("@/modules/brand-dna-extractor/pages/brand-extractor")
 );
+
 
 
 /**
@@ -58,6 +60,8 @@ export default function App() {
             <Route path="/content" element={<ContentFeedbackPage />} />
             <Route path="/analytics" element={<AnalyticsPage />} />
             <Route path="/campaigns" element={<CampaingnPage />} />
+            <Route path="/brand-dna" element={<BrandDashboard />} />
+            <Route path="/style-profile" element={<StyleProfilePage />} />
           </Route>
         </Routes>
       </BrowserRouter>
