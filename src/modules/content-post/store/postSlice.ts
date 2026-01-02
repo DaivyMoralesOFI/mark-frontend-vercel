@@ -6,6 +6,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Post } from "../types/postTypes";
 import { PostService } from "../services/postService";
+import { VideoPost, VideoPostsResponse } from "../schemas/video-posts.schemas";
 
 /**
  * PostState
@@ -13,6 +14,7 @@ import { PostService } from "../services/postService";
  */
 interface PostState {
     posts: Post[];         // Array of post objects
+    videos: VideoPost[],
     loading: boolean;      // Loading state for fetching posts
     error: string | null;  // Error message if fetching fails
   }
@@ -20,6 +22,7 @@ interface PostState {
 // Initial state for the content post slice
 const initialState: PostState = {
   posts: [],
+  videos:[],
   loading: false,
   error: null,
 };
@@ -38,6 +41,17 @@ export const fetchPosts = createAsyncThunk(
     }
   }
 );
+
+export const fetchVideoPost = createAsyncThunk(
+  'posts/fetchVideoPosts', 
+  async(_,{rejectWithValue}) =>{
+    try{
+      return await PostService.getVideoPost();
+    }catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Unknown error');
+    }
+  }
+)
 
 /**
  * postSlice
@@ -68,6 +82,18 @@ const postSlice = createSlice({
         state.posts = action.payload;
       })
       .addCase(fetchPosts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(fetchVideoPost.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchVideoPost.fulfilled, (state, action: PayloadAction<VideoPostsResponse>) => {
+        state.loading = false;
+        state.videos = action.payload;
+      })
+      .addCase(fetchVideoPost.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });
