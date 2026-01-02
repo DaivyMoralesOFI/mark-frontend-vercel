@@ -27,7 +27,11 @@ import { VideoPostCarrousel } from "../components/carousels/video-post-carousel"
  */
 export default function ContentFeedbackPage() {
   // Fetch posts, loading, and error state from the custom hook
-  const { posts, loading, error } = useContentFeedback();
+  const { posts, videos ,loading, error } = useContentFeedback();
+
+  console.log(videos.length);
+  
+
   // Modal state and handlers from the useModals hook
   const {
     showCreatePost,
@@ -64,7 +68,8 @@ export default function ContentFeedbackPage() {
       <PageOutletLayout pageTitle="Content Feedback" actions={pageActions}>
         {/* Grid of posts with feedback */}
         <PostGrid posts={posts} />
-        <VideoPostCarrousel />
+        {videos && <VideoPostCarrousel videos={videos}/>}
+        
       </PageOutletLayout>
       {/* Modal for creating a new post */}
       <CreatePostModal isOpen={showCreatePost} onClose={closeCreatePost} />

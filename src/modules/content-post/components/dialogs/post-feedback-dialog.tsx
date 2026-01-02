@@ -19,8 +19,8 @@ export const PostFeedbackDialog = ({
 }: PostFeedbackDialogProps) => {
   return (
     <Dialog>
-      <DialogTrigger>
-        <Button variant={"ghost"}>See Feedback</Button>
+      <DialogTrigger className="cursor-pointer text-xs hover:bg-gray-100 py-2 px-3 rounded-md">
+        See Feedback
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

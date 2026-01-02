@@ -39,8 +39,6 @@ interface PostCardProps {
  * Used in the PostGrid to show a list of posts.
  */
 export const PostCard = ({ post }: PostCardProps) => {
-  console.log({ post });
-
   return (
     <Card className="flex flex-col h-full">
       <CardHeader className="items-center justify-center">
