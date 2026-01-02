@@ -96,9 +96,14 @@ export const videoSuggestionService = {
       formData.append('company_url', data.company_url);
     }
 
+    // Determine endpoint based on use_brand_dna
+    const endpoint = data.use_brand_dna
+      ? 'https://n8n.sofiatechnology.ai/webhook/generate-video'
+      : 'https://n8n.sofiatechnology.ai/webhook/d192fb97-c470-4a7a-a75b-6e1601b269d4';
+
     // Send POST request with FormData
     await axios.post(
-      'https://n8n.sofiatechnology.ai/webhook/d192fb97-c470-4a7a-a75b-6e1601b269d4',
+      endpoint,
       formData,
       {
         headers: {

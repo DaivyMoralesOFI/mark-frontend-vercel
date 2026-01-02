@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom";
 import { BrandProfileProgress } from "../components/BrandProfileProgress";
 import { LogoSection } from "../components/LogoSection";
 import { ColorPaletteSection } from "../components/ColorPaletteSection";
@@ -9,10 +10,12 @@ import { CompanySelectorModal } from "../components/CompanySelectorModal";
 import { CompanyDropdown } from "../components/CompanyDropdown";
 import { useBrandDna } from "../hooks/useBrandDna";
 import PageOutletLayout from "@/shared/layout/page-outlet-layout";
+import { Button } from "@/shared/components/ui/button";
 
 export function BrandDashboard() {
   const { selectedCompany, selectCompany } = useBrandDna();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Open modal if no company is selected when component mounts
@@ -37,11 +40,19 @@ export function BrandDashboard() {
         actions={[]}
         headerContent={
           selectedCompany ? (
-            <CompanyDropdown
-              selectedCompany={selectedCompany}
-              onSelectCompany={handleSelectCompany}
-              onViewAll={handleViewAll}
-            />
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => navigate('/brand-dna-extractor')}
+              >
+                Extractor
+              </Button>
+              <CompanyDropdown
+                selectedCompany={selectedCompany}
+                onSelectCompany={handleSelectCompany}
+                onViewAll={handleViewAll}
+              />
+            </div>
           ) : null
         }
       >
