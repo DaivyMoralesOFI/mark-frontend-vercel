@@ -15,7 +15,14 @@ import { BrandDashboard } from "./modules/brand-dna/page/Brand-DNA-Page";
 import AuthPage from "./modules/auth/page/authPage";
 import { AuthProvider } from "./modules/auth/store/authProvider";
 import RequireAuth from "./modules/auth/components/RequireAuth";
+import { lazy } from "react";
 import { StyleProfilePage } from "./modules/style-profile/StyleProfilePage";
+
+const ExtractorDNAPage = lazy(
+  () => import("@/modules/brand-dna-extractor/pages/brand-extractor")
+);
+
+
 
 /**
  * App
@@ -35,6 +42,8 @@ export default function App() {
         <Routes>
           {/* Public route: authentication page */}
           <Route path="/auth" element={<AuthPage />} />
+          {/*Experimental Brand DNA routes*/}
+          <Route path="/brand-dna-extractor" element={<ExtractorDNAPage/>}/>
           {/* Protected routes: require authentication */}
           <Route
             element={

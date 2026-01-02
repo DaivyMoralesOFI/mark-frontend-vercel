@@ -131,6 +131,8 @@ export const usePost = (selectedCompanyUrl?: string) => {
           postType: postState.postType,
           platforms: postState.selectedPlatforms,
           description: postState.description,
+          use_brand_dna: postState.useBrandDna,
+          company_url: selectedCompanyUrl,
         });
         setGeneratedImage(blob);
       } finally {

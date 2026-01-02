@@ -1,33 +1,64 @@
 import { Card } from "@/shared/components/ui/card"
-import { Check } from "lucide-react"    
+import { Check, Loader2 } from "lucide-react"
+import { useBrandDna } from "../hooks/useBrandDna"
 
 export function TypographySection() {
+  const { data, loading } = useBrandDna()
+
   return (
     <Card className="w-full">
       <div className="p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-lg text-foreground">Typography</h3>
-          <div className="flex items-center gap-2 text-sm text-primary font-medium">
-            <Check className="h-4 w-4" />
-            Detected
-          </div>
+          {data?.typography && (
+            <div className="flex items-center gap-2 text-sm text-primary font-medium">
+              <Check className="h-4 w-4" />
+              Detected
+            </div>
+          )}
         </div>
 
-        <div className="space-y-6">
-          <div className="p-4 rounded-lg bg-muted/50 border border-border">
-            <p className="text-xs text-muted-foreground mb-2 uppercase tracking-wide">Primary Font</p>
-            <h4 className="text-2xl font-bold mb-1" style={{ fontFamily: "Georgia, serif" }}>
-              Inter
-            </h4>
-            <p className="text-sm text-muted-foreground">The quick brown fox jumps</p>
+        {loading ? (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
+        ) : data?.typography ? (
+          <div className="space-y-6">
+            <div className="p-4 rounded-lg bg-muted/50 border border-border">
+              <p className="text-xs text-muted-foreground mb-2 uppercase tracking-wide">
+                {data.typography.headings.usage_context || "Headings"}
+              </p>
+              <h4 
+                className="text-2xl font-bold mb-1" 
+                style={{ fontFamily: `${data.typography.headings.font_family}${data.typography.headings.category ? `, ${data.typography.headings.category}` : ''}` }}
+              >
+                {data.typography.headings.font_family}
+              </h4>
+              {data.typography.headings.category && (
+                <p className="text-sm text-muted-foreground">{data.typography.headings.category}</p>
+              )}
+              <p className="text-sm text-muted-foreground mt-2">The quick brown fox jumps</p>
+            </div>
 
-          <div className="p-4 rounded-lg bg-muted/50 border border-border">
-            <p className="text-xs text-muted-foreground mb-2 uppercase tracking-wide">Secondary Font</p>
-            <h4 className="text-2xl font-bold mb-1">SF Pro Display</h4>
-            <p className="text-sm text-muted-foreground">The quick brown fox jumps</p>
+            <div className="p-4 rounded-lg bg-muted/50 border border-border">
+              <p className="text-xs text-muted-foreground mb-2 uppercase tracking-wide">
+                {data.typography.body.usage_context || "Body"}
+              </p>
+              <h4 
+                className="text-2xl font-bold mb-1"
+                style={{ fontFamily: `${data.typography.body.font_family}${data.typography.body.category ? `, ${data.typography.body.category}` : ''}` }}
+              >
+                {data.typography.body.font_family}
+              </h4>
+              {data.typography.body.category && (
+                <p className="text-sm text-muted-foreground">{data.typography.body.category}</p>
+              )}
+              <p className="text-sm text-muted-foreground mt-2">The quick brown fox jumps</p>
+            </div>
           </div>
-        </div>
+        ) : (
+          <p className="text-sm text-muted-foreground text-center py-8">No typography data available</p>
+        )}
       </div>
     </Card>
   )
