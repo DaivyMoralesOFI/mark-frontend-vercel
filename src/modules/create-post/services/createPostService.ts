@@ -57,10 +57,33 @@ export const createPostService = {
       ? '/create-image' 
       : '/0bfe57a1-076f-4a49-80b5-3513c0f53524';
     
-    const response = await postApi.post(endpoint, data, {
-      responseType: 'blob',
-    });
-    return response.data;
+    if (data.use_brand_dna) {
+      // When Brand DNA is enabled, the endpoint returns JSON with a URL
+      const response = await postApi.post(endpoint, data, {
+        responseType: 'json',
+      });
+      
+      // Extract the URL from the response
+      const imageUrl = response.data['url-logo'];
+      if (!imageUrl) {
+        throw new Error('No image URL found in response');
+      }
+      
+      // Download the image from the URL and convert it to a Blob
+      const imageResponse = await fetch(imageUrl);
+      if (!imageResponse.ok) {
+        throw new Error(`Failed to fetch image from URL: ${imageResponse.statusText}`);
+      }
+      
+      const blob = await imageResponse.blob();
+      return blob;
+    } else {
+      // When Brand DNA is disabled, the endpoint returns a blob directly
+      const response = await postApi.post(endpoint, data, {
+        responseType: 'blob',
+      });
+      return response.data;
+    }
   },
 
   /**
