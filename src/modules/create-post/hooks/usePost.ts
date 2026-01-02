@@ -135,6 +135,10 @@ export const usePost = (selectedCompanyUrl?: string) => {
           company_url: selectedCompanyUrl,
         });
         setGeneratedImage(blob);
+      } catch (error) {
+        console.error('Error generating image:', error);
+        // Optionally, you could show an error notification to the user here
+        setGeneratedImage(null);
       } finally {
         setLoadingImage(false);
       }

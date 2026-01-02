@@ -17,7 +17,6 @@ import {
 import { Button } from "@/shared/components/ui/button";
 import { Label } from "@/shared/components/ui/label";
 import { Checkbox } from "@/shared/components/ui/checkbox";
-import { Badge } from "@/shared/components/ui/badge";
 import TooltipHover from "@/shared/components/tooltip/tooltip-hover";
 import {
   Select,
