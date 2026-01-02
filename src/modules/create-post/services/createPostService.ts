@@ -53,7 +53,11 @@ export const createPostService = {
    * @returns {Promise<Blob>} - The generated image as a Blob
    */
   generateImage: async (data: ImageGenerationRequest): Promise<Blob> => {
-    const response = await postApi.post('/0bfe57a1-076f-4a49-80b5-3513c0f53524', data, {
+    const endpoint = data.use_brand_dna 
+      ? '/create-image' 
+      : '/0bfe57a1-076f-4a49-80b5-3513c0f53524';
+    
+    const response = await postApi.post(endpoint, data, {
       responseType: 'blob',
     });
     return response.data;

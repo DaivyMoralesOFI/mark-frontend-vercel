@@ -54,6 +54,8 @@ export interface Platform {
     postType: string;
     platforms: string[];
     description: string;
+    use_brand_dna?: boolean; // Optional - applies brand DNA (logo, colors, tone) to the image
+    company_url?: string; // Optional - URL of the selected company for brand DNA
   }
   
 /**
@@ -99,7 +101,6 @@ export type SelectedAccountsByPlatform = {
   export interface PostFormData {
     postType: PostType | "";
     selectedPlatforms: string[];
-    useBrandDna: boolean;
     useBrandDna: boolean;
     description: string;
     hasImage: boolean;
