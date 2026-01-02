@@ -17,6 +17,7 @@ import { Sparkles, ArrowRight } from "lucide-react";
 import { Card } from "@/shared/components/ui/card";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/core/lib/utils";
 import { brandExtractorWorkFlow } from "../services/brand-extractor.api";
 import {
@@ -45,6 +46,7 @@ const successMessages = [
 ];
 
 const Extractor = () => {
+  const navigate = useNavigate();
   const [isAnimating, setIsAnimating] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
@@ -62,7 +64,6 @@ const Extractor = () => {
 
     try {
       const response = await brandExtractorWorkFlow(data.brandUrl);
-      console.log("Brand DNA extracted:", response);
       const apiDuration = Date.now() - startTime;
       const timePerMessage = calculateTimePerMessage(
         apiDuration,
@@ -244,10 +245,7 @@ const Extractor = () => {
                     <Button
                       className="py-8 w-full relative rounded-md"
                       variant="agent"
-                      onClick={() => {
-                        // Aquí puedes navegar a la página de resultados
-                        console.log("Explorando Brand DNA...");
-                      }}
+                      onClick={() => navigate("/brand-dna")}
                     >
                       Explore your Brand DNA
                       <ArrowRight />
