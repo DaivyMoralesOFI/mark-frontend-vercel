@@ -4,20 +4,28 @@
 // It shows the author, date, post text, feedback, likes, and a link to the original post.
 // The component is styled with Tailwind CSS and uses UI primitives for layout and interactivity.
 
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/shared/components/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/shared/components/ui/card";
 import { Post } from "../types/postTypes";
-import { Badge } from "@/shared/components/ui/badge";
-import { Heart } from "lucide-react";
+import { Calendar, EllipsisVertical, Heart } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
+import { PostFeedbackDialog } from "./dialogs/post-feedback-dialog";
 
 /**
  * Props for PostCard
  * @property {Post} post - The post data to display
  */
 interface PostCardProps {
-    post: Post;
-  }
-  
+  post: Post;
+}
+
 /**
  * PostCard
  *
@@ -30,45 +38,47 @@ interface PostCardProps {
  *
  * Used in the PostGrid to show a list of posts.
  */
-  export const PostCard = ({ post }: PostCardProps) => {
-    return (
-      <Card className="hover:shadow-lg transition-shadow">
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              {/* Author avatar */}
-              <img
-                src="ofi-dark.svg"
-                alt="Ofi Services Logo"
-                className="w-10 h-10 rounded-full object-cover"
-              />
-              <div>
-                {/* Author name and post date */}
-                <CardTitle>{post.Author}</CardTitle>
-                <p className="text-sm text-muted-foreground">{post.Date}</p>
-              </div>
+export const PostCard = ({ post }: PostCardProps) => {
+  return (
+    <Card className="flex flex-col h-full">
+      <CardHeader className="items-center justify-center">
+        <CardTitle>
+          <div className="flex items-center gap-2">
+            {/* Author avatar */}
+            <img
+              src="ofi-dark.svg"
+              alt="Ofi Services Logo"
+              className="w-10 h-10 rounded-full object-cover"
+            />
+            <div>
+              {/* Author name and post date */}
+              <p>{post.Author}</p>
             </div>
-            {/* Like badge with heart icon */}
-            <Badge className="flex items-center space-x-1 bg-white text-red-500">
-              <Heart size={14} />
-              <span>{post.likes}</span>
-            </Badge>
           </div>
-        </CardHeader>
-        <CardContent>
-          {/* Post text */}
-          <p className="mb-4">{post.Text}</p>
-          {/* Post feedback as a blockquote */}
-          <blockquote className="border-l-4 border-purple-500 pl-4 italic text-sm text-muted-foreground">
-            {post.Feedback}
-          </blockquote>
-        </CardContent>
-        <CardFooter className="flex justify-end">
-          {/* Link to the original post */}
-          <a href={post.Link} target="_blank" rel="noopener noreferrer">
-            <Button variant="link">See post</Button>
+        </CardTitle>
+        <CardDescription className="flex items-start justify-start gap-4">
+            <div className="flex justify-center items-center gap-2">
+              <Calendar size={12} />
+              <span>{post.Date}</span>
+            </div>
+             <div className="flex justify-center items-center gap-2">
+              <Heart size={12} />
+              <span>{post.likes}</span>
+            </div>
+        </CardDescription>
+        <CardAction>
+          <EllipsisVertical size={12} />
+        </CardAction>
+      </CardHeader>
+      <CardContent className="flex-1 overflow-hidden">
+       <p className="line-clamp-3">{post.Text}</p>
+      </CardContent>
+      <CardFooter className="justify-between mt-auto">
+        <PostFeedbackDialog post_feedback={post.Feedback} />
+         <a href={post.Link} target="_blank" rel="noopener noreferrer">
+            <Button variant="link">Go to post</Button>
           </a>
-        </CardFooter>
-      </Card>
-    );
-  };
+      </CardFooter>
+    </Card>
+  );
+};

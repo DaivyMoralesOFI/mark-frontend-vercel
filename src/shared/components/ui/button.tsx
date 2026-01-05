@@ -18,10 +18,10 @@ const buttonVariants = cva(
         secondary:
           "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
         ghost:
-          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
+          "hover:bg-foreground/10 hover:text-accent-foreground dark:hover:bg-foreground/50",
         link: "text-primary underline-offset-4 hover:underline",
         agent:
-          "text-on-primary bg-gradient-to-r from-blue-500 to-indigo-600 shadow-xs transition-all duration-500 transform  hover:bg-gradient-to-l hover:from-blue-600 hover:to-indigo-700 focus-visible:ring-blue-500/20 dark:focus-visible:ring-blue-500/40 dark:bg-gradient-to-r dark:from-blue-400 dark:to-indigo-500 dark:hover:bg-gradient-to-l dark:hover:from-blue-500 dark:hover:to-indigo-600",
+          "text-on-primary bg-gradient-to-r from-primary to-secondary shadow-xs border-1 border-primary text-white",
       },
       size: {
         default: "h-7 px-4 py-2 has-[>svg]:px-3",

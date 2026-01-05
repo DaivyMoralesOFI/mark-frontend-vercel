@@ -5,7 +5,7 @@
 
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchPosts, clearError } from '../store/postSlice';
+import { fetchPosts, clearError, fetchVideoPost } from '../store/postSlice';
 import { AppDispatch } from '@/core/store/store';
 import { RootState } from '@/core/store/rootReducer';
 
@@ -24,11 +24,12 @@ import { RootState } from '@/core/store/rootReducer';
 export const useContentFeedback = () => {
   const dispatch = useDispatch<AppDispatch>();
   // Select posts, loading, and error state from Redux
-  const { posts, loading, error } = useSelector((state: RootState) => state.posts);
+  const { posts, videos ,loading, error } = useSelector((state: RootState) => state.posts);
 
   // Fetch posts on mount
   useEffect(() => {
     dispatch(fetchPosts());
+    dispatch(fetchVideoPost());
   }, [dispatch]);
 
   /**
@@ -40,6 +41,7 @@ export const useContentFeedback = () => {
 
   return {
     posts,
+    videos,
     loading,
     error,
     clearError: handleClearError,

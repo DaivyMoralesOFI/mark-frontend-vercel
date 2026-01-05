@@ -14,6 +14,7 @@ import { ErrorState } from "@/shared/components/error-state/ErrorState";
 import { PostGrid } from "../components/PostGrid";
 import { CreatePostModal } from "@/modules/create-post/components/CreatePostModal";
 import { AiChatModal } from "@/modules/chat-coach-modal/page/AiChatModal";
+import { VideoPostCarrousel } from "../components/carousels/video-post-carousel";
 
 /**
  * ContentFeedbackPage
@@ -26,7 +27,11 @@ import { AiChatModal } from "@/modules/chat-coach-modal/page/AiChatModal";
  */
 export default function ContentFeedbackPage() {
   // Fetch posts, loading, and error state from the custom hook
-  const { posts, loading, error } = useContentFeedback();
+  const { posts, videos ,loading, error } = useContentFeedback();
+
+  console.log(videos.length);
+  
+
   // Modal state and handlers from the useModals hook
   const {
     showCreatePost,
@@ -63,6 +68,8 @@ export default function ContentFeedbackPage() {
       <PageOutletLayout pageTitle="Content Feedback" actions={pageActions}>
         {/* Grid of posts with feedback */}
         <PostGrid posts={posts} />
+        {videos && <VideoPostCarrousel videos={videos}/>}
+        
       </PageOutletLayout>
       {/* Modal for creating a new post */}
       <CreatePostModal isOpen={showCreatePost} onClose={closeCreatePost} />

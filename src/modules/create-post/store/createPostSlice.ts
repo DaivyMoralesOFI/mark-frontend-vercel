@@ -12,6 +12,7 @@ import { createPostService } from "../services/createPostService";
 const initialState: PostState = {
     postType: "",
     selectedPlatforms: [],
+    useBrandDna: false,
     description: "",
     hasImage: false,
     generatedImage: null,
@@ -122,6 +123,10 @@ const initialState: PostState = {
           state.selectedPlatforms.push(platformId);
         }
       },
+      /** Toggle the Brand DNA flag */
+      toggleUseBrandDna: (state) => {
+        state.useBrandDna = !state.useBrandDna;
+      },
       /** Set the post description */
       setDescription: (state, action: PayloadAction<string>) => {
         state.description = action.payload;
@@ -186,6 +191,7 @@ const initialState: PostState = {
       resetForm: (state) => {
         state.postType = "";
         state.selectedPlatforms = [];
+        state.useBrandDna = false;
         state.description = "";
         state.hasImage = false;
         state.generatedImage = null;
@@ -267,6 +273,7 @@ const initialState: PostState = {
   export const {
     setPostType,
     togglePlatform,
+    toggleUseBrandDna,
     setDescription,
     addHashtagToDescription,
     setHasImage,
