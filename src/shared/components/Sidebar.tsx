@@ -3,7 +3,18 @@
 // This file defines the Sidebar component, which renders the main navigation sidebar for the application.
 // It includes navigation links, an AI assistant section, settings, and a user/company profile card, all styled with Tailwind CSS.
 
-import { BarChart3, FileText, Home, Settings, TrendingUp, Bot, Dna, User } from "lucide-react"
+import {
+  BarChart3,
+  FileText,
+  Home,
+  Settings,
+  TrendingUp,
+  Bot,
+  Dna,
+  User,
+  Layers,
+  CirclePlus,
+} from "lucide-react";
 import {
   Sidebar as SidebarComponent,
   SidebarContent,
@@ -15,9 +26,15 @@ import {
   SidebarMenuItem,
   SidebarHeader,
   SidebarFooter,
-} from "@/shared/components/ui/sidebar"
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar"
-import { Link } from "react-router-dom"
+} from "@/shared/components/ui/sidebar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/shared/components/ui/avatar";
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import { CreatePostModal } from "@/modules/create-post/components/CreatePostModal";
 
 // Navigation items for the main sidebar menu
 const navigationItems = [
@@ -26,8 +43,8 @@ const navigationItems = [
   { title: "Content", icon: FileText, isActive: false, to: "/content" },
   { title: "Campaigns", icon: TrendingUp, isActive: false, to: "/campaigns" },
   { title: "Brand DNA", icon: Dna, isActive: false, to: "/brand-dna" },
-  { title: "Style Profile", icon: User, isActive: false, to: "/style-profile" }
-]
+  { title: "Style Profile", icon: User, isActive: false, to: "/style-profile" },
+];
 
 /**
  * Sidebar
@@ -39,29 +56,28 @@ const navigationItems = [
  * - Responsive and styled for a modern UI
  */
 export function Sidebar() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
-    <SidebarComponent className="border-r border-border" variant="sidebar" collapsible="icon">
+    <SidebarComponent
+      className="border-r border-border"
+      variant="sidebar"
+      collapsible="icon"
+    >
       <SidebarHeader>
-      <SidebarMenu>
+        <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               size="lg"
               className="data-[state=open]:bg-[var(--sidebar-accent)]"
             >
-              <div
-                className="flex aspect-square bg-linear-to-r/oklab from-pink-300 to-purple-300 size-8 items-center justify-center rounded-lg border border-sidebar-accent"
-              >
+              <div className="flex aspect-square bg-linear-to-r/oklab from-pink-300 to-purple-300 size-8 items-center justify-center rounded-lg border border-sidebar-accent">
                 <img src="/mark-dark.svg" alt="Mark" className="w-5 h-5" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span
-                  className="truncate font-semibold text-sidebar-foreground"
-                >
+                <span className="truncate font-semibold text-sidebar-foreground">
                   Mark AI
                 </span>
-                <span
-                  className="truncate text-xs text-sidebar-accent-foreground"
-                >
+                <span className="truncate text-xs text-sidebar-accent-foreground">
                   Marketing Dashboard
                 </span>
               </div>
@@ -73,20 +89,45 @@ export function Sidebar() {
       <SidebarContent>
         {/* Main navigation group */}
         <SidebarGroup>
+          <SidebarGroupContent className="flex flex-col gap-2 my-auto">
+            <SidebarMenu>
+              <SidebarMenuItem className="flex items-center gap-2">
+                <SidebarMenuButton
+                  tooltip="Quick Create"
+                  className="cursor-pointer text-primary-foreground  bg-primary min-w-8 duration-300 ease-linear font-medium hover:bg-primary-foreground hover:text-primary hover:border-primary border"
+                  onClick={() => setIsModalOpen(true)}
+                >
+                  <CirclePlus />
+                  <span>Create post</span>
+                </SidebarMenuButton>
+                <CreatePostModal
+                  isOpen={isModalOpen}
+                  onClose={() => setIsModalOpen(false)}
+                />
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navigationItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   {item.to ? (
-                    <SidebarMenuButton asChild isActive={item.isActive} tooltip={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={item.isActive}
+                      tooltip={item.title}
+                    >
                       <Link to={item.to}>
                         <item.icon className="w-4 h-4" />
                         <span>{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
                   ) : (
-                    <SidebarMenuButton isActive={item.isActive} tooltip={item.title}>
+                    <SidebarMenuButton
+                      isActive={item.isActive}
+                      tooltip={item.title}
+                    >
                       <item.icon className="w-4 h-4" />
                       <span>{item.title}</span>
                     </SidebarMenuButton>
@@ -135,12 +176,16 @@ export function Sidebar() {
               <AvatarFallback></AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">Ofi Services</p>
-              <p className="text-xs text-gray-500 truncate">Marketing Manager</p>
+              <p className="text-sm font-medium text-gray-900 truncate">
+                Ofi Services
+              </p>
+              <p className="text-xs text-gray-500 truncate">
+                Marketing Manager
+              </p>
             </div>
           </div>
         </div>
       </SidebarFooter>
     </SidebarComponent>
-  )
+  );
 }

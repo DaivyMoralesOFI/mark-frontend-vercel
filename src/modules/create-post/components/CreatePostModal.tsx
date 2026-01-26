@@ -27,15 +27,17 @@ import {
 } from "@/shared/components/ui/select";
 import { ScrollArea } from "@/shared/components/ui/scroll-area";
 
-import { usePost } from '../hooks/usePost';
-import { POST_TYPES } from '../types/createPostTypes';
-import { PlatformSelector } from './PlatformSelector';
-import { DescriptionInput } from './DescriptionInput';
-import { TrendsSection } from './TrendsSection';
-import { ImageUpload } from './ImageUpload';
-import { AISuggestion } from './AISuggestion';
-import { ScheduleModal } from '../../../shared/components/ScheduleModal';
-import { SuccessNotification } from './SuccessNotification';
+import { usePost } from "../hooks/usePost";
+import { POST_TYPES, PostType } from "../types/createPostTypes";
+import { PlatformSelector } from "./PlatformSelector";
+import { DescriptionInput } from "./DescriptionInput";
+import { TrendsSection } from "./TrendsSection";
+import { ImageUpload } from "./ImageUpload";
+import { AISuggestion } from "./AISuggestion";
+import { ScheduleModal } from "../../../shared/components/ScheduleModal";
+import { SuccessNotification } from "./SuccessNotification";
+import { Badge } from "@/shared/components/ui/badge";
+import { cn } from "@/core/lib/utils";
 
 /**
  * Props for CreatePostModal
@@ -46,7 +48,6 @@ interface CreatePostModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
 
 /**
  * CreatePostModal
@@ -65,37 +66,41 @@ interface CreatePostModalProps {
  */
 export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
   // Local state for company dropdown
-  const [companies, setCompanies] = useState<Array<{ name: string; url: string }>>([]);
+  const [companies, setCompanies] = useState<
+    Array<{ name: string; url: string }>
+  >([]);
   const [selectedCompany, setSelectedCompany] = useState<string>("");
 
   // Fetch companies list from API when modal opens
   useEffect(() => {
     if (isOpen) {
-      fetch('https://n8n.sofiatechnology.ai/webhook/brands-list')
-        .then(response => {
+      fetch("https://n8n.sofiatechnology.ai/webhook/brands-list")
+        .then((response) => {
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
           return response.text();
         })
-        .then(text => {
-          if (!text || text.trim() === '') {
-            console.warn('Empty response from brands API');
+        .then((text) => {
+          if (!text || text.trim() === "") {
+            console.warn("Empty response from brands API");
             setCompanies([]);
             return;
           }
           const data = JSON.parse(text);
           setCompanies(data.brands || []);
         })
-        .catch(error => {
-          console.error('Failed to load companies:', error);
+        .catch((error) => {
+          console.error("Failed to load companies:", error);
           setCompanies([]);
         });
     }
   }, [isOpen]);
 
   // Get the URL of the selected company
-  const selectedCompanyUrl = companies.find(c => c.name === selectedCompany)?.url;
+  const selectedCompanyUrl = companies.find(
+    (c) => c.name === selectedCompany,
+  )?.url;
 
   // usePost hook provides all state, actions, and validators for the post creation flow
   const {
@@ -147,49 +152,58 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
   // Determines if image can be generated (requires canSuggest and non-empty description)
   const canGenerateImage = canSuggest && !!description.trim();
 
-
-
   return (
     <>
       {/* Main dialog for creating a post */}
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-[90vw] w-full">
           {/* Success notification shown after post creation */}
           <SuccessNotification show={showSuccess} />
-          
           <DialogHeader>
             <DialogTitle className="text-gray-900">Create New Post</DialogTitle>
           </DialogHeader>
-
           {/* Scrollable area for form fields */}
-          <ScrollArea className="max-h-[70vh] pr-4">
-            <div className="space-y-6 text-gray-900">
-              {/* Post Type Selection */}
-              <div className="space-y-2">
-                <Label htmlFor="post-type">Post Type</Label>
-                <Select value={postType} onValueChange={handlePostTypeChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select post type" />
-                  </SelectTrigger>
-                  <SelectContent>
+          <ScrollArea className="max-h-[80vh] w-full">
+            <div className="flex flex-col justify-between items-start gap-4">
+              <div className="flex justify-start items-center gap-4">
+                {/* Platform Selection (e.g., Facebook, Twitter) */}
+                <PlatformSelector
+                  selectedPlatforms={selectedPlatforms}
+                  onTogglePlatform={handlePlatformToggle}
+                  selectedAccountsByPlatform={selectedAccountsByPlatform}
+                  onSelectAccount={handleSelectAccountForPlatform}
+                />
+              </div>
+              <div className="space-y-6 text-gray-900">
+                {/* Post Type Selection */}
+                <div className="space-y-2 flex gap-3 items-center">
+                  <Label htmlFor="post-type">Post Type</Label>
+                  <div className="flex gap-2">
                     {/* Render available post types */}
                     {POST_TYPES.map((type) => (
-                      <SelectItem key={type.value} value={type.value}>
+                      <Button
+                        key={type.value}
+                        className={cn("text-xs")}
+                        variant={
+                          postType === type.value ? "default" : "outline"
+                        }
+                        onClick={() =>
+                          handlePostTypeChange(type.value as PostType)
+                        }
+                      >
                         {type.label}
-                      </SelectItem>
+                      </Button>
                     ))}
-                  </SelectContent>
-                </Select>
-                
-                {/* Brand DNA Toggle - positioned next to Post Type */}
+                  </div>
+                  {/* Brand DNA Toggle - positioned next to Post Type 
                 <div className="flex items-center space-x-2 pt-2">
-                  <Checkbox 
-                    id="use-brand-dna" 
+                  <Checkbox
+                    id="use-brand-dna"
                     checked={useBrandDna}
                     onCheckedChange={handleToggleUseBrandDna}
                   />
-                  <Label 
-                    htmlFor="use-brand-dna" 
+                  <Label
+                    htmlFor="use-brand-dna"
                     className="cursor-pointer text-sm font-medium"
                   >
                     Use Brand DNA
@@ -201,81 +215,70 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
                   >
                     <Info className="w-4 h-4 text-gray-500 hover:text-gray-700 cursor-help" />
                   </TooltipHover>
+                </div>*/}
                 </div>
+
+                {/* Company Selection - Only shown when Use Brand DNA is checked */}
+                {useBrandDna && (
+                  <div className="space-y-2">
+                    <Label htmlFor="company">Select Company *</Label>
+                    <Select
+                      value={selectedCompany}
+                      onValueChange={(value) => setSelectedCompany(value)}
+                    >
+                      <SelectTrigger id="company">
+                        <SelectValue placeholder="Choose a company" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {companies.map((company) => (
+                          <SelectItem key={company.name} value={company.name}>
+                            {company.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+                {/* Post Description with AI Suggestion button */}
+                <DescriptionInput
+                  description={description}
+                  onDescriptionChange={handleDescriptionChange}
+                  onSuggestion={handleSuggestion}
+                  loadingSuggestion={loadingSuggestion}
+                  canSuggest={canSuggest}
+                />
+
+                {/* Trends and Hashtag Suggestions */}
+                <TrendsSection
+                  selectedPlatforms={selectedPlatforms}
+                  trends={trends}
+                  loadingTrends={loadingTrends}
+                  onAddHashtag={handleAddHashtag}
+                />
+
+                {/* Image Upload and AI Generation */}
+                <ImageUpload
+                  hasImage={hasImage}
+                  generatedImage={generatedImage}
+                  uploadedImages={uploadedImages}
+                  loadingImage={loadingImage}
+                  fileInputRef={fileInputRef}
+                  onImageGeneration={handleImageGeneration}
+                  onFileUpload={handleFileUpload}
+                  onRemoveImage={handleRemoveImage}
+                  onRemoveUploadedImage={handleRemoveUploadedImage}
+                  canGenerateImage={canGenerateImage}
+                />
+
+                {/* AI Suggestion for optimal posting time and strategy */}
+                <AISuggestion />
               </div>
-
-              {/* Company Selection - Only shown when Use Brand DNA is checked */}
-              {useBrandDna && (
-                <div className="space-y-2">
-                  <Label htmlFor="company">Select Company *</Label>
-                  <Select
-                    value={selectedCompany}
-                    onValueChange={(value) => setSelectedCompany(value)}
-                  >
-                    <SelectTrigger id="company">
-                      <SelectValue placeholder="Choose a company" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {companies.map((company) => (
-                        <SelectItem key={company.name} value={company.name}>
-                          {company.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-
-              {/* Platform Selection (e.g., Facebook, Twitter) */}
-              <PlatformSelector
-                selectedPlatforms={selectedPlatforms}
-                onTogglePlatform={handlePlatformToggle}
-                selectedAccountsByPlatform={selectedAccountsByPlatform}
-                onSelectAccount={handleSelectAccountForPlatform}
-              />
-
-              {/* Post Description with AI Suggestion button */}
-              <DescriptionInput
-                description={description}
-                onDescriptionChange={handleDescriptionChange}
-                onSuggestion={handleSuggestion}
-                loadingSuggestion={loadingSuggestion}
-                canSuggest={canSuggest}
-              />
-
-              {/* Trends and Hashtag Suggestions */}
-              <TrendsSection
-                selectedPlatforms={selectedPlatforms}
-                trends={trends}
-                loadingTrends={loadingTrends}
-                onAddHashtag={handleAddHashtag}
-              />
-
-              {/* Image Upload and AI Generation */}
-              <ImageUpload
-                hasImage={hasImage}
-                generatedImage={generatedImage}
-                uploadedImages={uploadedImages}
-                loadingImage={loadingImage}
-                fileInputRef={fileInputRef}
-                onImageGeneration={handleImageGeneration}
-                onFileUpload={handleFileUpload}
-                onRemoveImage={handleRemoveImage}
-                onRemoveUploadedImage={handleRemoveUploadedImage}
-                canGenerateImage={canGenerateImage}
-              />
-
-              {/* AI Suggestion for optimal posting time and strategy */}
-              <AISuggestion />
             </div>
           </ScrollArea>
 
           {/* Action Buttons: Cancel, Schedule, Create Post */}
           <div className="flex justify-end space-x-3 pt-4 border-t">
-            <Button
-              variant="destructive"
-              onClick={onClose}
-            >
+            <Button variant="destructive" onClick={onClose}>
               Cancel
             </Button>
             <Button
