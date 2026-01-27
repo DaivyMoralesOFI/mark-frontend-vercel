@@ -5,28 +5,36 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/core/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden",
+  "inline-flex items-center justify-center rounded-md border px-2 py-1 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-4 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden",
   {
     variants: {
       variant: {
-        default:
-          "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
+        default: "bg-primary text-on-primary [a&]:hover:bg-primary/90",
+        primaryOutline:
+          "border-primary bg-primary-container text-on-primary-container [a&]:hover:bg-primary-container/90",
         secondary:
-          "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
+          "border-secondary bg-secondary text-on-secondary [a&]:hover:bg-secondary/90",
+        secondaryOutline:
+          "border-secondary bg-secondary-container text-on-secondary-container [a&]:hover:bg-secondary-container/90",
+        tertiaryOutline:
+          "border-tertiary bg-tertiary-container text-on-tertiary-container [a&]:hover:bg-tertiary-container/90",
         destructive:
-          "border-red-950 bg-error text-on-error [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
+          "border-error bg-error-container text-on-error-container [a&]:hover:bg-error-container/90",
         outline:
-          "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
-        high: "bg-red-100 text-red-700 border border-red-700 rounded-md p-0.5",
-        medium: "bg-yellow-100 text-yellow-700 border border-yellow-700 rounded-md p-0.5",
-        low: "bg-green-100 text-green-700 border border-green-700 rounded-md p-0.5",
-        info: "bg-blue-100 text-blue-700 border border-blue-700 rounded-md p-0.5",
+          "text-on-surface [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
+        ghost: "bg-transparent text-on-surface border-0",
+        agent:
+          "rounded-sm bg-linear-to-r/oklab from-primary to-primary-container text-on-primary border-primary",
+        high: "bg-red-100 text-red-700 border border-red-700",
+        medium: "bg-yellow-100 text-yellow-700 border border-yellow-700",
+        low: "bg-green-100 text-green-700 border border-green-700",
+        gold: "bg-amber-300 border-amber-600 text-amber-900",
       },
     },
     defaultVariants: {
       variant: "default",
     },
-  }
+  },
 );
 
 function Badge({

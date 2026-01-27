@@ -1,8 +1,3 @@
-// Sidebar.tsx
-//
-// This file defines the Sidebar component, which renders the main navigation sidebar for the application.
-// It includes navigation links, an AI assistant section, settings, and a user/company profile card, all styled with Tailwind CSS.
-
 import {
   BarChart3,
   FileText,
@@ -35,6 +30,8 @@ import {
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { CreatePostModal } from "@/modules/create-post/components/CreatePostModal";
+import MarkLogo from "@/assets/logos/mark-colored.svg";
+import { cn } from "@/core/lib/utils";
 
 // Navigation items for the main sidebar menu
 const navigationItems = [
@@ -66,26 +63,34 @@ export function Sidebar() {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-[var(--sidebar-accent)]"
-            >
-              <div className="flex aspect-square bg-linear-to-r/oklab from-pink-300 to-purple-300 size-8 items-center justify-center rounded-lg border border-sidebar-accent">
-                <img src="/mark-dark.svg" alt="Mark" className="w-5 h-5" />
-              </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold text-sidebar-foreground">
-                  Mark AI
-                </span>
-                <span className="truncate text-xs text-sidebar-accent-foreground">
-                  Marketing Dashboard
-                </span>
-              </div>
+            <SidebarMenuButton asChild size="lg">
+              <Link to={"/"}>
+                <div
+                  className={cn(
+                    "flex aspect-square items-center justify-center",
+                    status ? "size-14" : "size-9",
+                  )}
+                >
+                  <picture className="site-front-logo">
+                    <source src={MarkLogo} />
+                    <img
+                      src={MarkLogo}
+                      alt="Site front logo"
+                      className="w-full h-full"
+                    />
+                  </picture>
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-bold text-2xl text-secondary">
+                    MARK
+                  </span>
+                  <span className="truncate">Marketing Agent</span>
+                </div>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-
       <SidebarContent>
         {/* Main navigation group */}
         <SidebarGroup>
@@ -94,7 +99,7 @@ export function Sidebar() {
               <SidebarMenuItem className="flex items-center gap-2">
                 <SidebarMenuButton
                   tooltip="Quick Create"
-                  className="cursor-pointer text-primary-foreground  bg-primary min-w-8 duration-300 ease-linear font-medium hover:bg-primary-foreground hover:text-primary hover:border-primary border"
+                  className="cursor-pointer text-on-secondary bg-secondary min-w-8 duration-300 ease-linear font-medium hover:bg-on-secondary hover:text-secondary hover:border-secondary border"
                   onClick={() => setIsModalOpen(true)}
                 >
                   <CirclePlus />

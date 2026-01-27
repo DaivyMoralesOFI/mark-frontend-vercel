@@ -156,14 +156,14 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
     <>
       {/* Main dialog for creating a post */}
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-[90vw] w-full">
+        <DialogContent className="max-w-[90vw] w-full h-fit max-h-fit">
           {/* Success notification shown after post creation */}
           <SuccessNotification show={showSuccess} />
           <DialogHeader>
             <DialogTitle className="text-gray-900">Create New Post</DialogTitle>
           </DialogHeader>
           {/* Scrollable area for form fields */}
-          <ScrollArea className="max-h-[80vh] w-full">
+          <ScrollArea className="min-lg:h-[70svh] max-lg:h-[50svh] max-h-[80svh] w-full">
             <div className="flex flex-col justify-between items-start gap-4">
               <div className="flex justify-start items-center gap-4">
                 {/* Platform Selection (e.g., Facebook, Twitter) */}
