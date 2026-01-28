@@ -74,7 +74,7 @@ const PageOutletLayout = <T extends string | undefined = undefined>({
   if (triggers && tabsContent) {
     if (triggers.length !== tabsContent.length) {
       console.error(
-        `Error: triggers (${triggers.length}) y tabsContent (${tabsContent.length}) deben tener el mismo tamaño`
+        `Error: triggers (${triggers.length}) y tabsContent (${tabsContent.length}) deben tener el mismo tamaño`,
       );
       return null;
     }
@@ -85,7 +85,11 @@ const PageOutletLayout = <T extends string | undefined = undefined>({
           <TabsList className="h-12 w-full flex justify-between items-center bg-surface border-b-1 border-outline-variant pr-4">
             <div className="w-full max-w-1/2 flex items-start h-full">
               {triggers.map((trigger, index) => (
-                <TabsTrigger key={index} value={trigger.slug} className="capitalize flex flex-row items-center" >
+                <TabsTrigger
+                  key={index}
+                  value={trigger.slug}
+                  className="capitalize flex flex-row items-center"
+                >
                   <trigger.icon />
                   <p>{trigger.label}</p>
                 </TabsTrigger>
@@ -94,10 +98,7 @@ const PageOutletLayout = <T extends string | undefined = undefined>({
             {tabActions && <AppHeaderActions actions={tabActions} />}
           </TabsList>
           {tabsContent.map((content, index) => (
-            <TabsContent
-              key={index}
-              value={triggers[index].slug}
-            >
+            <TabsContent key={index} value={triggers[index].slug}>
               <div
                 className={`main-content w-full px-4 max-sm:px-2 ${className}`}
               >
@@ -106,7 +107,7 @@ const PageOutletLayout = <T extends string | undefined = undefined>({
                     className={cn(
                       "wrapper-layout gap-2 pt-4 h-full",
                       layout === "flex" ? "flex flex-col" : "grid grid-cols-12",
-                      className
+                      className,
                     )}
                   >
                     {content}
@@ -124,12 +125,12 @@ const PageOutletLayout = <T extends string | undefined = undefined>({
     <div className="h-full w-full flex flex-col bg-surface-container text-on-surface px-0">
       {actions && <SiteHeader title={title} actions={actions} />}
       <div className="relative w-full">
-        <ScrollArea className="h-[calc(100svh-10em)] w-full ">
+        <ScrollArea className="h-[calc(100svh-8em)] w-full">
           <div
             className={cn(
-              "wrapper-layout gap-2 pt-4 min-h-[calc(100svh-10em-0.1em)]",
+              "wrapper-layout gap-2 pt-4 min-h-[calc(100svh-8em-0.1em)] bg-surface-container-low",
               layout === "flex" ? "flex flex-col" : "grid grid-cols-12",
-              className
+              className,
             )}
           >
             {children}
@@ -140,8 +141,5 @@ const PageOutletLayout = <T extends string | undefined = undefined>({
   );
 };
 export default PageOutletLayout;
-
-
-
 
 //

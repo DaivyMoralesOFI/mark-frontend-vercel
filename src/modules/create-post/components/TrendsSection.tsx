@@ -14,7 +14,6 @@ import { Label } from "@/shared/components/ui/label";
  * @property {(hashtag: string) => void} onAddHashtag - Callback to add a hashtag to the post.
  */
 interface TrendsSectionProps {
-  selectedPlatforms: string[];
   trends: string[];
   loadingTrends: boolean;
   onAddHashtag: (hashtag: string) => void;
@@ -31,18 +30,14 @@ interface TrendsSectionProps {
  * Used in the CreatePostModal to help users add relevant hashtags to their post.
  */
 export const TrendsSection: React.FC<TrendsSectionProps> = ({
-  selectedPlatforms,
   trends,
   loadingTrends,
   onAddHashtag,
 }) => {
-  // Only show trends if Instagram or LinkedIn is selected
-  const shouldShowTrends = selectedPlatforms.includes("instagram") || 
-                          selectedPlatforms.includes("linkedin") ||
-                          selectedPlatforms.includes("tiktok") ||
-                          selectedPlatforms.includes("twitter");
+  // Only show trends if there are trends or we are loading them
+  const shouldShowTrends = loadingTrends || trends.length > 0;
 
-  // If neither platform is selected, render nothing
+  // If no trends and not loading, render nothing
   if (!shouldShowTrends) return null;
 
   return (

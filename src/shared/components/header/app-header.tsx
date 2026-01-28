@@ -24,7 +24,7 @@ export default function AppHeader() {
   const [isTrainModalOpen, setIsTrainModalOpen] = useState(false);
   return (
     <header className="bg-sidebar group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 w-full transition-[width,height] ease-linear">
-      <div className="flex flex-row items-center justify-between px-3 py-4 w-auto max-w-svw">
+      <div className="flex flex-row items-center justify-between px-3 py-2 w-auto max-w-svw">
         <div className="navbar-brand min-w-[200px] 2xl::min-w-[300px] min-h-8 h-full flex flex-row justify-start items-center relative">
           <div className="flex flex-row justify-start items-center relative">
             <picture className="absolute h-full -top-3 -left-1 inline-flex dark:hidden">

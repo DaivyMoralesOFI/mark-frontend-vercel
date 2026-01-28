@@ -38,6 +38,7 @@ import { ScheduleModal } from "../../../shared/components/ScheduleModal";
 import { SuccessNotification } from "./SuccessNotification";
 import { Badge } from "@/shared/components/ui/badge";
 import { cn } from "@/core/lib/utils";
+import { useAppSelector, RootState } from "../../../core/store/store";
 
 /**
  * Props for CreatePostModal
@@ -106,7 +107,6 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
   const {
     // State
     postType, // Current selected post type
-    selectedPlatforms, // Array of selected platforms
     useBrandDna, // Brand DNA toggle state
     description, // Post description text
     hasImage, // Boolean indicating if an image is present
@@ -123,10 +123,6 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
     showSuccess, // Boolean to show success notification
     showScheduleModal, // Boolean to show schedule modal
     fileInputRef, // Ref for file input element
-    selectedAccountsByPlatform, // NUEVO: Estado de cuentas seleccionadas
-    handleSelectAccountForPlatform, // NUEVO: Handler para seleccionar cuenta
-    handlePlatformToggle,
-    handleToggleUseBrandDna, // Handler to toggle Brand DNA
     // Actions
     handlePostTypeChange, // Change post type
     handleDescriptionChange, // Change description
@@ -146,6 +142,10 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
     isFormValid, // Validate form for submission
     isScheduleValid, // Validate schedule fields
   } = usePost(selectedCompanyUrl);
+
+  const { selectedPlatforms } = useAppSelector(
+    (state: RootState) => state.createPost,
+  );
 
   // Determines if AI suggestion can be requested (requires post type and at least one platform)
   const canSuggest = !!postType && selectedPlatforms.length > 0;
@@ -167,12 +167,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
             <div className="flex flex-col justify-between items-start gap-4">
               <div className="flex justify-start items-center gap-4">
                 {/* Platform Selection (e.g., Facebook, Twitter) */}
-                <PlatformSelector
-                  selectedPlatforms={selectedPlatforms}
-                  onTogglePlatform={handlePlatformToggle}
-                  selectedAccountsByPlatform={selectedAccountsByPlatform}
-                  onSelectAccount={handleSelectAccountForPlatform}
-                />
+                <PlatformSelector />
               </div>
               <div className="space-y-6 text-gray-900">
                 {/* Post Type Selection */}
@@ -250,7 +245,6 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
 
                 {/* Trends and Hashtag Suggestions */}
                 <TrendsSection
-                  selectedPlatforms={selectedPlatforms}
                   trends={trends}
                   loadingTrends={loadingTrends}
                   onAddHashtag={handleAddHashtag}
@@ -278,7 +272,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
 
           {/* Action Buttons: Cancel, Schedule, Create Post */}
           <div className="flex justify-end space-x-3 pt-4 border-t">
-            <Button variant="destructive" onClick={onClose}>
+            <Button variant="error" onClick={onClose}>
               Cancel
             </Button>
             <Button

@@ -24,10 +24,15 @@ import {
 import { useAuth } from "@/modules/auth/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import OFILogo from "@/assets/logos/ofi-white.webp";
+import { useBrands } from "@/core/hooks/useBrands";
+import { cn } from "@/core/lib/utils";
 
 const AccountSelector = () => {
   const [_, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { brands, loading, error, selectedBrand, selectBrand } = useBrands();
+  console.log({ brands, loading, error });
+  console.log({ selectedBrand });
 
   // Cerrar el dropdown cuando se hace clic fuera
   useEffect(() => {
@@ -50,10 +55,17 @@ const AccountSelector = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="cursor-pointer group">
         <div className="avatar-content flex flex-row justify-center items-center gap-3 group-hover:shadow-lg group-hover:bg-purple-100 transition-all duration-200 rounded-md">
-          <Avatar className="h-7 w-7 rounded-md">
-            <AvatarImage src={OFILogo} alt={"OFI"} />
-          </Avatar>
-          <ChevronDown className="" strokeWidth={2} size={10} />
+          {selectedBrand && (
+            <>
+              <Avatar className="h-7 w-7 rounded-md">
+                <AvatarImage
+                  src={selectedBrand.identity.logo_url}
+                  alt={selectedBrand.identity.name}
+                />
+              </Avatar>
+              <ChevronDown className="" strokeWidth={2} size={10} />
+            </>
+          )}
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -65,12 +77,23 @@ const AccountSelector = () => {
         <DropdownMenuGroup>
           <DropdownMenuLabel>Brand Selector</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <Avatar className="h-7 w-7 rounded-md">
-              <AvatarImage src={OFILogo} alt={"OFI"} />
-            </Avatar>
-            <p>OFI Testing Services</p>
-          </DropdownMenuItem>
+          {brands?.map((brand) => {
+            return (
+              <DropdownMenuItem
+                className={cn(
+                  brand.isActive && "bg-primary/20 hover:bg-primary/50",
+                )}
+              >
+                <Avatar className="h-7 w-7 rounded-md">
+                  <AvatarImage
+                    src={brand.identity.logo_url}
+                    alt={brand.identity.name}
+                  />
+                </Avatar>
+                <p>{brand.identity.name}</p>
+              </DropdownMenuItem>
+            );
+          })}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>

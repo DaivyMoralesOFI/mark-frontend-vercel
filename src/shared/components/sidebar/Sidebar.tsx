@@ -55,11 +55,7 @@ const navigationItems = [
 export function Sidebar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   return (
-    <SidebarComponent
-      className="border-r border-border"
-      variant="sidebar"
-      collapsible="icon"
-    >
+    <SidebarComponent variant="sidebar" collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

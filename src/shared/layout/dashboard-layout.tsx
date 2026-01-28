@@ -31,7 +31,7 @@ const DashboardLayout = () => {
       >
         <Sidebar />
         {/*  <Toaster /> */}
-        <div className="w-screen h-full ">
+        <div className="w-screen h-full px-3">
           <AppHeader />
           <SidebarInset>
             <div className="outlet-container overflow-hidden border border-outline-variant bg-surface-container rounded-lg max-h-[calc(100vh-5px)]  md:max-h-[calc(100vh-5em)]">

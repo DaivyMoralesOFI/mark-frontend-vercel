@@ -1,82 +1,25 @@
-// site-header.tsx
-//
-// This file defines the SiteHeader component, which renders the main site header with a sidebar toggle, title, and action buttons.
-// It supports navigation, custom actions, and responsive design, styled with Tailwind CSS.
+import { SidebarTrigger } from "../ui/sidebar";
+import { Actions } from "@/shared/types/types";
+import { AppHeaderActions } from "@/shared/router";
+import DynamicBradcrumbs from "@/shared/components/breadcrumbs/breadcrumb-router";
 
-import { Link } from "react-router-dom";
-import { SidebarIcon } from "lucide-react";
-import { AppHeaderActions } from "@/shared/types/types";
-import { useSidebar } from "../ui/sidebar";
-import { Button } from "../ui/button";
-
-/**
- * Props for SiteHeader
- * @property {string} title - The title to display in the header
- * @property {AppHeaderActions[]} actions - Array of action button definitions
- * @property {React.ReactNode} headerContent - Optional custom content to render in the header
- */
 interface SiteHeaderProps {
   title: string;
-  actions: AppHeaderActions[];
-  headerContent?: React.ReactNode;
+  actions?: Actions[];
 }
 
-/**
- * SiteHeader
- *
- * Renders the main site header with a sidebar toggle, title, and action buttons.
- * - Supports navigation links and custom actions
- * - Responsive design for desktop and mobile
- */
-const SiteHeader = ({ title, actions, headerContent }: SiteHeaderProps) => {
-  const { toggleSidebar } = useSidebar();
+const SiteHeader = ({ title, actions }: SiteHeaderProps) => {
   return (
-    <div className="page-hader w-full flex flex-row justify-between items-end py-2 pr-4 pl-2 border-b border-border">
-      <div className="title-content flex flex-row">
-        {/* Sidebar toggle button */}
-        <Button
-          className="h-8 w-8"
-          variant="ghost"
-          size="icon"
-          onClick={toggleSidebar}
-        >
-          <SidebarIcon />
-        </Button>
-        {/* Page title */}
-        <h1 className="text-2xl font-bold">{title}</h1>
+    <div className="page-header w-full min-h-10 h-fit flex flex-col md:flex-row items-start md:items-end justify-between gap-2 py-2 px-4 bg-surface-container-lowest border-b border-outline-variant">
+      <div className="title-content flex flex-row lg:flex-col gap-1">
+        <div className="flex flex-row gap-2 items-center">
+          <SidebarTrigger />
+          <DynamicBradcrumbs />
+        </div>
+        <h1 className=" text-2xl font-bold">{title}</h1>
       </div>
-      {/* Action buttons (links or custom actions) */}
-      <div className="cta-header-actions hidden md:inline-flex flex-row gap-2 items-center">
-        {/* Custom header content (e.g., CompanyDropdown) */}
-        {headerContent}
-        {actions.map((action, index) => {
-          const Icon = action.icon;
-          const type = action.type;
-          const buttonProps = {
-            variant: action.variant || "default",
-            className:
-              action.className || "pl-1 pr-2 py-1 text-[12px] font-medium",
-            onClick: action.onClick,
-          };
-
-          if (type == "link") {
-            return (
-              <Link key={`action-link-${index}`} to={action.href ?? "/"}>
-                <Button {...buttonProps}>
-                  <Icon className="h-4 w-4 mr-1" />
-                  <span>{action.label}</span>
-                </Button>
-              </Link>
-            );
-          }
-
-          return (
-            <Button key={`action-link-${index}`} {...buttonProps}>
-              <Icon className="h-4 w-4 mr-1" />
-              <p>{action.label}</p>
-            </Button>
-          );
-        })}
+      <div className="cta-header-actions flex flex-row gap-2 overflow-x-auto md:overflow-x-visible scrollbar-hide pb-2 md:pb-0">
+        {actions && <AppHeaderActions actions={actions} />}
       </div>
     </div>
   );
