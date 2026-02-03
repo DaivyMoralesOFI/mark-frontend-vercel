@@ -64,7 +64,7 @@ export default function App() {
                 {/* Main dashboard and feature pages */}
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/chat" element={<MarketingCoachChat />} />
-                <Route path="/content" element={<ContentFeedbackPage />} />
+                <Route path="/calendar" element={<ContentFeedbackPage />} />
                 <Route path="/analytics" element={<AnalyticsPage />} />
                 <Route path="/campaigns" element={<CampaingnPage />} />
                 <Route path="/brand-dna" element={<BrandDashboard />} />

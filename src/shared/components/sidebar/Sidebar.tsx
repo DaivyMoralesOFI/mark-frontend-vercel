@@ -7,7 +7,6 @@ import {
   Bot,
   Dna,
   User,
-  Layers,
   CirclePlus,
   Calendar,
 } from "lucide-react";
@@ -38,7 +37,7 @@ import { cn } from "@/core/lib/utils";
 const navigationItems = [
   { title: "Dashboard", icon: Home, isActive: false, to: "/dashboard" },
   { title: "Analytics", icon: BarChart3, isActive: false, to: "/analytics" },
-  { title: "Calendar", icon: Calendar, isActive: false, to: "/content" },
+  { title: "Calendar", icon: Calendar, isActive: false, to: "/calendar" },
   { title: "Campaigns", icon: TrendingUp, isActive: false, to: "/campaigns" },
   { title: "Brand DNA", icon: Dna, isActive: false, to: "/brand-dna" },
   { title: "Style Profile", icon: User, isActive: false, to: "/style-profile" },

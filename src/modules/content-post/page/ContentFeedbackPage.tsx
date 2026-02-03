@@ -4,9 +4,9 @@
 // It integrates with the content post module's hooks, components, and modals, and provides actions for creating posts and interacting with the AI assistant.
 // The page handles loading and error states, and displays a grid of posts with options to create new posts or ask for AI feedback.
 
-import { MessageCircle, Plus } from "lucide-react";
+import { MessageCircle, Plus, LayoutGrid, Calendar as CalendarIcon } from "lucide-react";
 import PageOutletLayout from "@/shared/layout/page-outlet-layout";
-import { AppHeaderActions } from "@/shared/types/types";
+import { Actions } from "@/shared/types/types";
 import { useContentFeedback } from "../hooks/useContentFeedback";
 import { useModals } from "@/core/hooks/useModals";
 import { LoadingState } from "@/shared/components/loading-state/LoadingState";
@@ -15,6 +15,8 @@ import { PostGrid } from "../components/PostGrid";
 import { CreatePostModal } from "@/modules/create-post/components/CreatePostModal";
 import { AiChatModal } from "@/modules/chat-coach-modal/page/AiChatModal";
 import { VideoPostCarrousel } from "../components/carousels/video-post-carousel";
+import { AgendaCalendar } from "../components/AgendaCalendar";
+import { useState } from "react";
 
 /**
  * ContentFeedbackPage
@@ -26,13 +28,12 @@ import { VideoPostCarrousel } from "../components/carousels/video-post-carousel"
  * - Integrates with modals for post creation and AI chat
  */
 export default function ContentFeedbackPage() {
-  // Fetch posts, loading, and error state from the custom hook
-  const { posts, videos ,loading, error } = useContentFeedback();
+  // Fetch posts, videos, loading, and error states from the custom hook
+  const { posts, videos, loading, error } = useContentFeedback();
 
   console.log(videos.length);
-  
 
-  // Modal state and handlers from the useModals hook
+  // Modal states and handlers from the useModals hook
   const {
     showCreatePost,
     showAskMark,
@@ -42,16 +43,27 @@ export default function ContentFeedbackPage() {
     closeAskMark,
   } = useModals();
 
-  // Define header actions for the page (create post, ask Mark)
-  const pageActions: AppHeaderActions[] = [
+  const [viewMode, setViewMode] = useState<"list" | "month">("month");
+
+  // Define header actions for the page (view mode, create post, ask Mark)
+  const pageActions: Actions[] = [
     {
-      label: "Create Post",
+      type: "button",
+      children: "View Mode",
+      icon: viewMode === "list" ? LayoutGrid : CalendarIcon,
+      onClick: () => setViewMode(viewMode === "list" ? "month" : "list"),
+      variant: "outline",
+    },
+    {
+      type: "button",
+      children: "Create Post",
       icon: Plus,
       onClick: openCreatePost,
       variant: "default",
     },
     {
-      label: "Ask Mark",
+      type: "button",
+      children: "Ask Mark",
       icon: MessageCircle,
       onClick: openAskMark,
       variant: "secondary",
@@ -65,11 +77,20 @@ export default function ContentFeedbackPage() {
   return (
     <>
       {/* Main layout with page title and actions */}
-      <PageOutletLayout pageTitle="Content Feedback" actions={pageActions}>
-        {/* Grid of posts with feedback */}
-        <PostGrid posts={posts} />
-        {videos && <VideoPostCarrousel videos={videos}/>}
-        
+      <PageOutletLayout pageTitle="Content Feedback" actions={pageActions as any}>
+        {viewMode === "month" ? (
+          <div className="col-span-12">
+            <AgendaCalendar />
+          </div>
+        ) : (
+          <>
+            <div className="col-span-12 flex flex-col gap-4">
+              {/* Grid of posts with feedback */}
+              <PostGrid posts={posts} />
+              {videos && <VideoPostCarrousel videos={videos} />}
+            </div>
+          </>
+        )}
       </PageOutletLayout>
       {/* Modal for creating a new post */}
       <CreatePostModal isOpen={showCreatePost} onClose={closeCreatePost} />
