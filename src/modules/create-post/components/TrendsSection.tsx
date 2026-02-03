@@ -4,6 +4,7 @@
 // Users can add suggested hashtags to their post by clicking on them. The component handles loading state and empty state.
 // It is styled with Tailwind CSS and designed for use in post creation flows.
 
+import { Button } from "@/shared/components/ui/button";
 import { Label } from "@/shared/components/ui/label";
 
 /**
@@ -43,7 +44,9 @@ export const TrendsSection: React.FC<TrendsSectionProps> = ({
   return (
     <div className="space-y-2">
       {/* Section label */}
-      <Label className="font-semibold">Trends</Label>
+      <Label className="font-semibold text-outline-variant">
+        More trends for your post
+      </Label>
       {loadingTrends ? (
         // Loading state
         <div className="text-xs text-gray-500">Loading hashtags...</div>
@@ -51,14 +54,14 @@ export const TrendsSection: React.FC<TrendsSectionProps> = ({
         // Render trending hashtags as clickable buttons
         <div className="flex flex-wrap gap-2">
           {trends.map((hashtag) => (
-            <button
+            <Button
               key={hashtag}
               type="button"
-              className="px-2 py-1 rounded bg-gray-100 hover:bg-purple-100 text-purple-700 text-xs border border-purple-200 transition"
+              variant="secondaryOutline"
               onClick={() => onAddHashtag(hashtag)}
             >
               {hashtag}
-            </button>
+            </Button>
           ))}
         </div>
       ) : (

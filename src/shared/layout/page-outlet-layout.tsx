@@ -1,6 +1,5 @@
-import { ScrollArea } from "@/shared/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/shared/components/ui/scroll-area";
 import { Actions, Trigger } from "@/shared/types/types";
-import { AppHeaderActions, SiteHeader } from "@/shared/router";
 import { useEffect } from "react";
 import { cn } from "@/core/lib/utils";
 import {
@@ -9,9 +8,11 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/shared/components/ui/tabs";
+import { AppHeaderActions, SiteHeader } from "../router";
 
 type PageProps<T extends string | undefined = undefined> = {
-  title: string;
+  pageTitle: string;
+  title?: string;
   className?: string;
   layout?: "flex" | "grid";
 } & (T extends `${string}with-tabs${string}` | "with-tabs"
@@ -42,6 +43,7 @@ type PageProps<T extends string | undefined = undefined> = {
     : { description?: never; content?: never });
 
 const PageOutletLayout = <T extends string | undefined = undefined>({
+  pageTitle,
   title,
   children,
   actions,
@@ -56,7 +58,7 @@ const PageOutletLayout = <T extends string | undefined = undefined>({
 }: PageProps<T>) => {
   // Update document title when component mounts or pageTitle changes
   useEffect(() => {
-    document.title = `${title} | HR-Agent | SOFIA Tech`;
+    document.title = `${pageTitle} | HR-Agent | SOFIA Tech`;
 
     // Optional: Set meta description if provided
     if (description && content) {
@@ -68,20 +70,20 @@ const PageOutletLayout = <T extends string | undefined = undefined>({
       }
       metaDescription.setAttribute("content", `${description}: ${content}`);
     }
-  }, [title, description, content]);
+  }, [pageTitle, description, content]);
 
   // Validación: triggers y tabsContent deben tener el mismo tamaño
   if (triggers && tabsContent) {
     if (triggers.length !== tabsContent.length) {
       console.error(
-        `Error: triggers (${triggers.length}) y tabsContent (${tabsContent.length}) deben tener el mismo tamaño`,
+        `Error: triggers (${triggers.length}) and tabsContent (${tabsContent.length}) must have the same length`,
       );
       return null;
     }
     return (
-      <div className="h-full w-full flex flex-col bg-surface-container text-on-surface px-0">
+      <div className="h-full w-full max-w-full flex flex-col bg-surface-container text-on-surface px-0 overflow-hidden">
         <Tabs defaultValue={defaultTrigger} className="w-full p-0">
-          {actions && <SiteHeader title={title} actions={actions} />}
+          {actions && <SiteHeader title={title || ""} actions={actions} />}
           <TabsList className="h-12 w-full flex justify-between items-center bg-surface border-b-1 border-outline-variant pr-4">
             <div className="w-full max-w-1/2 flex items-start h-full">
               {triggers.map((trigger, index) => (
@@ -100,19 +102,20 @@ const PageOutletLayout = <T extends string | undefined = undefined>({
           {tabsContent.map((content, index) => (
             <TabsContent key={index} value={triggers[index].slug}>
               <div
-                className={`main-content w-full px-4 max-sm:px-2 ${className}`}
+                className={cn(
+                  `main-content w-full h-full min-h-[calc(100svh-13em)] overflow-auto  ${className}`,
+                  "max-sm:px-2",
+                )}
               >
-                <ScrollArea className="h-[calc(100svh-4em)] w-full ">
-                  <div
-                    className={cn(
-                      "wrapper-layout gap-2 pt-4 h-full",
-                      layout === "flex" ? "flex flex-col" : "grid grid-cols-12",
-                      className,
-                    )}
-                  >
-                    {content}
-                  </div>
-                </ScrollArea>
+                <div
+                  className={cn(
+                    "wrapper-layout gap-2 h-full",
+                    layout === "flex" ? "flex flex-col" : "grid grid-cols-12",
+                    className,
+                  )}
+                >
+                  {content}
+                </div>
               </div>
             </TabsContent>
           ))}
@@ -123,12 +126,17 @@ const PageOutletLayout = <T extends string | undefined = undefined>({
 
   return (
     <div className="h-full w-full flex flex-col bg-surface-container text-on-surface px-0">
-      {actions && <SiteHeader title={title} actions={actions} />}
+      <SiteHeader title={title || ""} actions={actions} />
       <div className="relative w-full">
-        <ScrollArea className="h-[calc(100svh-8em)] w-full">
+        <ScrollArea
+          className={cn(
+            title ? "h-[calc(100svh-10em)] " : "h-[calc(100svh-8em)] ",
+            "w-full ",
+          )}
+        >
           <div
             className={cn(
-              "wrapper-layout gap-2 pt-4 min-h-[calc(100svh-8em-0.1em)] bg-surface-container-low",
+              "wrapper-layout gap-2 pt-4 min-h-[calc(100svh-10em-0.1em)]",
               layout === "flex" ? "flex flex-col" : "grid grid-cols-12",
               className,
             )}
@@ -141,5 +149,3 @@ const PageOutletLayout = <T extends string | undefined = undefined>({
   );
 };
 export default PageOutletLayout;
-
-//

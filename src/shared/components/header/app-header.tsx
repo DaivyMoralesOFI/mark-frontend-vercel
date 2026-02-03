@@ -4,7 +4,14 @@
 // It includes search, assistant, notifications, theme toggle, filters, and user profile actions, styled with Tailwind CSS.
 
 import { useState } from "react";
-import { Bell, Filter, Search, Store, GraduationCap } from "lucide-react";
+import {
+  Bell,
+  Filter,
+  Search,
+  Store,
+  GraduationCap,
+  MessageCircle,
+} from "lucide-react";
 import { ToggleTheme, TooltipHover } from "@/shared/router";
 import { Button } from "@/shared/components/ui/button";
 import { TrainModelModal } from "@/modules/train-model-modal/TrainModelModal";
@@ -70,6 +77,16 @@ export default function AppHeader() {
             </Button>
           </TooltipHover>
           <TooltipHover
+            title="Ask Mark"
+            content=""
+            className="hidden md:inline-flex"
+          >
+            <Button variant="secondary">
+              <MessageCircle strokeWidth={2} size={16} />
+              <span>Ask Mark</span>
+            </Button>
+          </TooltipHover>
+          <TooltipHover
             title="Notifications"
             content=""
             className="hidden md:inline-flex"
@@ -89,14 +106,6 @@ export default function AppHeader() {
           >
             <ToggleTheme />
           </TooltipHover>
-          <Button
-            variant="default"
-            className="inline-flex md:hidden rounded-sm h-7"
-            size="sm"
-          >
-            <Filter />
-            <span> Filters</span>
-          </Button>
           <AccountSelector />
         </div>
       </div>

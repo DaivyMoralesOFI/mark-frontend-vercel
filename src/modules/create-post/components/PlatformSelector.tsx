@@ -15,13 +15,6 @@ import { togglePlatform } from "../store/createPostSlice";
  */
 interface PlatformSelectorProps {}
 
-/**
- * PlatformSelector
- *
- * Renders a list of available platforms as selectable buttons.
- * Clicking an icon toggles that platform's selection in the global Redux state.
- * Selected platforms show a filled logo, while unselected ones show an outline.
- */
 export const PlatformSelector: React.FC<PlatformSelectorProps> = () => {
   const dispatch = useAppDispatch();
   const { selectedPlatforms } = useAppSelector((state) => state.createPost);

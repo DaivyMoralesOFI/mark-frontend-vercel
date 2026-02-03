@@ -8,7 +8,8 @@ import { Loader } from "lucide-react";
 import { Label } from "@/shared/components/ui/label";
 import { Button } from "@/shared/components/ui/button";
 import { Textarea } from "@/shared/components/ui/textarea";
-import { MAX_DESCRIPTION_LENGTH } from '../types/createPostTypes';
+import { MAX_DESCRIPTION_LENGTH } from "../types/createPostTypes";
+import { Badge } from "@/shared/components/ui/badge";
 
 /**
  * Props for DescriptionInput
@@ -43,31 +44,16 @@ export const DescriptionInput: React.FC<DescriptionInputProps> = ({
   loadingSuggestion,
   canSuggest,
 }) => {
-  return (
-    <div className="space-y-2">
-      {/* Label and AI Suggestion Button */}
-      <div className="flex items-center gap-2">
-        <Label htmlFor="description">Post Description</Label>
-        <div className="relative">
-          {/* AI Suggestion Button: triggers onSuggestion, shows spinner if loading */}
-          <Button
-            type="button"
-            size="icon"
-            variant="ghost"
-            className="h-7 w-7 p-0"
-            aria-label="Suggest description with AI"
-            disabled={loadingSuggestion || !canSuggest}
-            onClick={onSuggestion}
-          >
-            {loadingSuggestion ? (
-              <Loader className="animate-spin w-4 h-4 text-green-600" />
-            ) : (
-              <img src="/mark-yellow.svg" alt="Mark icon" className="w-6 h-6" />
-            )}
-            <span className="sr-only">Suggest description with AI</span>
-          </Button>
-        </div>
+  if (loadingSuggestion) {
+    return (
+      <div className="flex items-center justify-center h-full min-h-[300px]">
+        <Loader className="animate-spin" />
       </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2 relative">
       {/* Controlled textarea for post description */}
       <Textarea
         id="description"
@@ -75,18 +61,14 @@ export const DescriptionInput: React.FC<DescriptionInputProps> = ({
         value={description}
         onChange={(e) => onDescriptionChange(e.target.value)}
         rows={4}
-        className="resize-none overflow-y-auto w-full"
-        style={{
-          overflowX: "hidden",
-          wordBreak: "break-word",
-          whiteSpace: "pre-wrap",
-          maxHeight: "140px",
-        }}
+        className="resize-none overflow-y-auto w-full border-0 focus:ring-0 focus:ring-offset-0 active:outline-none active:border-0 active:ring-0 active:ring-offset-0 focus:outline-none shadow-none min-h-[300px]"
       />
       {/* Character count display */}
-      <p className="text-xs text-gray-500">
-        {description.length}/{MAX_DESCRIPTION_LENGTH} characters
-      </p>
+      <div className="absolute bottom-2 right-2">
+        <Badge variant="outline">
+          {description.length}/{MAX_DESCRIPTION_LENGTH} characters
+        </Badge>
+      </div>
     </div>
   );
 };

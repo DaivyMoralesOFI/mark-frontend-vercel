@@ -132,6 +132,9 @@ export const usePost = (selectedCompanyUrl?: string) => {
    * Handler for requesting an AI-generated suggestion for the description
    */
   const handleSuggestion = async () => {
+    console.log("generating suggestion");
+    console.log(postState);
+
     if (!postState.postType || postState.selectedPlatforms.length === 0) return;
 
     dispatch(
@@ -147,6 +150,8 @@ export const usePost = (selectedCompanyUrl?: string) => {
    * Handler for requesting AI image generation
    */
   const handleImageGeneration = async () => {
+    console.log("generating image");
+    console.log(postState);
     if (
       !postState.postType ||
       postState.selectedPlatforms.length === 0 ||
@@ -160,7 +165,7 @@ export const usePost = (selectedCompanyUrl?: string) => {
         postType: postState.postType,
         platforms: postState.selectedPlatforms,
         description: postState.description,
-        use_brand_dna: postState.useBrandDna,
+        use_brand_dna: true,
         company_url: selectedCompanyUrl,
       });
       setGeneratedImage(blob);

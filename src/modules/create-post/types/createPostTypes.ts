@@ -153,7 +153,7 @@ export const PLATFORMS: Platform[] = [
     logo_fill: instagramFill,
     color: "bg-pink-500",
   },
-  {
+  /*{ 
     id: "twitter",
     name: "Twitter",
     logo_outline: twitterOutline,
@@ -180,7 +180,7 @@ export const PLATFORMS: Platform[] = [
     logo_outline: tiktokOutline,
     logo_fill: tiktokFill,
     color: "bg-black",
-  },
+  }, */
 ];
 
 /**

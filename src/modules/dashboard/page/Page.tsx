@@ -2,14 +2,14 @@ import { useState } from "react";
 import { MetricsGrid } from "@/modules/dashboard/MetricsGrid";
 import { RecentActivity } from "@/modules/dashboard/RecentActivity";
 import { PerformanceChart } from "@/modules/dashboard/PerformaceChart";
-import { AppHeaderActions } from "@/shared/types/types";
 import PageOutletLayout from "@/shared/layout/page-outlet-layout";
-import { Plus,  Mail, Video, MessageCircle, ImageIcon } from "lucide-react";
+import { Plus, Mail, Video, MessageCircle, ImageIcon } from "lucide-react";
 import { CreatePostModal } from "@/modules/create-post/components/CreatePostModal";
 import { CreateVideoModal } from "@/modules/create-video/createVideoModal";
 import { AiChatModal } from "@/modules/chat-coach-modal/page/AiChatModal";
 import { SendEmailModal } from "@/modules/send-email/SendEmail";
 import EditImageModal from "@/modules/edit-image-modal/EditImageModal";
+import { Actions } from "@/shared/types/types";
 
 export default function Dashboard() {
   const [showCreatePost, setShowCreatePost] = useState(false);
@@ -18,42 +18,33 @@ export default function Dashboard() {
   const [showSendEmail, setShowSendEmail] = useState(false);
   const [showEditImage, setShowEditImage] = useState(false);
 
-  const pageActions: AppHeaderActions[] = [
+  const pageActions: Actions[] = [
     {
-      label: "Create Post",
+      children: "Create Post",
       icon: Plus,
       onClick: () => setShowCreatePost(true),
       variant: "default",
+      type: "button",
     },
     {
-      label: "Create Video",
+      children: "Create Video",
       icon: Video,
       onClick: () => setShowCreateVideo(true),
       variant: "default",
+      type: "button",
     },
     {
-      label: "Edit Image",
+      children: "Edit Image",
       icon: ImageIcon,
       onClick: () => setShowEditImage(true),
       variant: "default",
-    },
-    {
-      label: "Send Email",
-      icon: Mail,
-      onClick: () => setShowSendEmail(true),
-      variant: "default",
-    },
-    {
-      label: "Ask Mark",
-      icon: MessageCircle,
-      onClick: () => setShowAskMark(true),
-      variant: "secondary",
+      type: "button",
     },
   ];
 
   return (
     <>
-      <PageOutletLayout
+      <PageOutletLayout<"with-actions">
         pageTitle="Dashboard"
         actions={pageActions}
       >
@@ -69,12 +60,23 @@ export default function Dashboard() {
           </div>
         </div>
       </PageOutletLayout>
-      <CreatePostModal isOpen={showCreatePost} onClose={() => setShowCreatePost(false)} />
-      <CreateVideoModal isOpen={showCreateVideo} onClose={() => setShowCreateVideo(false)} />
-      <EditImageModal isOpen={showEditImage} onClose={() => setShowEditImage(false)} />
-      <SendEmailModal isOpen={showSendEmail} onClose={() => setShowSendEmail(false)} />
+      <CreatePostModal
+        isOpen={showCreatePost}
+        onClose={() => setShowCreatePost(false)}
+      />
+      <CreateVideoModal
+        isOpen={showCreateVideo}
+        onClose={() => setShowCreateVideo(false)}
+      />
+      <EditImageModal
+        isOpen={showEditImage}
+        onClose={() => setShowEditImage(false)}
+      />
+      <SendEmailModal
+        isOpen={showSendEmail}
+        onClose={() => setShowSendEmail(false)}
+      />
       <AiChatModal isOpen={showAskMark} onClose={() => setShowAskMark(false)} />
-      
     </>
   );
 }

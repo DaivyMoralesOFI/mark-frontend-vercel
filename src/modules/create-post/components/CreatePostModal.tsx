@@ -7,7 +7,16 @@
 // The component leverages custom hooks and modular subcomponents for a clean, maintainable structure.
 
 import { useState, useEffect } from "react";
-import { Loader, Info } from "lucide-react";
+import {
+  Loader,
+  Info,
+  SparklesIcon,
+  Sparkles,
+  Hash,
+  Image,
+  PackageOpen,
+  Pencil,
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -39,6 +48,7 @@ import { SuccessNotification } from "./SuccessNotification";
 import { Badge } from "@/shared/components/ui/badge";
 import { cn } from "@/core/lib/utils";
 import { useAppSelector, RootState } from "../../../core/store/store";
+import { CreateImageAISheet } from "@/modules/create-image-sheet/create-sheet-post";
 
 /**
  * Props for CreatePostModal
@@ -180,7 +190,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
                         key={type.value}
                         className={cn("text-xs")}
                         variant={
-                          postType === type.value ? "default" : "outline"
+                          postType === type.value ? "secondary" : "outline"
                         }
                         onClick={() =>
                           handlePostTypeChange(type.value as PostType)
@@ -190,8 +200,8 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
                       </Button>
                     ))}
                   </div>
-                  {/* Brand DNA Toggle - positioned next to Post Type 
-                <div className="flex items-center space-x-2 pt-2">
+                  {/* Brand DNA Toggle - positioned next to Post Type */}
+                  {/* <div className="flex items-center space-x-2 pt-2">
                   <Checkbox
                     id="use-brand-dna"
                     checked={useBrandDna}
@@ -210,45 +220,68 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
                   >
                     <Info className="w-4 h-4 text-gray-500 hover:text-gray-700 cursor-help" />
                   </TooltipHover>
-                </div>*/}
+                </div> */}
                 </div>
 
                 {/* Company Selection - Only shown when Use Brand DNA is checked */}
-                {useBrandDna && (
-                  <div className="space-y-2">
-                    <Label htmlFor="company">Select Company *</Label>
-                    <Select
-                      value={selectedCompany}
-                      onValueChange={(value) => setSelectedCompany(value)}
-                    >
-                      <SelectTrigger id="company">
-                        <SelectValue placeholder="Choose a company" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {companies.map((company) => (
-                          <SelectItem key={company.name} value={company.name}>
-                            {company.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-                {/* Post Description with AI Suggestion button */}
-                <DescriptionInput
-                  description={description}
-                  onDescriptionChange={handleDescriptionChange}
-                  onSuggestion={handleSuggestion}
-                  loadingSuggestion={loadingSuggestion}
-                  canSuggest={canSuggest}
-                />
 
-                {/* Trends and Hashtag Suggestions */}
-                <TrendsSection
-                  trends={trends}
-                  loadingTrends={loadingTrends}
-                  onAddHashtag={handleAddHashtag}
-                />
+                <div className="space-y-2">
+                  <Label htmlFor="company">Select Company *</Label>
+                  <Select
+                    value={selectedCompany}
+                    onValueChange={(value) => setSelectedCompany(value)}
+                  >
+                    <SelectTrigger id="company">
+                      <SelectValue placeholder="Choose a company" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {companies.map((company) => (
+                        <SelectItem key={company.name} value={company.name}>
+                          {company.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <AISuggestion />
+                <div className="flex w-full flex-col relative gap-3 m-0 p-2 border border-outline rounded-md">
+                  <div className="flex flex-row justify-start items-start gap-0">
+                    <Button
+                      variant={"agent"}
+                      className="rounded-none rounded-l-md border"
+                      onClick={handleSuggestion}
+                    >
+                      <Pencil />
+                      create Description with Mark
+                    </Button>
+                    <CreateImageAISheet
+                      handleImageGeneration={handleImageGeneration}
+                    />
+                    <Button variant={"outline"} className="rounded-none border">
+                      <PackageOpen />
+                      Choose image from library
+                    </Button>
+                    <Button
+                      variant={"outline"}
+                      className="rounded-none rounded-r-md"
+                    >
+                      <Hash />
+                      Include hastag trends
+                    </Button>
+                  </div>
+                  <DescriptionInput
+                    description={description}
+                    onDescriptionChange={handleDescriptionChange}
+                    onSuggestion={handleSuggestion}
+                    loadingSuggestion={loadingSuggestion}
+                    canSuggest={canSuggest}
+                  />
+                  <TrendsSection
+                    trends={trends}
+                    loadingTrends={loadingTrends}
+                    onAddHashtag={handleAddHashtag}
+                  />
+                </div>
 
                 {/* Image Upload and AI Generation */}
                 <ImageUpload
@@ -265,7 +298,6 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
                 />
 
                 {/* AI Suggestion for optimal posting time and strategy */}
-                <AISuggestion />
               </div>
             </div>
           </ScrollArea>

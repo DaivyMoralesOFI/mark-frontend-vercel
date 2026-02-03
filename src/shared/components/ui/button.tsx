@@ -17,6 +17,8 @@ const buttonVariants = cva(
           "bg-primary border-primary text-on-primary hover:bg-primary-container hover:text-on-primary-container",
         secondary:
           "bg-secondary-container border-secondary text-on-secondary-container hover:bg-secondary/80",
+        secondaryOutline:
+          "border border-secondary-container text-secondary-container hover:bg-secondary/80",
         success:
           "bg-green-200 border-green-950 text-green-800 hover:bg-green-400",
         ghost: "border-0 hover:bg-surface-container-low hover:text-on-surface",
@@ -39,7 +41,7 @@ const buttonVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 const Button = React.forwardRef<
