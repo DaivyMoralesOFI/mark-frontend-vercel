@@ -1,6 +1,6 @@
 import {
   BarChart3,
-  FileText,
+
   Home,
   Settings,
   TrendingUp,
@@ -9,6 +9,7 @@ import {
   User,
   Layers,
   CirclePlus,
+  Calendar,
 } from "lucide-react";
 import {
   Sidebar as SidebarComponent,
@@ -37,7 +38,7 @@ import { cn } from "@/core/lib/utils";
 const navigationItems = [
   { title: "Dashboard", icon: Home, isActive: false, to: "/dashboard" },
   { title: "Analytics", icon: BarChart3, isActive: false, to: "/analytics" },
-  { title: "Content", icon: FileText, isActive: false, to: "/content" },
+  { title: "Calendar", icon: Calendar, isActive: false, to: "/content" },
   { title: "Campaigns", icon: TrendingUp, isActive: false, to: "/campaigns" },
   { title: "Brand DNA", icon: Dna, isActive: false, to: "/brand-dna" },
   { title: "Style Profile", icon: User, isActive: false, to: "/style-profile" },
