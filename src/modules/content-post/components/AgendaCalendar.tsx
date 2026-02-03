@@ -6,38 +6,22 @@ import { MONTHS, WEEKDAYS, getDaysInMonth, getDaysInWeek } from '../utils/agenda
 import { cn } from '@/core/lib/utils';
 import { PostDetailsModal } from './PostDetailsModal';
 
-// Mock data for scheduled posts
-const MOCK_POSTS = [
-    {
-        id: '1',
-        time: '10:42',
-        date: new Date(2026, 1, 3),
-        platforms: ['instagram', 'facebook', 'twitter'],
-        title: 'How to create a complete portfolio',
-        imageUrl: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=300'
-    },
-    {
-        id: '2',
-        time: '10:55',
-        date: new Date(2026, 1, 3),
-        platforms: ['instagram', 'facebook'],
-        title: 'Mastering Next.js 14',
-        imageUrl: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=300'
-    },
-    { id: '3', time: '11:02', date: new Date(2026, 1, 3), platforms: ['instagram', 'facebook'], title: 'UI Design Tips', imageUrl: '' },
-    { id: '4', time: '11:25', date: new Date(2026, 1, 4), platforms: ['instagram', 'facebook'], title: 'Daily Inspiration', imageUrl: '' },
-    { id: '5', time: '11:25', date: new Date(2026, 1, 4), platforms: ['instagram', 'facebook'], title: 'Work Habit', imageUrl: '' },
-];
+import { useFirebasePosts } from '../hooks/useFirebasePosts';
+import { Post } from '../types/postTypes';
 
 const PlatformIcon = ({ className }: { className?: string }) => {
     return <InstagramIcon className={cn("w-3 h-3", className)} />;
 };
 
 export const AgendaCalendar = () => {
+    const { posts, loading, error } = useFirebasePosts();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [calendarView, setCalendarView] = useState<'list' | 'week' | 'month'>('month');
     const [selectedPost, setSelectedPost] = useState<any>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    if (loading) return <div className="flex items-center justify-center h-full">Loading calendar...</div>;
+    if (error) return <div className="flex items-center justify-center h-full text-red-500">{error}</div>;
 
     const handlePostClick = (post: any) => {
         setSelectedPost(post);
@@ -173,8 +157,8 @@ export const AgendaCalendar = () => {
             {/* Content View */}
             {calendarView === 'list' ? (
                 <div className="flex-1 flex flex-col gap-4 overflow-y-auto pr-2">
-                    {MOCK_POSTS
-                        .filter(post => {
+                    {posts
+                        .filter((post: Post) => {
                             if (calendarView === 'list') {
                                 // Filter by current month for list view
                                 return post.date.getMonth() === currentDate.getMonth() &&
@@ -182,8 +166,8 @@ export const AgendaCalendar = () => {
                             }
                             return true;
                         })
-                        .sort((a, b) => a.date.getTime() - b.date.getTime())
-                        .map((post) => (
+                        .sort((a: Post, b: Post) => a.date.getTime() - b.date.getTime())
+                        .map((post: Post) => (
                             <div
                                 key={post.id}
                                 onClick={() => handlePostClick(post)}
@@ -238,7 +222,7 @@ export const AgendaCalendar = () => {
 
                     {/* Calendar Cells */}
                     {days.map((day, idx) => {
-                        const dayPosts = MOCK_POSTS.filter(p =>
+                        const dayPosts = posts.filter((p: Post) =>
                             p.date.getDate() === day.date.getDate() &&
                             p.date.getMonth() === day.date.getMonth() &&
                             p.date.getFullYear() === day.date.getFullYear()

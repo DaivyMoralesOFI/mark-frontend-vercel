@@ -20,11 +20,12 @@ import {
 import { Button } from '@/shared/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/shared/components/ui/avatar';
 import { cn } from '@/core/lib/utils';
+import { Post } from '../types/postTypes';
 
 interface PostDetailsModalProps {
     isOpen: boolean;
     onClose: () => void;
-    post: any;
+    post: Post | null;
 }
 
 const PlatformIcon = ({ className }: { className?: string }) => {
@@ -33,6 +34,11 @@ const PlatformIcon = ({ className }: { className?: string }) => {
 
 export const PostDetailsModal = ({ isOpen, onClose, post }: PostDetailsModalProps) => {
     if (!post) return null;
+
+    const formatDate = (date: Date | undefined) => {
+        if (!date) return 'N/A';
+        return date.toLocaleDateString('en-GB') + ' - ' + date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) + 'h';
+    };
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -51,7 +57,7 @@ export const PostDetailsModal = ({ isOpen, onClose, post }: PostDetailsModalProp
                                     </Avatar>
                                     <div className="flex items-center gap-1.5">
                                         <h3 className="text-sm font-medium text-gray-900">
-                                            Jhon Doe
+                                            Brand User
                                         </h3>
                                         <BadgeCheck className="w-4 h-4 text-[#0095ff] fill-[#0095ff] text-white" strokeWidth={2.5} />
                                     </div>
@@ -64,7 +70,7 @@ export const PostDetailsModal = ({ isOpen, onClose, post }: PostDetailsModalProp
                                     <img
                                         src={post.imageUrl}
                                         alt={post.title}
-                                        className="w-full h-full object-cover max-h-[750px]"
+                                        className="w-full h-full object-contain max-h-[750px]"
                                     />
                                 ) : (
                                     <div className="w-full h-full aspect-square flex items-center justify-center bg-gray-100 text-gray-400">
@@ -77,16 +83,16 @@ export const PostDetailsModal = ({ isOpen, onClose, post }: PostDetailsModalProp
                             <div className="p-4 pt-2">
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-4">
-                                        <Heart className="w-6 h-6 text-[#ff3040] fill-[#ff3040] cursor-pointer" />
-                                        <MessageCircle className="w-6 h-6 text-gray-900 cursor-pointer" />
-                                        <Send className="w-6 h-6 text-gray-900 cursor-pointer" />
+                                        <Heart className="w-6 h-6 text-gray-400 cursor-pointer hover:text-[#ff3040]" />
+                                        <MessageCircle className="w-6 h-6 text-gray-400 cursor-pointer" />
+                                        <Send className="w-6 h-6 text-gray-400 cursor-pointer" />
                                     </div>
-                                    <Bookmark className="w-6 h-6 text-gray-900 cursor-pointer" />
+                                    <Bookmark className="w-6 h-6 text-gray-400 cursor-pointer" />
                                 </div>
                                 <div className="space-y-1">
-                                    <span className="text-sm font-bold block text-gray-900">LukasLemos</span>
-                                    <p className="text-sm text-gray-800 leading-snug">
-                                        The history of the guitar dates back to approximately 2,000 BCE. It underwent a great transformation until reaching the...
+                                    <span className="text-sm font-bold block text-gray-900">Post Caption</span>
+                                    <p className="text-sm text-gray-800 leading-snug whitespace-pre-wrap">
+                                        {post.copy}
                                     </p>
                                 </div>
                             </div>
@@ -100,11 +106,13 @@ export const PostDetailsModal = ({ isOpen, onClose, post }: PostDetailsModalProp
 
                                 <div className="space-y-6">
                                     <div>
-                                        <label className="text-gray-400 text-[14px] font-medium block mb-2">View</label>
+                                        <label className="text-gray-400 text-[14px] font-medium block mb-2">Platform</label>
                                         <div className="flex items-center justify-between px-4 py-2.5 border border-gray-200 rounded-xl bg-white shadow-sm cursor-pointer hover:border-gray-300 transition-all">
                                             <div className="flex items-center gap-3">
                                                 <PlatformIcon className="w-5 h-5" />
-                                                <span className="text-[14px] font-medium text-gray-700">Feed</span>
+                                                <span className="text-[14px] font-medium text-gray-700 capitalize">
+                                                    {(post.platforms && post.platforms[0]) || 'Instagram'}
+                                                </span>
                                             </div>
                                             <ChevronDown className="w-4 h-4 text-gray-400" />
                                         </div>
@@ -114,15 +122,15 @@ export const PostDetailsModal = ({ isOpen, onClose, post }: PostDetailsModalProp
                                         <label className="text-gray-400 text-[14px] font-medium block mb-2">Post type</label>
                                         <div className="flex items-center gap-3">
                                             <Tag className="w-5 h-5 text-gray-800" />
-                                            <span className="text-[14px] font-medium text-gray-700">{post.type || 'Entertainment'}</span>
+                                            <span className="text-[14px] font-medium text-gray-700 capitalize">{post.post_type || 'Social Post'}</span>
                                         </div>
                                     </div>
 
                                     <div>
-                                        <label className="text-gray-400 text-[14px] font-medium block mb-2">Creation</label>
+                                        <label className="text-gray-400 text-[14px] font-medium block mb-2">Created at</label>
                                         <div className="flex items-center gap-3">
                                             <Calendar className="w-6 h-6 text-gray-800" />
-                                            <span className="text-[14px] font-medium text-gray-700">31/07/2024 - 12:26h</span>
+                                            <span className="text-[14px] font-medium text-gray-700">{formatDate(post.created_at)}</span>
                                         </div>
                                     </div>
 
@@ -130,7 +138,7 @@ export const PostDetailsModal = ({ isOpen, onClose, post }: PostDetailsModalProp
                                         <label className="text-[#0095ff] text-[14px] font-medium block mb-2">Scheduled for:</label>
                                         <div className="flex items-center gap-3">
                                             <Calendar className="w-6 h-6 text-[#0095ff]" />
-                                            <span className="text-[14px] font-medium text-[#0095ff]">31/07/2024 - 15:00h</span>
+                                            <span className="text-[14px] font-medium text-[#0095ff]">{formatDate(post.date)}</span>
                                         </div>
                                     </div>
                                 </div>
