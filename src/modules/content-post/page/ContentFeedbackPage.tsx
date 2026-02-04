@@ -18,6 +18,7 @@ import { AgendaCalendar } from "../components/AgendaCalendar";
 import { useState } from "react";
 import { InstagramIcon } from "@/shared/components/icons/InstagramIcon";
 import { Button } from "@/shared/components/ui/button";
+import { useSearchParams } from "react-router-dom";
 
 /**
  * ContentFeedbackPage
@@ -29,6 +30,10 @@ import { Button } from "@/shared/components/ui/button";
  * - Integrates with modals for post creation and AI chat
  */
 export default function ContentFeedbackPage() {
+  const [searchParams] = useSearchParams();
+  const initialDateParam = searchParams.get('date');
+  const initialPostId = searchParams.get('postId');
+
   // Fetch posts, videos, loading, and error states from the custom hook
   const { posts, videos, loading, error } = useContentFeedback();
 
@@ -92,7 +97,11 @@ export default function ContentFeedbackPage() {
       <PageOutletLayout pageTitle="Content Feedback" actions={pageActions as any}>
         {viewMode !== "list" ? (
           <div className="col-span-12">
-            <AgendaCalendar view={viewMode as 'month' | 'week'} />
+            <AgendaCalendar
+              view={viewMode as 'month' | 'week'}
+              initialDate={initialDateParam ? new Date(initialDateParam) : undefined}
+              initialPostId={initialPostId || undefined}
+            />
           </div>
         ) : (
           <>

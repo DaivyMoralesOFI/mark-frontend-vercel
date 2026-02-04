@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock } from 'lucide-react';
 import { InstagramIcon } from '@/shared/components/icons/InstagramIcon';
 import { Button } from '@/shared/components/ui/button';
@@ -16,14 +16,27 @@ const PlatformIcon = ({ className }: { className?: string }) => {
 interface AgendaCalendarProps {
     view?: 'month' | 'week';
     onClose?: () => void;
+    initialDate?: Date;
+    initialPostId?: string;
 }
 
-export const AgendaCalendar = ({ view: externalView }: AgendaCalendarProps) => {
+export const AgendaCalendar = ({ view: externalView, initialDate, initialPostId }: AgendaCalendarProps) => {
     const { posts, loading, error } = useFirebasePosts();
-    const [currentDate, setCurrentDate] = useState(new Date());
+    const [currentDate, setCurrentDate] = useState(initialDate || new Date());
     const [calendarView, _setCalendarView] = useState<'month' | 'week'>('month');
     const [selectedPost, setSelectedPost] = useState<any>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    // Effect to open the specific post if initialPostId is provided
+    useEffect(() => {
+        if (initialPostId && posts.length > 0) {
+            const post = posts.find(p => p.id === initialPostId);
+            if (post) {
+                setSelectedPost(post);
+                setIsModalOpen(true);
+            }
+        }
+    }, [initialPostId, posts]);
 
     // Prioritize external view if provided
     const effectiveView = externalView || calendarView;
