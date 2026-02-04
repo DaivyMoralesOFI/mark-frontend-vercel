@@ -1,10 +1,10 @@
-import { Card } from "@/shared/components/ui/card"
-import { Button } from "@/shared/components/ui/button"
-import { Upload, Loader2 } from "lucide-react"
-import { useBrandDna } from "../hooks/useBrandDna"
+import { Card } from "@/shared/components/ui/card";
+import { Button } from "@/shared/components/ui/button";
+import { Upload, Loader2 } from "lucide-react";
+import { useBrandDna } from "../hooks/useBrandDna";
 
 export function LogoSection() {
-  const { data, loading } = useBrandDna()
+  const { data, loading } = useBrandDna();
 
   return (
     <Card className="overflow-hidden w-full">
@@ -20,19 +20,21 @@ export function LogoSection() {
         <div className="aspect-square rounded-lg flex items-center justify-center p-8 border border-border">
           {loading ? (
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          ) : data?.brand_identity?.logo?.url ? (
+          ) : data?.identity?.logo_url ? (
             <div className="relative w-full h-full flex items-center justify-center bg-muted border border-border rounded-lg">
-              <img 
-                src={data.brand_identity.logo.url} 
-                alt={data.brand_identity.name || "Brand Logo"} 
+              <img
+                src={data.identity.logo_url}
+                alt={data.identity.name || "Brand Logo"}
                 className="w-full h-full object-contain"
               />
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground text-center">No logo available</p>
+            <p className="text-sm text-muted-foreground text-center">
+              No logo available
+            </p>
           )}
         </div>
       </div>
     </Card>
-  )
+  );
 }
