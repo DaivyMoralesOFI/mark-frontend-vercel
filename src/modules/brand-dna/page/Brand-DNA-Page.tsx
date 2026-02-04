@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { BrandProfileProgress } from "../components/BrandProfileProgress";
 import { LogoSection } from "../components/LogoSection";
@@ -24,7 +24,9 @@ export function BrandDashboard() {
     }
   }, [selectedCompany]);
 
-  const handleSelectCompany = (company: Parameters<typeof selectCompany>[0]) => {
+  const handleSelectCompany = (
+    company: Parameters<typeof selectCompany>[0],
+  ) => {
     selectCompany(company);
     setIsModalOpen(false);
   };
@@ -35,37 +37,38 @@ export function BrandDashboard() {
 
   return (
     <>
-      <PageOutletLayout 
-        pageTitle="Brand DNA" 
-        actions={[]}
-        headerContent={
-          selectedCompany ? (
-            <div className="flex items-center gap-2">
-              <Button 
-                variant="outline" 
-                onClick={() => navigate('/brand-dna-extractor')}
-              >
-                Extractor
-              </Button>
-              <CompanyDropdown
-                selectedCompany={selectedCompany}
-                onSelectCompany={handleSelectCompany}
-                onViewAll={handleViewAll}
-              />
-            </div>
-          ) : null
-        }
-      >
+      <PageOutletLayout pageTitle="Brand DNA">
         {!selectedCompany ? (
           // Empty state when no company is selected
           <div className="col-span-12 flex items-center justify-center min-h-[60vh]">
             <div className="text-center">
-              <p className="text-lg text-muted-foreground mb-2">No company selected</p>
-              <p className="text-sm text-muted-foreground">Please select a company to view its Brand DNA</p>
+              <p className="text-lg text-muted-foreground mb-2">
+                No company selected
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Please select a company to view its Brand DNA
+              </p>
             </div>
           </div>
         ) : (
           <>
+            {/* Header with company selector */}
+            <div className="col-span-12 flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => navigate("/brand-dna-extractor")}
+                >
+                  Extractor
+                </Button>
+                <CompanyDropdown
+                  selectedCompany={selectedCompany}
+                  onSelectCompany={handleSelectCompany}
+                  onViewAll={handleViewAll}
+                />
+              </div>
+            </div>
+
             {/* Brand Profile Progress - Full width */}
             <div className="col-span-12">
               <BrandProfileProgress />
@@ -98,8 +101,8 @@ export function BrandDashboard() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSelectCompany={handleSelectCompany}
-        selectedCompanyId={selectedCompany?.id}
+        selectedCompanyId={selectedCompany?.uuid}
       />
     </>
-  )
+  );
 }
