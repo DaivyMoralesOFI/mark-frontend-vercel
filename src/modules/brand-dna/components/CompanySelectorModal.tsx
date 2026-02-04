@@ -50,9 +50,7 @@ export function CompanySelectorModal({
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">
-            Select Company
-          </DialogTitle>
+          <DialogTitle className="text-2xl font-bold">Select Brand</DialogTitle>
           <DialogDescription>
             Choose a company to view and manage its brand DNA
           </DialogDescription>

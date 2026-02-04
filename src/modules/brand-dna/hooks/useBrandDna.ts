@@ -18,8 +18,6 @@ export const useBrandDna = () => {
   return {
     selectedCompany: selectedBrand,
     selectCompany: (brand: Brand) => {
-      console.log("useBrandDna - selectCompany called with:", brand);
-      console.log("useBrandDna - brand.uuid:", brand.uuid);
       selectBrand(brand.uuid);
     },
     data: selectedBrand,

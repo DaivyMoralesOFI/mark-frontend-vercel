@@ -50,7 +50,7 @@ export function CompanyDropdown({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-64">
-        <DropdownMenuLabel>Switch Company</DropdownMenuLabel>
+        <DropdownMenuLabel>Switch Brand</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {loading ? (
           <DropdownMenuItem
