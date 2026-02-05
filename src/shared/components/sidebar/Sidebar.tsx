@@ -21,6 +21,7 @@ import {
   SidebarMenuItem,
   SidebarHeader,
   SidebarFooter,
+  useSidebar,
 } from "@/shared/components/ui/sidebar";
 import {
   Avatar,
@@ -32,6 +33,7 @@ import { useState } from "react";
 import { CreatePostModal } from "@/modules/create-post/components/CreatePostModal";
 import MarkLogo from "@/assets/logos/mark-colored.svg";
 import { cn } from "@/core/lib/utils";
+import { useUser } from "@/core/hooks/useUser";
 
 // Navigation items for the main sidebar menu
 const navigationItems = [
@@ -54,6 +56,10 @@ const navigationItems = [
  */
 export function Sidebar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { state } = useSidebar();
+  const isExpanded = state === "expanded";
+  const { user, loading } = useUser("bb355aba-a0e9-4431-9ea9-e94080d85ac2"); // Using the ID from the screenshot
+
   return (
     <SidebarComponent variant="sidebar" collapsible="icon">
       <SidebarHeader>
@@ -63,8 +69,8 @@ export function Sidebar() {
               <Link to={"/"}>
                 <div
                   className={cn(
-                    "flex aspect-square items-center justify-center",
-                    status ? "size-14" : "size-9",
+                    "flex aspect-square items-center justify-center transition-all duration-300",
+                    isExpanded ? "size-10" : "size-8",
                   )}
                 >
                   <picture className="site-front-logo">
@@ -170,22 +176,41 @@ export function Sidebar() {
         </SidebarMenu>
 
         {/* User/company profile card */}
-        <div className=" bg-gray-50 rounded-lg">
-          <div className="flex items-center space-x-3">
-            <Avatar className="w-8 h-8">
-              <AvatarImage src="https://i.pravatar.cc/150?img=8" />
-              <AvatarFallback></AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">
-                Ofi Services
-              </p>
-              <p className="text-xs text-gray-500 truncate">
-                Marketing Manager
-              </p>
-            </div>
-          </div>
-        </div>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              size="lg"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+            >
+              <Avatar className="h-8 w-8 rounded-lg">
+                <AvatarImage
+                  src={user?.photo_url || "https://i.pravatar.cc/150?img=8"}
+                  alt={user?.user_name || "User"}
+                />
+                <AvatarFallback className="rounded-lg">
+                  {user?.user_name?.split("_").map((n: string) => n[0]).join("").toUpperCase() || "OS"}
+                </AvatarFallback>
+              </Avatar>
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                {loading ? (
+                  <>
+                    <div className="h-4 w-24 bg-gray-200 animate-pulse rounded" />
+                    <div className="mt-1 h-3 w-32 bg-gray-100 animate-pulse rounded" />
+                  </>
+                ) : (
+                  <>
+                    <span className="truncate font-semibold text-gray-900">
+                      {user?.user_name}
+                    </span>
+                    <span className="truncate text-xs text-on-surface-variant">
+                      {user?.job_title}
+                    </span>
+                  </>
+                )}
+              </div>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarFooter>
     </SidebarComponent>
   );
