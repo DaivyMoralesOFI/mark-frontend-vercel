@@ -17,17 +17,15 @@ export function LogoSection() {
           </Button>
         </div>
 
-        <div className="aspect-square rounded-lg flex items-center justify-center p-8 border border-border">
+        <div className="aspect-square rounded-lg flex items-center justify-center p-8 border border-border bg-muted">
           {loading ? (
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           ) : data?.identity?.logo_url ? (
-            <div className="relative w-full h-full flex items-center justify-center bg-muted border border-border rounded-lg">
-              <img
-                src={data.identity.logo_url}
-                alt={data.identity.name || "Brand Logo"}
-                className="w-full h-full object-contain"
-              />
-            </div>
+            <img
+              src={data.identity.logo_url}
+              alt={data.identity.name || "Brand Logo"}
+              className="max-w-[60%] max-h-[60%] object-contain"
+            />
           ) : (
             <p className="text-sm text-muted-foreground text-center">
               No logo available

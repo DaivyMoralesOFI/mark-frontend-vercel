@@ -37,7 +37,10 @@ export function BrandDashboard() {
 
   return (
     <>
-      <PageOutletLayout pageTitle="Brand DNA">
+      <PageOutletLayout
+        pageTitle="Brand DNA"
+        className="px-8 max-sm:px-4 gap-6 py-6"
+      >
         {!selectedCompany ? (
           // Empty state when no company is selected
           <div className="col-span-12 flex items-center justify-center min-h-[60vh]">

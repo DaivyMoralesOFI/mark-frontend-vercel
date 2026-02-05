@@ -55,7 +55,7 @@ export function BrandLogo({ name, logo, size = "sm" }: BrandLogoProps) {
     <img
       src={logo}
       alt={name}
-      className="w-full h-full object-contain"
+      className="max-w-full max-h-full object-contain"
       onError={() => setImageError(true)}
     />
   );
