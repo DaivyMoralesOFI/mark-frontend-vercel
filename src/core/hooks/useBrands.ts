@@ -38,6 +38,7 @@ export const useBrands = () => {
    * Sets the active brand by ID
    */
   const selectBrand = (id: string | null) => {
+    console.log("useBrands - selectBrand called with id:", id);
     dispatch(setSelectedBrandId(id));
   };
 

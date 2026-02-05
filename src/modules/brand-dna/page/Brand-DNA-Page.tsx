@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { BrandProfileProgress } from "../components/BrandProfileProgress";
 import { LogoSection } from "../components/LogoSection";
@@ -7,10 +7,10 @@ import { TypographySection } from "../components/TypographySection";
 import { BrandToneSection } from "../components/BrandToneSection";
 import { UsageFeaturesSection } from "../components/UsageFeaturesSection";
 import { CompanySelectorModal } from "../components/CompanySelectorModal";
-import { CompanyDropdown } from "../components/CompanyDropdown";
 import { useBrandDna } from "../hooks/useBrandDna";
 import PageOutletLayout from "@/shared/layout/page-outlet-layout";
-import { Button } from "@/shared/components/ui/button";
+import { Actions } from "@/shared/types/types";
+import { Sparkles } from "lucide-react";
 
 export function BrandDashboard() {
   const { selectedCompany, selectCompany } = useBrandDna();
@@ -24,44 +24,40 @@ export function BrandDashboard() {
     }
   }, [selectedCompany]);
 
-  const handleSelectCompany = (company: Parameters<typeof selectCompany>[0]) => {
+  const handleSelectCompany = (
+    company: Parameters<typeof selectCompany>[0],
+  ) => {
     selectCompany(company);
     setIsModalOpen(false);
   };
 
-  const handleViewAll = () => {
-    setIsModalOpen(true);
-  };
+  const pageActions: Actions[] = [
+    {
+      children: "Extractor",
+      icon: Sparkles,
+      onClick: () => navigate("/brand-dna-extractor"),
+      variant: "default",
+      type: "button",
+    },
+  ];
 
   return (
     <>
-      <PageOutletLayout 
-        pageTitle="Brand DNA" 
-        actions={[]}
-        headerContent={
-          selectedCompany ? (
-            <div className="flex items-center gap-2">
-              <Button 
-                variant="outline" 
-                onClick={() => navigate('/brand-dna-extractor')}
-              >
-                Extractor
-              </Button>
-              <CompanyDropdown
-                selectedCompany={selectedCompany}
-                onSelectCompany={handleSelectCompany}
-                onViewAll={handleViewAll}
-              />
-            </div>
-          ) : null
-        }
+      <PageOutletLayout<"with-actions">
+        pageTitle="Brand DNA"
+        actions={pageActions}
+        className="px-8 max-sm:px-4 gap-6 py-6"
       >
         {!selectedCompany ? (
           // Empty state when no company is selected
           <div className="col-span-12 flex items-center justify-center min-h-[60vh]">
             <div className="text-center">
-              <p className="text-lg text-muted-foreground mb-2">No company selected</p>
-              <p className="text-sm text-muted-foreground">Please select a company to view its Brand DNA</p>
+              <p className="text-lg text-muted-foreground mb-2">
+                No company selected
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Please select a company to view its Brand DNA
+              </p>
             </div>
           </div>
         ) : (
@@ -98,8 +94,8 @@ export function BrandDashboard() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSelectCompany={handleSelectCompany}
-        selectedCompanyId={selectedCompany?.id}
+        selectedCompanyId={selectedCompany?.uuid}
       />
     </>
-  )
+  );
 }

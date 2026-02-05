@@ -9,7 +9,6 @@ import postReducer from "../../modules/content-post/store/postSlice";
 import chatReducer from "../../modules/chat-coach-modal/store/chatModalSlice";
 import chatCoachReducer from "../../modules/chat-coach/store/chatSlice";
 import createPostReducer from "../../modules/create-post/store/createPostSlice";
-import brandDnaReducer from "../../modules/brand-dna/store/brandDnaSlice";
 
 import brandReducer from "./brandSlice";
 
@@ -26,7 +25,6 @@ const rootReducer = combineReducers({
   chatModal: chatReducer,
   chat: chatCoachReducer,
   createPost: createPostReducer,
-  brandDna: brandDnaReducer,
   brands: brandReducer,
 });
 

@@ -1,12 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
-import {
-  BadgeCheck,
-  Bell,
-  ChevronDown,
-  CirclePlus,
-  LogOut,
-  Sparkles,
-} from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { ChevronDown, CirclePlus } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,23 +9,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/shared/components/ui/avatar";
-import { useAuth } from "@/modules/auth/hooks/useAuth";
+import { Avatar, AvatarImage } from "@/shared/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
-import OFILogo from "@/assets/logos/ofi-white.webp";
 import { useBrands } from "@/core/hooks/useBrands";
 import { cn } from "@/core/lib/utils";
 
 const AccountSelector = () => {
   const [_, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { brands, loading, error, selectedBrand, selectBrand } = useBrands();
-  console.log({ brands, loading, error });
-  console.log({ selectedBrand });
+  const { brands, selectedBrand, selectBrand } = useBrands();
+  const navigate = useNavigate();
 
   // Cerrar el dropdown cuando se hace clic fuera
   useEffect(() => {
@@ -50,6 +36,10 @@ const AccountSelector = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const handleAddNewBrand = () => {
+    navigate("/brand-dna-extractor");
+  };
 
   return (
     <DropdownMenu>
@@ -80,8 +70,12 @@ const AccountSelector = () => {
           {brands?.map((brand) => {
             return (
               <DropdownMenuItem
+                key={brand.uuid}
+                onClick={() => selectBrand(brand.uuid)}
                 className={cn(
-                  brand.isActive && "bg-primary/20 hover:bg-primary/50",
+                  "cursor-pointer",
+                  selectedBrand?.uuid === brand.uuid &&
+                    "bg-primary/20 hover:bg-primary/50",
                 )}
               >
                 <Avatar className="h-7 w-7 rounded-md">
@@ -97,7 +91,10 @@ const AccountSelector = () => {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={handleAddNewBrand}
+            className="cursor-pointer"
+          >
             <CirclePlus strokeWidth={2} size={16} />
             <p>Add New Brand</p>
           </DropdownMenuItem>
