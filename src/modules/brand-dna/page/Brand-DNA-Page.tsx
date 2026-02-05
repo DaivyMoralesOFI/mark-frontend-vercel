@@ -7,10 +7,10 @@ import { TypographySection } from "../components/TypographySection";
 import { BrandToneSection } from "../components/BrandToneSection";
 import { UsageFeaturesSection } from "../components/UsageFeaturesSection";
 import { CompanySelectorModal } from "../components/CompanySelectorModal";
-import { CompanyDropdown } from "../components/CompanyDropdown";
 import { useBrandDna } from "../hooks/useBrandDna";
 import PageOutletLayout from "@/shared/layout/page-outlet-layout";
-import { Button } from "@/shared/components/ui/button";
+import { Actions } from "@/shared/types/types";
+import { Sparkles } from "lucide-react";
 
 export function BrandDashboard() {
   const { selectedCompany, selectCompany } = useBrandDna();
@@ -31,14 +31,21 @@ export function BrandDashboard() {
     setIsModalOpen(false);
   };
 
-  const handleViewAll = () => {
-    setIsModalOpen(true);
-  };
+  const pageActions: Actions[] = [
+    {
+      children: "Extractor",
+      icon: Sparkles,
+      onClick: () => navigate("/brand-dna-extractor"),
+      variant: "default",
+      type: "button",
+    },
+  ];
 
   return (
     <>
-      <PageOutletLayout
+      <PageOutletLayout<"with-actions">
         pageTitle="Brand DNA"
+        actions={pageActions}
         className="px-8 max-sm:px-4 gap-6 py-6"
       >
         {!selectedCompany ? (
@@ -55,23 +62,6 @@ export function BrandDashboard() {
           </div>
         ) : (
           <>
-            {/* Header with company selector */}
-            <div className="col-span-12 flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => navigate("/brand-dna-extractor")}
-                >
-                  Extractor
-                </Button>
-                <CompanyDropdown
-                  selectedCompany={selectedCompany}
-                  onSelectCompany={handleSelectCompany}
-                  onViewAll={handleViewAll}
-                />
-              </div>
-            </div>
-
             {/* Brand Profile Progress - Full width */}
             <div className="col-span-12">
               <BrandProfileProgress />
