@@ -4,7 +4,7 @@
 // It includes the sidebar, header, and a content outlet area, and manages sidebar open/close state.
 
 import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar";
-import { Sidebar } from "@/shared/components/Sidebar";
+import { Sidebar } from "@/shared/components/sidebar/Sidebar";
 import { AppHeader } from "@/shared/router";
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
@@ -23,18 +23,21 @@ const DashboardLayout = () => {
   // State for sidebar open/close
   const [isOpen, setIsOpen] = useState(true);
   return (
-    <div className="dashboard-layout bg-sidebar text-foreground min-w-screen min-h-screen max-w-svw">
-      <SidebarProvider open={isOpen} onOpenChange={setIsOpen}>
+    <div className="dashboard-layout text-on-surface max-w-screen min-h-screen bg-surface relative">
+      <SidebarProvider
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        className="relative "
+      >
         <Sidebar />
-        <div className="flex flex-row w-full max-h-svh h-full overflow-hidden">
-          <div className="flex flex-col w-full">
-            <AppHeader />
-            <SidebarInset className="px-2">
-              <div className="outlet-container border border-border rounded-sm bg-background min-h-[calc(100svh-60px)] max-h-[calc(100svh-60px)] w-full h-full">
-                <Outlet />
-              </div>
-            </SidebarInset>
-          </div>
+        {/*  <Toaster /> */}
+        <div className="w-screen h-full px-3">
+          <AppHeader />
+          <SidebarInset>
+            <div className="outlet-container overflow-hidden border border-outline-variant bg-surface-container rounded-lg max-h-[calc(100vh-5px)]  md:max-h-[calc(100vh-5em)]">
+              <Outlet />
+            </div>
+          </SidebarInset>
         </div>
       </SidebarProvider>
     </div>

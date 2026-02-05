@@ -4,10 +4,20 @@
 // It includes search, assistant, notifications, theme toggle, filters, and user profile actions, styled with Tailwind CSS.
 
 import { useState } from "react";
-import { Bell, Filter, Search, Store, GraduationCap } from "lucide-react";
-import { AvatarDropdown, ToggleTheme, TooltipHover } from "@/shared/router";
+import {
+  Bell,
+  Filter,
+  Search,
+  Store,
+  GraduationCap,
+  MessageCircle,
+} from "lucide-react";
+import { ToggleTheme, TooltipHover } from "@/shared/router";
 import { Button } from "@/shared/components/ui/button";
 import { TrainModelModal } from "@/modules/train-model-modal/TrainModelModal";
+import AccountSelector from "../dropdown/account-selector";
+import OFILogoHDark from "@/assets/logos/ofi-dark.webp";
+import OFILogoHLight from "@/assets/logos/ofi-white.webp";
 
 /**
  * AppHeader
@@ -22,43 +32,30 @@ export default function AppHeader() {
   return (
     <header className="bg-sidebar group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 w-full transition-[width,height] ease-linear">
       <div className="flex flex-row items-center justify-between px-3 py-2 w-auto max-w-svw">
-        {/* Search and assistant section */}
-        <div className="command-container flex-2 flex flex-row justify-center items-center">
-          <TooltipHover
-            title="Search something"
-            content=""
-            className="hidden md:inline-flex"
-          >
-            <Button
-              variant="outline"
-              size="icon"
-              className="w-auto min-w-[400px] justify-start cursor-pointer p-0 px-3 h-7 border-r-0 rounded-none rounded-tl-sm rounded-bl-sm hover:bg-background"
-            >
-              <Search strokeWidth={2} size={16} />
-              <span className="font-light">Search</span>
-            </Button>
-          </TooltipHover>
-          <TooltipHover
-            title="use SOFIA Assistent"
-            content=""
-            className="hidden md:inline-flex"
-          >
-            <Button
-              variant="outline"
-              size="icon"
-              className="cursor-pointer p-0 px-0 h-7 border-l-0 rounded-none rounded-tr-sm rounded-br-sm hover:bg-surface-container"
-            >
-              <span>✨</span>
-            </Button>
-          </TooltipHover>
+        <div className="navbar-brand min-w-[200px] 2xl::min-w-[300px] min-h-8 h-full flex flex-row justify-start items-center relative">
+          <div className="flex flex-row justify-start items-center relative">
+            <picture className="absolute h-full -top-3 -left-1 inline-flex dark:hidden">
+              <source src={OFILogoHLight} />
+              <img
+                src={OFILogoHLight}
+                alt="SOFIA Technology logo concept"
+                className="w-10 h-10"
+              />
+            </picture>
+            <picture className="absolute h-full -top-3 -left-1 hidden dark:inline-flex">
+              <source src={OFILogoHDark} />
+              <img
+                src={OFILogoHDark}
+                alt="SOFIA Technology logo concept"
+                className="w-10 h-10"
+              />
+            </picture>
+            <p className="navbar-brand pl-10 font-bold">SERVICES</p>
+          </div>
         </div>
         {/* Actions section: marketplace, notifications, theme, filters, profile */}
         <div className="appbar-cta flex items-center justify-between gap-2">
-          <TooltipHover
-            title="Train your AI model"
-            content=""
-            className=""
-          >
+          <TooltipHover title="Train your AI model" content="" className="">
             <Button
               variant="default"
               size="icon"
@@ -69,18 +66,24 @@ export default function AppHeader() {
               <span>Train</span>
             </Button>
           </TooltipHover>
-          <TooltipHover
-            title="Integrate new agents"
-            content=""
-            className=""
-          >
+          <TooltipHover title="Integrate new agents" content="" className="">
             <Button
               variant="default"
               size="icon"
-              className="cursor-pointer pr-3 pl-2 py-1 border-1 border-secondary w-auto h-7 rounded-sm bg-linear-to-r/oklab from-pink-300 to-purple-300 text-on-secondary"
+              className="cursor-pointer pr-3 pl-2 py-1 border-0 w-auto h-7 rounded-sm bg-linear-to-r/oklab from-pink-300 to-purple-300 text-on-secondary"
             >
               <Store strokeWidth={2} size={16} />
               <span>Agents MarketPlace</span>
+            </Button>
+          </TooltipHover>
+          <TooltipHover
+            title="Ask Mark"
+            content=""
+            className="hidden md:inline-flex"
+          >
+            <Button variant="secondary">
+              <MessageCircle strokeWidth={2} size={16} />
+              <span>Ask Mark</span>
             </Button>
           </TooltipHover>
           <TooltipHover
@@ -103,21 +106,13 @@ export default function AppHeader() {
           >
             <ToggleTheme />
           </TooltipHover>
-          <Button variant="default" className="inline-flex md:hidden rounded-sm h-7" size="sm">
-            <Filter />
-            <span> Filters</span>
-          </Button>
-          <TooltipHover title="Profile" content="" className="">
-            <AvatarDropdown
-              avatarSrc="https://i.pravatar.cc/150?img=8"
-              onSignOut={() => {}}
-              userEmail="demo@sofiatech.com"
-              userName="MARK Demo"
-            />
-          </TooltipHover>
+          <AccountSelector />
         </div>
       </div>
-      <TrainModelModal isOpen={isTrainModalOpen} onClose={() => setIsTrainModalOpen(false)} />
+      <TrainModelModal
+        isOpen={isTrainModalOpen}
+        onClose={() => setIsTrainModalOpen(false)}
+      />
     </header>
   );
 }

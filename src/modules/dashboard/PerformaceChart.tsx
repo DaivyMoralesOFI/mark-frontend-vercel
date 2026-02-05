@@ -22,7 +22,7 @@ export function PerformanceChart() {
   const totalConversions = data.reduce((sum, d) => sum + d.conversions, 0)
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center space-x-2">

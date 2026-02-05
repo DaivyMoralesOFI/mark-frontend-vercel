@@ -4,17 +4,21 @@
 // It integrates with the content post module's hooks, components, and modals, and provides actions for creating posts and interacting with the AI assistant.
 // The page handles loading and error states, and displays a grid of posts with options to create new posts or ask for AI feedback.
 
-import { MessageCircle, Plus } from "lucide-react";
+import { Plus, LayoutGrid, Calendar as CalendarIcon, Clock, ChevronRight } from "lucide-react";
 import PageOutletLayout from "@/shared/layout/page-outlet-layout";
-import { AppHeaderActions } from "@/shared/types/types";
+import { Actions } from "@/shared/types/types";
 import { useContentFeedback } from "../hooks/useContentFeedback";
 import { useModals } from "@/core/hooks/useModals";
 import { LoadingState } from "@/shared/components/loading-state/LoadingState";
 import { ErrorState } from "@/shared/components/error-state/ErrorState";
 import { PostGrid } from "../components/PostGrid";
 import { CreatePostModal } from "@/modules/create-post/components/CreatePostModal";
-import { AiChatModal } from "@/modules/chat-coach-modal/page/AiChatModal";
 import { VideoPostCarrousel } from "../components/carousels/video-post-carousel";
+import { AgendaCalendar } from "../components/AgendaCalendar";
+import { useState } from "react";
+import { InstagramIcon } from "@/shared/components/icons/InstagramIcon";
+import { Button } from "@/shared/components/ui/button";
+import { useSearchParams } from "react-router-dom";
 
 /**
  * ContentFeedbackPage
@@ -26,35 +30,60 @@ import { VideoPostCarrousel } from "../components/carousels/video-post-carousel"
  * - Integrates with modals for post creation and AI chat
  */
 export default function ContentFeedbackPage() {
-  // Fetch posts, loading, and error state from the custom hook
-  const { posts, videos ,loading, error } = useContentFeedback();
+  const [searchParams] = useSearchParams();
+  const initialDateParam = searchParams.get('date');
+  const initialPostId = searchParams.get('postId');
+
+  // Fetch posts, videos, loading, and error states from the custom hook
+  const { posts, videos, loading, error } = useContentFeedback();
 
   console.log(videos.length);
-  
 
-  // Modal state and handlers from the useModals hook
+  // Modal states and handlers from the useModals hook
   const {
     showCreatePost,
-    showAskMark,
     openCreatePost,
     closeCreatePost,
-    openAskMark,
-    closeAskMark,
   } = useModals();
 
-  // Define header actions for the page (create post, ask Mark)
-  const pageActions: AppHeaderActions[] = [
+  const [viewMode, setViewMode] = useState<"list" | "month" | "week">("month");
+
+  // Define header actions for the page (view mode, create post)
+  const pageActions: Actions[] = [
     {
-      label: "Create Post",
+      type: "button" as const,
+      children: viewMode === "list" ? "Calendar View" : "List View",
+      icon: viewMode === "list" ? CalendarIcon : LayoutGrid,
+      onClick: () => setViewMode(viewMode === "list" ? "month" : "list"),
+      variant: "outline" as const,
+    },
+    ...(viewMode !== "list" ? [{
+      type: "button" as const,
+      children: viewMode === "month" ? "Week View" : "Month View",
+      icon: Clock,
+      onClick: () => setViewMode(viewMode === "month" ? "week" : "month"),
+      variant: "outline" as const,
+    }] : []),
+    ...(viewMode !== "list" ? [{
+      type: "custom" as const,
+      node: (
+        <Button variant="outline" className="text-gray-600 min-w-[140px] justify-between">
+          <div className="flex items-center gap-2">
+            <div className="flex -space-x-1">
+              <InstagramIcon className="w-4 h-4 bg-white rounded-full border border-white" />
+            </div>
+            Instagram
+          </div>
+          <ChevronRight className="w-4 h-4 rotate-90" />
+        </Button>
+      )
+    }] : []),
+    {
+      type: "button" as const,
+      children: "Create Post",
       icon: Plus,
       onClick: openCreatePost,
-      variant: "default",
-    },
-    {
-      label: "Ask Mark",
-      icon: MessageCircle,
-      onClick: openAskMark,
-      variant: "secondary",
+      variant: "default" as const,
     },
   ];
 
@@ -65,16 +94,26 @@ export default function ContentFeedbackPage() {
   return (
     <>
       {/* Main layout with page title and actions */}
-      <PageOutletLayout pageTitle="Content Feedback" actions={pageActions}>
-        {/* Grid of posts with feedback */}
-        <PostGrid posts={posts} />
-        {videos && <VideoPostCarrousel videos={videos}/>}
-        
+      <PageOutletLayout pageTitle="Content Feedback" actions={pageActions as any}>
+        {viewMode !== "list" ? (
+          <div className="col-span-12">
+            <AgendaCalendar
+              view={viewMode as 'month' | 'week'}
+              initialDate={initialDateParam ? new Date(initialDateParam) : undefined}
+              initialPostId={initialPostId || undefined}
+            />
+          </div>
+        ) : (
+          <>
+            <div className="col-span-12 flex flex-col gap-4">
+              {/* Grid of posts with feedback */}
+              <PostGrid posts={posts} />
+              {videos && <VideoPostCarrousel videos={videos} />}
+            </div>
+          </>
+        )}
       </PageOutletLayout>
-      {/* Modal for creating a new post */}
       <CreatePostModal isOpen={showCreatePost} onClose={closeCreatePost} />
-      {/* Modal for interacting with the AI assistant */}
-      <AiChatModal isOpen={showAskMark} onClose={closeAskMark} />
     </>
   );
 }

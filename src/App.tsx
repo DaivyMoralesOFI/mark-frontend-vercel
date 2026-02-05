@@ -17,12 +17,12 @@ import { AuthProvider } from "./modules/auth/store/authProvider";
 import RequireAuth from "./modules/auth/components/RequireAuth";
 import { lazy } from "react";
 import { StyleProfilePage } from "./modules/style-profile/StyleProfilePage";
+import { ThemeProvider } from "./shared/router";
+import FirebaseProvider from "./core/context/firebase-context";
 
 const ExtractorDNAPage = lazy(
-  () => import("@/modules/brand-dna-extractor/pages/brand-extractor")
+  () => import("@/modules/brand-dna-extractor/pages/brand-extractor"),
 );
-
-
 
 /**
  * App
@@ -37,34 +37,44 @@ export default function App() {
   return (
     // Provide authentication context to the entire app
     <AuthProvider>
+      <ThemeProvider defaultTheme="light" storageKey="app-theme">
+        <FirebaseProvider>
+          <BrowserRouter>
+            <Routes>
+              {/* Public route: authentication page */}
+              <Route path="/auth" element={<AuthPage />} />
+              {/*Experimental Brand DNA routes*/}
+              <Route
+                path="/brand-dna-extractor"
+                element={<ExtractorDNAPage />}
+              />
+              {/* Protected routes: require authentication */}
+              <Route
+                element={
+                  <RequireAuth>
+                    <DashboardLayout />
+                  </RequireAuth>
+                }
+              >
+                {/* Redirect root to dashboard */}
+                <Route
+                  path="/"
+                  element={<Navigate to="/dashboard" replace />}
+                />
+                {/* Main dashboard and feature pages */}
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/chat" element={<MarketingCoachChat />} />
+                <Route path="/calendar" element={<ContentFeedbackPage />} />
+                <Route path="/analytics" element={<AnalyticsPage />} />
+                <Route path="/campaigns" element={<CampaingnPage />} />
+                <Route path="/brand-dna" element={<BrandDashboard />} />
+                <Route path="/style-profile" element={<StyleProfilePage />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </FirebaseProvider>
+      </ThemeProvider>
       {/* Set up client-side routing */}
-      <BrowserRouter>
-        <Routes>
-          {/* Public route: authentication page */}
-          <Route path="/auth" element={<AuthPage />} />
-          {/*Experimental Brand DNA routes*/}
-          <Route path="/brand-dna-extractor" element={<ExtractorDNAPage/>}/>
-          {/* Protected routes: require authentication */}
-          <Route
-            element={
-              <RequireAuth>
-                <DashboardLayout />
-              </RequireAuth>
-            }
-          >
-            {/* Redirect root to dashboard */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            {/* Main dashboard and feature pages */}
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/chat" element={<MarketingCoachChat />} />
-            <Route path="/content" element={<ContentFeedbackPage />} />
-            <Route path="/analytics" element={<AnalyticsPage />} />
-            <Route path="/campaigns" element={<CampaingnPage />} />
-            <Route path="/brand-dna" element={<BrandDashboard />} />
-            <Route path="/style-profile" element={<StyleProfilePage />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
     </AuthProvider>
   );
-} 
+}
