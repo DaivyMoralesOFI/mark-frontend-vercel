@@ -24,7 +24,7 @@ export function BrandProfileProgress() {
   const progress = calculateProgress();
 
   return (
-    <Card className="relative overflow-hidden bg-accent/50 border-border">
+    <Card className="relative overflow-hidden bg:white">
       <div className="p-6">
         <div className="flex items-start justify-between mb-3">
           <div>
