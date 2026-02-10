@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import DashboardLayout from "@/shared/layout/dashboard-layout";
 import MarketingCoachChat from "@/domains/creation-studio/chat-coach/page/MarketingCoachChatPage";
 import ContentFeedbackPage from "@/domains/dashboard/calendar/content-post/page/ContentFeedbackPage";
+import DashboardPage from "@/domains/dashboard/page/DashboardPage";
 import CampaingnPage from "@/domains/dashboard/management/campaigns/CampaingnPage";
 import { BrandDashboard } from "@/domains/creation-studio/brand-dna/page/Brand-DNA-Page";
 import AuthPage from "@/domains/auth/page/authPage";
@@ -54,12 +55,13 @@ export default function App() {
                   </RequireAuth>
                 }
               >
-                {/* Redirect root to calendar */}
+                {/* Redirect root to dashboard */}
                 <Route
                   path="/"
-                  element={<Navigate to="/calendar" replace />}
+                  element={<Navigate to="/dashboard" replace />}
                 />
                 {/* Main dashboard and feature pages */}
+                <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/chat" element={<MarketingCoachChat />} />
                 <Route path="/calendar" element={<ContentFeedbackPage />} />
                 <Route path="/campaigns" element={<CampaingnPage />} />

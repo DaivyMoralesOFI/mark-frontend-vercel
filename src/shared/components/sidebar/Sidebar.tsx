@@ -6,6 +6,7 @@ import {
   User,
   CirclePlus,
   Calendar,
+  LayoutDashboard,
 } from "lucide-react";
 import {
   Sidebar as SidebarComponent,
@@ -34,6 +35,7 @@ import { useUser } from "@/shared/hooks/useUser";
 
 // Navigation items for the main sidebar menu
 const navigationItems = [
+  { title: "Dashboard", icon: LayoutDashboard, isActive: false, to: "/dashboard" },
   { title: "Calendar", icon: Calendar, isActive: false, to: "/calendar" },
   { title: "Campaigns", icon: TrendingUp, isActive: false, to: "/campaigns" },
   { title: "Brand DNA", icon: Dna, isActive: false, to: "/brand-dna" },
