@@ -1,4 +1,4 @@
-import { cn } from "@/core/lib/utils";
+import { cn } from "@/shared/utils/utils";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import {
   Card,

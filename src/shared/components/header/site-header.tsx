@@ -1,6 +1,6 @@
 import { SidebarTrigger } from "../ui/sidebar";
 import { Actions } from "@/shared/types/types";
-import { AppHeaderActions } from "@/shared/router";
+import { AppHeaderActions } from "@/core/router/router";
 import DynamicBradcrumbs from "@/shared/components/breadcrumbs/breadcrumb-router";
 
 interface SiteHeaderProps {

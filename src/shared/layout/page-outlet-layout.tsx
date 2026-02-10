@@ -1,14 +1,14 @@
-import { ScrollArea, ScrollBar } from "@/shared/components/ui/scroll-area";
+import { ScrollArea } from "@/shared/components/ui/scroll-area";
 import { Actions, Trigger } from "@/shared/types/types";
 import { useEffect } from "react";
-import { cn } from "@/core/lib/utils";
+import { cn } from "@/shared/utils/utils";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/shared/components/ui/tabs";
-import { AppHeaderActions, SiteHeader } from "../router";
+import { AppHeaderActions, SiteHeader } from "@/core/router/router";
 
 type PageProps<T extends string | undefined = undefined> = {
   pageTitle: string;
@@ -17,29 +17,29 @@ type PageProps<T extends string | undefined = undefined> = {
   layout?: "flex" | "grid";
 } & (T extends `${string}with-tabs${string}` | "with-tabs"
   ? {
-      triggers: Trigger[];
-      tabsContent: React.ReactNode[];
-      defaultTrigger: string;
-      tabActions?: Actions[];
-      children?: never;
-    }
+    triggers: Trigger[];
+    tabsContent: React.ReactNode[];
+    defaultTrigger: string;
+    tabActions?: Actions[];
+    children?: never;
+  }
   : {
-      triggers?: never;
-      tabsContent?: never;
-      defaultTrigger?: never;
-      tabActions?: never;
-      children: React.ReactNode;
-    }) &
+    triggers?: never;
+    tabsContent?: never;
+    defaultTrigger?: never;
+    tabActions?: never;
+    children: React.ReactNode;
+  }) &
   (T extends `${string}with-actions${string}` | "with-actions"
     ? {
-        actions: Actions[];
-      }
+      actions: Actions[];
+    }
     : { actions?: never }) &
   (T extends `${string}with-SEO${string}` | "with-SEO"
     ? {
-        description: string;
-        content: string;
-      }
+      description: string;
+      content: string;
+    }
     : { description?: never; content?: never });
 
 const PageOutletLayout = <T extends string | undefined = undefined>({

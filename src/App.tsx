@@ -6,22 +6,20 @@
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import DashboardLayout from "@/shared/layout/dashboard-layout";
-import Dashboard from "@/modules/dashboard/page/Page";
-import MarketingCoachChat from "@/modules/chat-coach/page/MarketingCoachChatPage";
-import ContentFeedbackPage from "./modules/content-post/page/ContentFeedbackPage";
-import AnalyticsPage from "./modules/analytics/AnalyticsPage";
-import CampaingnPage from "./modules/campaigns/CampaingnPage";
-import { BrandDashboard } from "./modules/brand-dna/page/Brand-DNA-Page";
-import AuthPage from "./modules/auth/page/authPage";
-import { AuthProvider } from "./modules/auth/store/authProvider";
-import RequireAuth from "./modules/auth/components/RequireAuth";
+import MarketingCoachChat from "@/domains/creation-studio/chat-coach/page/MarketingCoachChatPage";
+import ContentFeedbackPage from "@/domains/dashboard/calendar/content-post/page/ContentFeedbackPage";
+import CampaingnPage from "@/domains/dashboard/management/campaigns/CampaingnPage";
+import { BrandDashboard } from "@/domains/creation-studio/brand-dna/page/Brand-DNA-Page";
+import AuthPage from "@/domains/auth/page/authPage";
+import { AuthProvider } from "@/domains/auth/store/authProvider";
+import RequireAuth from "@/domains/auth/components/RequireAuth";
 import { lazy } from "react";
-import { StyleProfilePage } from "./modules/style-profile/StyleProfilePage";
-import { ThemeProvider } from "./shared/router";
+import { StyleProfilePage } from "@/domains/creation-studio/brand-dna/style-profile/StyleProfilePage";
+import { ThemeProvider } from "@/core/router/router";
 import FirebaseProvider from "./core/context/firebase-context";
 
 const ExtractorDNAPage = lazy(
-  () => import("@/modules/brand-dna-extractor/pages/brand-extractor"),
+  () => import("@/domains/creation-studio/brand-dna/brand-dna-extractor/pages/brand-extractor"),
 );
 
 /**
@@ -56,16 +54,14 @@ export default function App() {
                   </RequireAuth>
                 }
               >
-                {/* Redirect root to dashboard */}
+                {/* Redirect root to calendar */}
                 <Route
                   path="/"
-                  element={<Navigate to="/dashboard" replace />}
+                  element={<Navigate to="/calendar" replace />}
                 />
                 {/* Main dashboard and feature pages */}
-                <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/chat" element={<MarketingCoachChat />} />
                 <Route path="/calendar" element={<ContentFeedbackPage />} />
-                <Route path="/analytics" element={<AnalyticsPage />} />
                 <Route path="/campaigns" element={<CampaingnPage />} />
                 <Route path="/brand-dna" element={<BrandDashboard />} />
                 <Route path="/style-profile" element={<StyleProfilePage />} />

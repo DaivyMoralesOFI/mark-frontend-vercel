@@ -1,7 +1,4 @@
 import {
-  BarChart3,
-
-  Home,
   Settings,
   TrendingUp,
   Bot,
@@ -30,15 +27,13 @@ import {
 } from "@/shared/components/ui/avatar";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { CreatePostModal } from "@/modules/create-post/components/CreatePostModal";
+import { CreatePostModal } from "@/domains/creation-studio/post-creator/components/CreatePostModal";
 import MarkLogo from "@/assets/logos/mark-colored.svg";
-import { cn } from "@/core/lib/utils";
-import { useUser } from "@/core/hooks/useUser";
+import { cn } from "@/shared/utils/utils";
+import { useUser } from "@/shared/hooks/useUser";
 
 // Navigation items for the main sidebar menu
 const navigationItems = [
-  { title: "Dashboard", icon: Home, isActive: false, to: "/dashboard" },
-  { title: "Analytics", icon: BarChart3, isActive: false, to: "/analytics" },
   { title: "Calendar", icon: Calendar, isActive: false, to: "/calendar" },
   { title: "Campaigns", icon: TrendingUp, isActive: false, to: "/campaigns" },
   { title: "Brand DNA", icon: Dna, isActive: false, to: "/brand-dna" },
