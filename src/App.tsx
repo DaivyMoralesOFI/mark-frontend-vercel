@@ -19,6 +19,7 @@ import { lazy } from "react";
 import { StyleProfilePage } from "./modules/style-profile/StyleProfilePage";
 import { ThemeProvider } from "./shared/router";
 import FirebaseProvider from "./core/context/firebase-context";
+import AppRoutes from "./core/routes/routes";
 
 const ExtractorDNAPage = lazy(
   () => import("@/modules/brand-dna-extractor/pages/brand-extractor"),
@@ -39,16 +40,25 @@ export default function App() {
     <AuthProvider>
       <ThemeProvider defaultTheme="light" storageKey="app-theme">
         <FirebaseProvider>
-          <BrowserRouter>
+          <AppRoutes />
+        </FirebaseProvider>
+      </ThemeProvider>
+      {/* Set up client-side routing */}
+    </AuthProvider>
+  );
+}
+
+/***
+ * <BrowserRouter>
             <Routes>
-              {/* Public route: authentication page */}
+              {/* Public route: authentication page *
               <Route path="/auth" element={<AuthPage />} />
-              {/*Experimental Brand DNA routes*/}
+              {/*Experimental Brand DNA routes*
               <Route
                 path="/brand-dna-extractor"
                 element={<ExtractorDNAPage />}
               />
-              {/* Protected routes: require authentication */}
+              {/* Protected routes: require authentication 
               <Route
                 element={
                   <RequireAuth>
@@ -56,12 +66,12 @@ export default function App() {
                   </RequireAuth>
                 }
               >
-                {/* Redirect root to dashboard */}
+                {/* Redirect root to dashboard *
                 <Route
                   path="/"
                   element={<Navigate to="/dashboard" replace />}
-                />
-                {/* Main dashboard and feature pages */}
+                /
+                {/* Main dashboard and feature pages *
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/chat" element={<MarketingCoachChat />} />
                 <Route path="/calendar" element={<ContentFeedbackPage />} />
@@ -72,9 +82,4 @@ export default function App() {
               </Route>
             </Routes>
           </BrowserRouter>
-        </FirebaseProvider>
-      </ThemeProvider>
-      {/* Set up client-side routing */}
-    </AuthProvider>
-  );
-}
+ */

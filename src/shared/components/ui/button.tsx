@@ -24,7 +24,7 @@ const buttonVariants = cva(
         ghost: "border-0 hover:bg-surface-container-low hover:text-on-surface",
         link: "border-0 text-blue-500 underline-offset-4 hover:underline",
         agent:
-          "bg-linear-to-r/oklab from-primary to-primary-container text-on-primary border-primary ",
+          "bg-linear-to-r/oklab from-primary to-primary-container text-on-primary border border-primary ",
         error:
           "bg-error-container border-error text-on-error-container hover:bg-error/90 focus-visible:ring-destructive/20",
       },
