@@ -54,8 +54,8 @@ const KPICard = ({
               isTrendPositive
                 ? "text-success"
                 : isTrendNegative
-                ? "text-danger"
-                : "text-on-surface-variant"
+                  ? "text-danger"
+                  : "text-on-surface-variant"
             )}
           >
             {trendIcon}

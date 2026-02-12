@@ -12,121 +12,95 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/shared/components/ui/chart";
+import { InstagramIcon } from "@/shared/components/icons/InstagramIcon";
+import { TikTokIcon } from "@/shared/components/icons/TikTokIcon";
+import { FacebookIcon } from "@/shared/components/icons/FacebookIcon";
+import { LinkedInIcon } from "@/shared/components/icons/LinkedInIcon";
+import { ArrowUp, ArrowDown } from "lucide-react";
+import { type TimePeriod, getSocialData } from "@/domains/dashboard/data/dashboardMockData";
 
-const instagramData = [
-    { day: 1, value: 35 },
-    { day: 2, value: 82 },
-    { day: 3, value: 45 },
-    { day: 4, value: 91 },
-    { day: 5, value: 25 },
-    { day: 6, value: 87 },
-    { day: 7, value: 62 },
-];
-
-const facebookData = [
-    { day: 1, value: 65 },
-    { day: 2, value: 25 },
-    { day: 3, value: 78 },
-    { day: 4, value: 30 },
-    { day: 5, value: 85 },
-    { day: 6, value: 22 },
-    { day: 7, value: 70 },
-];
-
-const tiktokData = [
-    { day: 1, value: 20 },
-    { day: 2, value: 95 },
-    { day: 3, value: 45 },
-    { day: 4, value: 85 },
-    { day: 5, value: 30 },
-    { day: 6, value: 98 },
-    { day: 7, value: 55 },
-];
-
-const linkedinData = [
-    { day: 1, value: 70 },
-    { day: 2, value: 20 },
-    { day: 3, value: 85 },
-    { day: 4, value: 45 },
-    { day: 5, value: 90 },
-    { day: 6, value: 35 },
-    { day: 7, value: 80 },
-];
-
-const networks = [
-    {
-        name: "Instagram",
-        data: instagramData,
-        color: "#8884d8",
-        total: "45.2k",
-    },
-    {
-        name: "Facebook",
-        data: facebookData,
-        color: "#8884d8",
-        total: "12.9k",
-    },
-    {
-        name: "TikTok",
-        data: tiktokData,
-        color: "#8884d8",
-        total: "89.4k",
-    },
-    {
-        name: "LinkedIn",
-        data: linkedinData,
-        color: "#8884d8",
-        total: "5.6k",
-    },
-];
+const platformIcons: Record<string, React.FC<{ className?: string }>> = {
+    Instagram: InstagramIcon,
+    TikTok: TikTokIcon,
+    Facebook: FacebookIcon,
+    LinkedIn: LinkedInIcon,
+};
 
 const SmallChartCard = ({
     name,
     data,
-    color,
     total,
+    trend,
 }: {
     name: string;
     data: any[];
-    color: string;
     total: string;
+    trend?: number;
 }) => {
+    // Chart color based on trend direction
+    const chartColor = trend !== undefined && trend > 0
+        ? "#10b981"  // emerald-500
+        : trend !== undefined && trend < 0
+            ? "#ef4444"  // red-500
+            : "#8884d8"; // default purple
+
     const chartConfig = {
         value: {
             label: name,
-            color: color,
+            color: chartColor,
         },
     } satisfies ChartConfig;
 
+    const IconComp = platformIcons[name];
+
     return (
-        <div className="bg-white border border-outline-variant rounded-xl p-4 h-[140px] flex flex-col justify-between">
-            <div className="flex justify-between items-start mb-2">
-                <div className="text-sm font-medium text-muted-foreground">{name}</div>
-                <div className="text-2xl font-bold text-gray-900">{total}</div>
+        <div className="bg-white rounded-xl border-[1px] border-gray-200 p-4 flex flex-col gap-3">
+            {/* Title row with icon */}
+            <div className="flex items-center gap-1.5">
+                {IconComp && <IconComp className="w-4 h-4" />}
+                <p className="text-[11px] font-normal uppercase tracking-wider text-gray-400">
+                    {name}
+                </p>
             </div>
-            <div className="h-[60px] w-full">
+
+            {/* Value + Trend */}
+            <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-medium text-gray-900">{total}</span>
+                {trend !== undefined && (
+                    <span
+                        className={`flex items-center gap-0.5 text-xs font-medium ${trend > 0 ? "text-emerald-500" : trend < 0 ? "text-red-500" : "text-gray-400"
+                            }`}
+                    >
+                        {trend > 0 ? <ArrowUp className="w-3 h-3" /> : trend < 0 ? <ArrowDown className="w-3 h-3" /> : null}
+                        {Math.abs(trend)}%
+                    </span>
+                )}
+            </div>
+
+            {/* Sparkline */}
+            <div className="h-[50px] w-full">
                 <ChartContainer config={chartConfig} className="h-full w-full">
                     <AreaChart
-                        accessibilityLayer
                         data={data}
-                        margin={{
-                            top: 5,
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                        }}
+                        margin={{ top: 2, bottom: 0, left: 0, right: 0 }}
                     >
+                        <defs>
+                            <linearGradient id={`fill-${name}`} x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor={chartColor} stopOpacity={0.3} />
+                                <stop offset="95%" stopColor={chartColor} stopOpacity={0.02} />
+                            </linearGradient>
+                        </defs>
                         <ChartTooltip
                             cursor={false}
                             content={<ChartTooltipContent hideLabel />}
                         />
                         <Area
                             dataKey="value"
-                            type="natural"
-                            fill={color}
-                            fillOpacity={0.1}
-                            stroke={color}
-                            strokeWidth={2}
+                            type="monotone"
+                            fill={`url(#fill-${name})`}
+                            fillOpacity={1}
+                            stroke={chartColor}
+                            strokeWidth={1.5}
                         />
                     </AreaChart>
                 </ChartContainer>
@@ -135,9 +109,15 @@ const SmallChartCard = ({
     );
 };
 
-export const SocialPerformanceSection = () => {
+interface SocialPerformanceSectionProps {
+    timePeriod: TimePeriod;
+}
+
+export const SocialPerformanceSection = ({ timePeriod }: SocialPerformanceSectionProps) => {
+    const networks = getSocialData(timePeriod);
+
     return (
-        <div className="flex flex-col gap-4 mt-8">
+        <div className="flex flex-col gap-4">
             <div className="flex justify-between items-center">
                 <h2 className="text-xl font-semibold">Performance by Social Network</h2>
                 <Select defaultValue="engagement">
@@ -158,8 +138,8 @@ export const SocialPerformanceSection = () => {
                         key={network.name}
                         name={network.name}
                         data={network.data}
-                        color={network.color}
                         total={network.total}
+                        trend={network.trend}
                     />
                 ))}
             </div>
