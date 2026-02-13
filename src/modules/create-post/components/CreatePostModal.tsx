@@ -48,7 +48,10 @@ import { SuccessNotification } from "./SuccessNotification";
 import { Badge } from "@/shared/components/ui/badge";
 import { cn } from "@/core/lib/utils";
 import { useAppSelector, RootState } from "../../../core/store/store";
-import { CreateImageAISheet } from "@/modules/create-image-sheet/create-sheet-post";
+import { CreateWithMarkSheet } from "@/modules/create-image-sheet/create-sheet-post";
+/* import { PostFeedback } from "./PostFeedback";
+import CopyTextGeneration from "./dialog/copy-text-generation";
+import CreateImageGeneration from "./dialog/create-image-generation"; */
 
 /**
  * Props for CreatePostModal
@@ -245,43 +248,34 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
                 </div>
                 <AISuggestion />
                 <div className="flex w-full flex-col relative gap-3 m-0 p-2 border border-outline rounded-md">
-                  <div className="flex flex-row justify-start items-start gap-0">
-                    <Button
-                      variant={"agent"}
-                      className="rounded-none rounded-l-md border"
-                      onClick={handleSuggestion}
-                    >
-                      <Pencil />
-                      create Description with Mark
-                    </Button>
-                    <CreateImageAISheet
-                      handleImageGeneration={handleImageGeneration}
-                    />
-                    <Button variant={"outline"} className="rounded-none border">
-                      <PackageOpen />
-                      Choose image from library
-                    </Button>
-                    <Button
-                      variant={"outline"}
-                      className="rounded-none rounded-r-md"
-                    >
-                      <Hash />
-                      Include hastag trends
-                    </Button>
-                  </div>
-                  <DescriptionInput
-                    description={description}
-                    onDescriptionChange={handleDescriptionChange}
-                    onSuggestion={handleSuggestion}
-                    loadingSuggestion={loadingSuggestion}
-                    canSuggest={canSuggest}
-                  />
+                  {/* <div className="flex flex-row justify-start items-start gap-0">
+                  <CopyTextGeneration />
+                  <CreateImageGeneration />
+
+                  <Button variant={"outline"} className="rounded-none border">
+                    <PackageOpen />
+                    Choose image from library
+                  </Button>
+                  <Button
+                    variant={"outline"}
+                    className="rounded-none rounded-r-md"
+                  >
+                    <Hash />
+                    Include hastag trends
+                  </Button>
+                </div>
+                <DescriptionInput
+                  description={description}
+                  onDescriptionChange={handleDescriptionChange}
+                  loadingSuggestion={loadingSuggestion}
+                /> */}
                   <TrendsSection
                     trends={trends}
                     loadingTrends={loadingTrends}
                     onAddHashtag={handleAddHashtag}
                   />
                 </div>
+                <PostFeedback errors={validationErrors} />
 
                 {/* Image Upload and AI Generation */}
                 <ImageUpload
