@@ -20,7 +20,7 @@ export const PlatformHeader = ({ profile }: PlatformHeaderProps) => {
     const IconComponent = platformIcons[profile.name];
 
     return (
-        <div className="flex items-center">
+        <div className="flex items-center ">
             <div className="flex items-center gap-4">
                 {/* Platform Icon */}
                 {IconComponent && (

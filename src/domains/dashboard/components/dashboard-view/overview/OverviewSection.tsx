@@ -1,12 +1,4 @@
-
-
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/shared/components/ui/select";
+import { useState } from "react";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
     ChartConfig,
@@ -15,51 +7,42 @@ import {
     ChartTooltipContent,
 } from "@/shared/components/ui/chart";
 import { ArrowUp, ArrowDown } from "lucide-react";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/shared/components/ui/select";
 
 import {
     type TimePeriod,
     getKpiData,
     getOverviewChartData,
-    getPeriodLabel,
 } from "@/domains/dashboard/data/dashboardMockData";
-
-const chartConfig = {
-    desktop: {
-        label: "Reach",
-        color: "#8884d8", // Purple
-    },
-} satisfies ChartConfig;
 
 interface OverviewSectionProps {
     timePeriod: TimePeriod;
-    onTimePeriodChange: (value: TimePeriod) => void;
 }
 
-export const OverviewSection = ({ timePeriod, onTimePeriodChange }: OverviewSectionProps) => {
+export const OverviewSection = ({ timePeriod }: OverviewSectionProps) => {
+    const [selectedMetric, setSelectedMetric] = useState<"followers" | "impressions" | "engagement" | "posts">("followers");
     const kpi = getKpiData(timePeriod);
     const chartData = getOverviewChartData(timePeriod);
 
+    const chartConfig = {
+        followers: { label: "Total Followers", color: "#d946ef" },
+        impressions: { label: "Impressions", color: "#d946ef" },
+        engagement: { label: "Engagement Rate", color: "#d946ef" },
+        posts: { label: "Total Posts", color: "#d946ef" },
+    } satisfies ChartConfig;
+
     return (
         <div className="flex flex-col gap-4">
-            <div className="flex justify-between items-center">
-                <h2 className="text-3xl font-medium tracking-tight">Dashboard</h2>
-                <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">{getPeriodLabel(timePeriod)}</span>
-                    <Select value={timePeriod} onValueChange={(v) => onTimePeriodChange(v as TimePeriod)}>
-                        <SelectTrigger className="w-[180px] bg-white">
-                            <SelectValue placeholder="Select period" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="7days">Last 7 days</SelectItem>
-                            <SelectItem value="30days">Last 30 days</SelectItem>
-                            <SelectItem value="90days">Last 3 months</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-            </div>
+            {/* Dashboard Title & Switcher removed - moved to Page Actions in PageOutletLayout */}
 
             {/* Metrics Row */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-gray-200">
+            <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-outline-variant">
                 {[
                     { title: "Total Followers", value: kpi.totalFollowers.value, trend: kpi.totalFollowers.trend },
                     { title: "Impressions", value: kpi.impressions.value, trend: kpi.impressions.trend },
@@ -67,11 +50,11 @@ export const OverviewSection = ({ timePeriod, onTimePeriodChange }: OverviewSect
                     { title: "Total Posts", value: kpi.totalPosts.value, trend: kpi.totalPosts.trend },
                 ].map((item) => (
                     <div key={item.title} className="px-4 first:pl-0 last:pr-0 py-5">
-                        <p className="text-[11px] font-normal uppercase tracking-wider text-gray-500 mb-1">
+                        <p className="text-[11px] font-normal uppercase tracking-wider text-on-surface-variant mb-1">
                             {item.title}
                         </p>
                         <div className="flex items-baseline gap-2">
-                            <span className="text-2xl font-medium text-gray-900">{item.value}</span>
+                            <span className="text-2xl font-medium text-on-surface">{item.value}</span>
                             {item.trend !== undefined && (
                                 <span
                                     className={`flex items-center gap-0.5 text-xs font-medium ${item.trend > 0 ? "text-emerald-500" : item.trend < 0 ? "text-red-500" : "text-gray-400"
@@ -89,8 +72,24 @@ export const OverviewSection = ({ timePeriod, onTimePeriodChange }: OverviewSect
             {/* Content Row */}
             <div className="grid gap-4 md:grid-cols-1">
                 {/* Chart Column */}
-                <div className="border-y border-gray-200 py-4">
-                    <h3 className="text-lg font-semibold mb-2">Overview</h3>
+                <div className="border-y border-outline-variant py-4">
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-medium text-on-surface">Overview</h3>
+                        <Select
+                            value={selectedMetric}
+                            onValueChange={(v) => setSelectedMetric(v as any)}
+                        >
+                            <SelectTrigger className="w-[180px] bg-surface border-outline-variant">
+                                <SelectValue placeholder="Metric" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="followers">Total Followers</SelectItem>
+                                <SelectItem value="impressions">Impressions</SelectItem>
+                                <SelectItem value="engagement">Engagement Rate</SelectItem>
+                                <SelectItem value="posts">Total Posts</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
                     <ChartContainer config={chartConfig} className="h-[350px] w-full">
                         <AreaChart
                             accessibilityLayer
@@ -98,23 +97,23 @@ export const OverviewSection = ({ timePeriod, onTimePeriodChange }: OverviewSect
                             margin={{
                                 left: 0,
                                 right: 0,
-                                top: 0,
+                                top: 10,
                                 bottom: 0,
                             }}
                         >
                             <defs>
-                                <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="var(--color-desktop)" stopOpacity={0.8} />
-                                    <stop offset="95%" stopColor="var(--color-desktop)" stopOpacity={0.1} />
+                                <linearGradient id="fillMetric" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor={`var(--color-${selectedMetric})`} stopOpacity={0.3} />
+                                    <stop offset="95%" stopColor={`var(--color-${selectedMetric})`} stopOpacity={0.01} />
                                 </linearGradient>
                             </defs>
 
                             <CartesianGrid
-                                vertical={true}
+                                vertical={false}
                                 horizontal={true}
                                 strokeDasharray="3 3"
-                                stroke="#e5e7eb"
-                                strokeOpacity={0.7}
+                                stroke="var(--outline-variant)"
+                                strokeOpacity={0.2}
                             />
 
                             <XAxis
@@ -123,12 +122,9 @@ export const OverviewSection = ({ timePeriod, onTimePeriodChange }: OverviewSect
                                 axisLine={false}
                                 tickMargin={8}
                                 interval="preserveStartEnd"
-                                minTickGap={40}
-                                tickFormatter={(value) => {
-                                    const d = new Date(value);
-                                    return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-                                }}
-                                tick={{ fontSize: 12, fill: "#9ca3af" }}
+                                minTickGap={60}
+                                tickFormatter={(value) => value}
+                                tick={{ fontSize: 12, fill: "var(--on-surface-variant)" }}
                             />
                             <YAxis
                                 yAxisId="left"
@@ -137,7 +133,7 @@ export const OverviewSection = ({ timePeriod, onTimePeriodChange }: OverviewSect
                                 axisLine={false}
                                 tickMargin={4}
                                 width={35}
-                                tick={{ fontSize: 11, fill: "#9ca3af" }}
+                                tick={{ fontSize: 11, fill: "var(--on-surface-variant)" }}
                             />
                             <YAxis
                                 yAxisId="right"
@@ -146,20 +142,22 @@ export const OverviewSection = ({ timePeriod, onTimePeriodChange }: OverviewSect
                                 axisLine={false}
                                 tickMargin={4}
                                 width={35}
-                                tick={{ fontSize: 11, fill: "#9ca3af" }}
+                                tick={{ fontSize: 11, fill: "var(--on-surface-variant)" }}
                             />
                             <ChartTooltip
-                                cursor={{ stroke: "#6b7280", strokeDasharray: "4 4", strokeWidth: 1 }}
+                                cursor={{ stroke: "var(--on-surface)", strokeDasharray: "4 4", strokeWidth: 1 }}
                                 content={<ChartTooltipContent indicator="dot" />}
                             />
                             <Area
                                 yAxisId="left"
-                                dataKey="desktop"
-                                type="natural"
-                                fill="url(#fillDesktop)"
+                                dataKey={selectedMetric}
+                                type="linear"
+                                fill="url(#fillMetric)"
                                 fillOpacity={0.4}
-                                stroke="var(--color-desktop)"
+                                stroke="#d946ef"
                                 strokeWidth={2}
+                                dot={false}
+                                activeDot={{ r: 4, strokeWidth: 2, stroke: "#fff", fill: "#d946ef" }}
                             />
                         </AreaChart>
                     </ChartContainer>

@@ -2,30 +2,7 @@
 // Centralized mock data for the dashboard, keyed by time period
 // ────────────────────────────────────────────────
 
-export type TimePeriod = "7days" | "30days" | "90days";
-
-// ── Helpers ──────────────────────────────────────
-function generateChartPoints(count: number, min: number, max: number, startDate: string) {
-    const start = new Date(startDate);
-    return Array.from({ length: count }, (_, i) => {
-        const d = new Date(start);
-        d.setDate(d.getDate() + i);
-        return {
-            date: d.toISOString().slice(0, 10),
-            desktop: Math.round(min + Math.random() * (max - min)),
-        };
-    });
-}
-
-function generateMiniChart(count: number, min: number, max: number) {
-    return Array.from({ length: count }, (_, i) => ({
-        day: i + 1,
-        value: Math.round(min + Math.random() * (max - min)),
-    }));
-}
-
-// Use a seeded‑style deterministic approach by hard-coding the data so it
-// doesn't flicker on every re-render.
+export type TimePeriod = "7days" | "30days" | "90days" | "all" | "custom";
 
 // ── KPI Data ────────────────────────────────────
 export interface KpiData {
@@ -54,97 +31,65 @@ const kpiByPeriod: Record<TimePeriod, KpiData> = {
         engagementRate: { value: "4.8%", trend: -4.1 },
         totalPosts: { value: "386", trend: 11.2 },
     },
+    "all": {
+        totalFollowers: { value: "152.4K", trend: 12.5 },
+        impressions: { value: "892.1K", trend: 8.2 },
+        engagementRate: { value: "5.2%", trend: -2.4 },
+        totalPosts: { value: "142", trend: 4.5 },
+    },
+    "custom": {
+        totalFollowers: { value: "152.4K", trend: 12.5 },
+        impressions: { value: "892.1K", trend: 8.2 },
+        engagementRate: { value: "5.2%", trend: -2.4 },
+        totalPosts: { value: "142", trend: 4.5 },
+    },
 };
 
 export function getKpiData(period: TimePeriod): KpiData {
+    if (period === "all" || period === "custom") return kpiByPeriod["30days"];
     return kpiByPeriod[period];
 }
 
 // ── Overview Chart Data ─────────────────────────
-const overviewChart7 = [
-    { date: "2024-04-24", desktop: 312 },
-    { date: "2024-04-25", desktop: 215 },
-    { date: "2024-04-26", desktop: 175 },
-    { date: "2024-04-27", desktop: 383 },
-    { date: "2024-04-28", desktop: 122 },
-    { date: "2024-04-29", desktop: 315 },
-    { date: "2024-04-30", desktop: 454 },
-];
 
-const overviewChart30 = [
-    { date: "2024-04-01", desktop: 222 },
-    { date: "2024-04-02", desktop: 97 },
-    { date: "2024-04-03", desktop: 167 },
-    { date: "2024-04-04", desktop: 242 },
-    { date: "2024-04-05", desktop: 373 },
-    { date: "2024-04-06", desktop: 301 },
-    { date: "2024-04-07", desktop: 245 },
-    { date: "2024-04-08", desktop: 409 },
-    { date: "2024-04-09", desktop: 59 },
-    { date: "2024-04-10", desktop: 261 },
-    { date: "2024-04-11", desktop: 327 },
-    { date: "2024-04-12", desktop: 292 },
-    { date: "2024-04-13", desktop: 342 },
-    { date: "2024-04-14", desktop: 137 },
-    { date: "2024-04-15", desktop: 120 },
-    { date: "2024-04-16", desktop: 138 },
-    { date: "2024-04-17", desktop: 446 },
-    { date: "2024-04-18", desktop: 364 },
-    { date: "2024-04-19", desktop: 243 },
-    { date: "2024-04-20", desktop: 89 },
-    { date: "2024-04-21", desktop: 137 },
-    { date: "2024-04-22", desktop: 224 },
-    { date: "2024-04-23", desktop: 138 },
-    { date: "2024-04-24", desktop: 387 },
-    { date: "2024-04-25", desktop: 215 },
-    { date: "2024-04-26", desktop: 75 },
-    { date: "2024-04-27", desktop: 383 },
-    { date: "2024-04-28", desktop: 122 },
-    { date: "2024-04-29", desktop: 315 },
-    { date: "2024-04-30", desktop: 454 },
-];
+const generateOverviewData = (length: number, period: TimePeriod) => {
+    return Array.from({ length }, (_, i) => {
+        const freq1 = 0.8;
+        const freq2 = 2.1;
+        const freq3 = 4.5;
+        const jitter = (Math.random() - 0.5) * 0.8;
+        const trend = i * 0.005;
 
-const overviewChart90 = [
-    { date: "2024-02-01", desktop: 180 },
-    { date: "2024-02-04", desktop: 245 },
-    { date: "2024-02-07", desktop: 310 },
-    { date: "2024-02-10", desktop: 160 },
-    { date: "2024-02-13", desktop: 420 },
-    { date: "2024-02-16", desktop: 290 },
-    { date: "2024-02-19", desktop: 350 },
-    { date: "2024-02-22", desktop: 195 },
-    { date: "2024-02-25", desktop: 480 },
-    { date: "2024-02-28", desktop: 220 },
-    { date: "2024-03-02", desktop: 375 },
-    { date: "2024-03-05", desktop: 140 },
-    { date: "2024-03-08", desktop: 450 },
-    { date: "2024-03-11", desktop: 280 },
-    { date: "2024-03-14", desktop: 330 },
-    { date: "2024-03-17", desktop: 190 },
-    { date: "2024-03-20", desktop: 410 },
-    { date: "2024-03-23", desktop: 260 },
-    { date: "2024-03-26", desktop: 520 },
-    { date: "2024-03-29", desktop: 170 },
-    { date: "2024-04-01", desktop: 380 },
-    { date: "2024-04-04", desktop: 300 },
-    { date: "2024-04-07", desktop: 245 },
-    { date: "2024-04-10", desktop: 460 },
-    { date: "2024-04-13", desktop: 210 },
-    { date: "2024-04-16", desktop: 390 },
-    { date: "2024-04-19", desktop: 150 },
-    { date: "2024-04-22", desktop: 340 },
-    { date: "2024-04-25", desktop: 270 },
-    { date: "2024-04-30", desktop: 454 },
-];
+        const wave = 1 + trend + jitter +
+            Math.sin(i * freq1) * 0.15 +
+            Math.sin(i * freq2) * 0.12 +
+            Math.sin(i * freq3) * 0.08;
 
-const overviewChartByPeriod: Record<TimePeriod, { date: string; desktop: number }[]> = {
-    "7days": overviewChart7,
-    "30days": overviewChart30,
-    "90days": overviewChart90,
+        let dateLabel = "";
+        if (period === "7days") dateLabel = `${i.toString().padStart(2, '0')}:00`;
+        else if (period === "30days") dateLabel = (i + 1).toString();
+        else if (period === "90days") dateLabel = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][i % 12];
+        else dateLabel = (i + 1).toString();
+
+        return {
+            date: dateLabel,
+            followers: Math.round(150000 * wave),
+            impressions: Math.round(890000 * wave),
+            engagement: Number((5.2 * wave).toFixed(1)),
+            posts: Math.round(140 * wave),
+        };
+    });
 };
 
 export function getOverviewChartData(period: TimePeriod) {
-    return overviewChartByPeriod[period];
+    const lengths: Record<TimePeriod, number> = {
+        "7days": 24,
+        "30days": 30,
+        "90days": 12,
+        "all": 12,
+        "custom": 30
+    };
+    return generateOverviewData(lengths[period], period);
 }
 
 // ── Social Performance Data ─────────────────────
@@ -156,173 +101,72 @@ export interface SocialNetworkData {
     trend?: number;
 }
 
-const socialDataByPeriod: Record<TimePeriod, SocialNetworkData[]> = {
-    "7days": [
-        {
-            name: "Instagram",
-            data: [
-                { day: 1, value: 38 }, { day: 2, value: 52 }, { day: 3, value: 41 }, { day: 4, value: 67 },
-                { day: 5, value: 45 }, { day: 6, value: 58 }, { day: 7, value: 72 }, { day: 8, value: 55 },
-                { day: 9, value: 48 }, { day: 10, value: 63 }, { day: 11, value: 78 }, { day: 12, value: 60 },
-                { day: 13, value: 71 }, { day: 14, value: 56 }, { day: 15, value: 82 }, { day: 16, value: 74 },
-                { day: 17, value: 68 }, { day: 18, value: 85 }, { day: 19, value: 79 }, { day: 20, value: 88 },
-            ],
-            color: "#8884d8",
-            total: "8.4k",
-            trend: 3.2,
-        },
-        {
-            name: "Facebook",
-            data: [
-                { day: 1, value: 74 }, { day: 2, value: 68 }, { day: 3, value: 71 }, { day: 4, value: 58 },
-                { day: 5, value: 65 }, { day: 6, value: 72 }, { day: 7, value: 54 }, { day: 8, value: 61 },
-                { day: 9, value: 49 }, { day: 10, value: 56 }, { day: 11, value: 63 }, { day: 12, value: 45 },
-                { day: 13, value: 52 }, { day: 14, value: 58 }, { day: 15, value: 41 }, { day: 16, value: 47 },
-                { day: 17, value: 55 }, { day: 18, value: 38 }, { day: 19, value: 44 }, { day: 20, value: 40 },
-            ],
-            color: "#8884d8",
-            total: "2.1k",
-            trend: -1.4,
-        },
-        {
-            name: "TikTok",
-            data: [
-                { day: 1, value: 25 }, { day: 2, value: 34 }, { day: 3, value: 28 }, { day: 4, value: 48 },
-                { day: 5, value: 38 }, { day: 6, value: 32 }, { day: 7, value: 55 }, { day: 8, value: 42 },
-                { day: 9, value: 61 }, { day: 10, value: 50 }, { day: 11, value: 44 }, { day: 12, value: 68 },
-                { day: 13, value: 58 }, { day: 14, value: 75 }, { day: 15, value: 62 }, { day: 16, value: 70 },
-                { day: 17, value: 82 }, { day: 18, value: 71 }, { day: 19, value: 90 }, { day: 20, value: 86 },
-            ],
-            color: "#8884d8",
-            total: "18.2k",
-            trend: 7.8,
-        },
-        {
-            name: "LinkedIn",
-            data: [
-                { day: 1, value: 42 }, { day: 2, value: 36 }, { day: 3, value: 50 }, { day: 4, value: 44 },
-                { day: 5, value: 39 }, { day: 6, value: 53 }, { day: 7, value: 47 }, { day: 8, value: 41 },
-                { day: 9, value: 55 }, { day: 10, value: 48 }, { day: 11, value: 60 }, { day: 12, value: 52 },
-                { day: 13, value: 45 }, { day: 14, value: 58 }, { day: 15, value: 64 }, { day: 16, value: 50 },
-                { day: 17, value: 62 }, { day: 18, value: 56 }, { day: 19, value: 65 }, { day: 20, value: 60 },
-            ],
-            color: "#8884d8",
-            total: "1.2k",
-            trend: 2.1,
-        },
-    ],
-    "30days": [
-        {
-            name: "Instagram",
-            data: [
-                { day: 1, value: 22 }, { day: 2, value: 35 }, { day: 3, value: 18 }, { day: 4, value: 42 },
-                { day: 5, value: 30 }, { day: 6, value: 55 }, { day: 7, value: 38 }, { day: 8, value: 28 },
-                { day: 9, value: 50 }, { day: 10, value: 45 }, { day: 11, value: 62 }, { day: 12, value: 48 },
-                { day: 13, value: 58 }, { day: 14, value: 40 }, { day: 15, value: 70 }, { day: 16, value: 55 },
-                { day: 17, value: 65 }, { day: 18, value: 72 }, { day: 19, value: 60 }, { day: 20, value: 78 },
-            ],
-            color: "#8884d8",
-            total: "45.2k",
-            trend: 12.5,
-        },
-        {
-            name: "Facebook",
-            data: [
-                { day: 1, value: 82 }, { day: 2, value: 75 }, { day: 3, value: 80 }, { day: 4, value: 65 },
-                { day: 5, value: 72 }, { day: 6, value: 60 }, { day: 7, value: 68 }, { day: 8, value: 75 },
-                { day: 9, value: 55 }, { day: 10, value: 62 }, { day: 11, value: 48 }, { day: 12, value: 58 },
-                { day: 13, value: 42 }, { day: 14, value: 55 }, { day: 15, value: 38 }, { day: 16, value: 50 },
-                { day: 17, value: 44 }, { day: 18, value: 35 }, { day: 19, value: 42 }, { day: 20, value: 32 },
-            ],
-            color: "#8884d8",
-            total: "12.9k",
-            trend: -3.2,
-        },
-        {
-            name: "TikTok",
-            data: [
-                { day: 1, value: 15 }, { day: 2, value: 28 }, { day: 3, value: 20 }, { day: 4, value: 38 },
-                { day: 5, value: 25 }, { day: 6, value: 45 }, { day: 7, value: 35 }, { day: 8, value: 52 },
-                { day: 9, value: 40 }, { day: 10, value: 58 }, { day: 11, value: 48 }, { day: 12, value: 65 },
-                { day: 13, value: 55 }, { day: 14, value: 72 }, { day: 15, value: 60 }, { day: 16, value: 78 },
-                { day: 17, value: 68 }, { day: 18, value: 85 }, { day: 19, value: 75 }, { day: 20, value: 92 },
-            ],
-            color: "#8884d8",
-            total: "89.4k",
-            trend: 15.3,
-        },
-        {
-            name: "LinkedIn",
-            data: [
-                { day: 1, value: 30 }, { day: 2, value: 42 }, { day: 3, value: 35 }, { day: 4, value: 28 },
-                { day: 5, value: 45 }, { day: 6, value: 38 }, { day: 7, value: 50 }, { day: 8, value: 42 },
-                { day: 9, value: 55 }, { day: 10, value: 48 }, { day: 11, value: 38 }, { day: 12, value: 58 },
-                { day: 13, value: 52 }, { day: 14, value: 62 }, { day: 15, value: 45 }, { day: 16, value: 58 },
-                { day: 17, value: 65 }, { day: 18, value: 55 }, { day: 19, value: 68 }, { day: 20, value: 62 },
-            ],
-            color: "#8884d8",
-            total: "5.6k",
-            trend: 4.7,
-        },
-    ],
-    "90days": [
-        {
-            name: "Instagram",
-            data: [
-                { day: 1, value: 18 }, { day: 2, value: 30 }, { day: 3, value: 12 }, { day: 4, value: 38 },
-                { day: 5, value: 25 }, { day: 6, value: 48 }, { day: 7, value: 32 }, { day: 8, value: 55 },
-                { day: 9, value: 42 }, { day: 10, value: 35 }, { day: 11, value: 60 }, { day: 12, value: 50 },
-                { day: 13, value: 68 }, { day: 14, value: 58 }, { day: 15, value: 45 }, { day: 16, value: 72 },
-                { day: 17, value: 65 }, { day: 18, value: 80 }, { day: 19, value: 70 }, { day: 20, value: 85 },
-            ],
-            color: "#8884d8",
-            total: "132.8k",
-            trend: 22.1,
-        },
-        {
-            name: "Facebook",
-            data: [
-                { day: 1, value: 88 }, { day: 2, value: 80 }, { day: 3, value: 85 }, { day: 4, value: 72 },
-                { day: 5, value: 78 }, { day: 6, value: 82 }, { day: 7, value: 65 }, { day: 8, value: 70 },
-                { day: 9, value: 58 }, { day: 10, value: 65 }, { day: 11, value: 52 }, { day: 12, value: 60 },
-                { day: 13, value: 48 }, { day: 14, value: 55 }, { day: 15, value: 42 }, { day: 16, value: 50 },
-                { day: 17, value: 38 }, { day: 18, value: 45 }, { day: 19, value: 30 }, { day: 20, value: 35 },
-            ],
-            color: "#8884d8",
-            total: "38.4k",
-            trend: -5.8,
-        },
-        {
-            name: "TikTok",
-            data: [
-                { day: 1, value: 12 }, { day: 2, value: 22 }, { day: 3, value: 8 }, { day: 4, value: 35 },
-                { day: 5, value: 18 }, { day: 6, value: 42 }, { day: 7, value: 30 }, { day: 8, value: 55 },
-                { day: 9, value: 38 }, { day: 10, value: 62 }, { day: 11, value: 48 }, { day: 12, value: 70 },
-                { day: 13, value: 58 }, { day: 14, value: 45 }, { day: 15, value: 75 }, { day: 16, value: 65 },
-                { day: 17, value: 82 }, { day: 18, value: 72 }, { day: 19, value: 88 }, { day: 20, value: 95 },
-            ],
-            color: "#8884d8",
-            total: "245.1k",
-            trend: 28.4,
-        },
-        {
-            name: "LinkedIn",
-            data: [
-                { day: 1, value: 28 }, { day: 2, value: 35 }, { day: 3, value: 22 }, { day: 4, value: 40 },
-                { day: 5, value: 32 }, { day: 6, value: 48 }, { day: 7, value: 38 }, { day: 8, value: 30 },
-                { day: 9, value: 52 }, { day: 10, value: 45 }, { day: 11, value: 55 }, { day: 12, value: 42 },
-                { day: 13, value: 60 }, { day: 14, value: 50 }, { day: 15, value: 65 }, { day: 16, value: 55 },
-                { day: 17, value: 48 }, { day: 18, value: 68 }, { day: 19, value: 62 }, { day: 20, value: 72 },
-            ],
-            color: "#8884d8",
-            total: "16.8k",
-            trend: 9.3,
-        },
-    ],
+interface RawSocialNetworkData {
+    name: string;
+    metrics: Record<string, {
+        total: string;
+        trend: number;
+        data: { day: number; value: number }[];
+    }>;
+    color: string;
+}
+
+const rawSocialData7: RawSocialNetworkData[] = [
+    {
+        name: "Instagram",
+        color: "#8884d8",
+        metrics: {
+            engagement: { total: "8.4k", trend: 3.2, data: Array.from({ length: 20 }, (_, i) => ({ day: i + 1, value: 30 + Math.random() * 50 })) },
+            followers: { total: "152.4k", trend: 1.5, data: Array.from({ length: 20 }, (_, i) => ({ day: i + 1, value: 100 + i * 2 })) },
+            impressions: { total: "892.1k", trend: 8.2, data: Array.from({ length: 20 }, (_, i) => ({ day: i + 1, value: 500 + Math.random() * 400 })) },
+        }
+    },
+    {
+        name: "Facebook",
+        color: "#8884d8",
+        metrics: {
+            engagement: { total: "2.1k", trend: -1.4, data: Array.from({ length: 20 }, (_, i) => ({ day: i + 1, value: 50 + Math.random() * 20 })) },
+            followers: { total: "45.2k", trend: 0.8, data: Array.from({ length: 20 }, (_, i) => ({ day: i + 1, value: 80 + i * 0.5 })) },
+            impressions: { total: "124.5k", trend: -2.1, data: Array.from({ length: 20 }, (_, i) => ({ day: i + 1, value: 300 + Math.random() * 150 })) },
+        }
+    },
+    {
+        name: "TikTok",
+        color: "#8884d8",
+        metrics: {
+            engagement: { total: "18.2k", trend: 7.8, data: Array.from({ length: 20 }, (_, i) => ({ day: i + 1, value: 20 + Math.random() * 80 })) },
+            followers: { total: "89.4k", trend: 12.5, data: Array.from({ length: 20 }, (_, i) => ({ day: i + 1, value: 50 + i * 5 })) },
+            impressions: { total: "1.2M", trend: 15.3, data: Array.from({ length: 20 }, (_, i) => ({ day: i + 1, value: 800 + Math.random() * 600 })) },
+        }
+    },
+    {
+        name: "LinkedIn",
+        color: "#8884d8",
+        metrics: {
+            engagement: { total: "1.2k", trend: 2.1, data: Array.from({ length: 20 }, (_, i) => ({ day: i + 1, value: 40 + Math.random() * 30 })) },
+            followers: { total: "5.6k", trend: 4.7, data: Array.from({ length: 20 }, (_, i) => ({ day: i + 1, value: 30 + i * 1 })) },
+            impressions: { total: "45.8k", trend: 5.6, data: Array.from({ length: 20 }, (_, i) => ({ day: i + 1, value: 200 + Math.random() * 100 })) },
+        }
+    },
+];
+
+const socialDataByMetricPeriod: Record<TimePeriod, RawSocialNetworkData[]> = {
+    "7days": rawSocialData7,
+    "30days": rawSocialData7,
+    "90days": rawSocialData7,
+    "all": rawSocialData7,
+    "custom": rawSocialData7,
 };
 
-export function getSocialData(period: TimePeriod): SocialNetworkData[] {
-    return socialDataByPeriod[period];
+export function getSocialData(period: TimePeriod, metric: string = "engagement"): SocialNetworkData[] {
+    const rawData = socialDataByMetricPeriod[period] || rawSocialData7;
+    return rawData.map(item => ({
+        name: item.name,
+        color: item.color,
+        total: item.metrics[metric]?.total || "0",
+        trend: item.metrics[metric]?.trend || 0,
+        data: item.metrics[metric]?.data || [],
+    }));
 }
 
 // ── Best Posts Data ──────────────────────────────
@@ -608,9 +452,12 @@ const postsByPeriod: Record<TimePeriod, PostData[]> = {
     "7days": posts7days,
     "30days": posts30days,
     "90days": posts90days,
+    "all": posts30days,
+    "custom": posts30days,
 };
 
 export function getBestPostsData(period: TimePeriod): PostData[] {
+    if (period === "all" || period === "custom") return postsByPeriod["30days"];
     return postsByPeriod[period];
 }
 
@@ -623,6 +470,12 @@ export function getPeriodLabel(period: TimePeriod): string {
             return "Last 30 days";
         case "90days":
             return "Last 3 months";
+        case "all":
+            return "All time";
+        case "custom":
+            return "Custom range";
+        default:
+            return "Select period";
     }
 }
 
@@ -635,5 +488,7 @@ export function getTrendLabel(period: TimePeriod): string {
             return "from last month";
         case "90days":
             return "from last quarter";
+        default:
+            return "vs previous period";
     }
 }

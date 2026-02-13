@@ -7,46 +7,35 @@ interface MetricsRowProps {
 
 export const MetricsRow = ({ metrics }: MetricsRowProps) => {
     return (
-        <div className="flex items-center w-full">
-            {metrics.map((metric, index) => {
+        <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-outline-variant">
+            {metrics.map((metric) => {
                 const isPositive = metric.trend >= 0;
 
                 return (
-                    <div key={metric.title} className="flex items-center flex-1">
-                        {/* KPI Item */}
-                        <div className="flex items-center justify-center gap-3 flex-1 py-4">
-                            <div className="flex flex-col gap-1">
-                                <span className="text-sm font-medium text-gray-400 uppercase tracking-wider">
-                                    {metric.title}
+                    <div key={metric.title} className="px-4 first:pl-0 last:pr-0 py-2">
+                        <p className="text-[11px] font-normal uppercase tracking-wider text-on-surface-variant mb-1">
+                            {metric.title}
+                        </p>
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-2xl font-medium text-on-surface">
+                                {metric.value}
+                            </span>
+                            <div
+                                className={`flex items-center gap-0.5 text-xs font-medium ${isPositive
+                                    ? "text-emerald-500"
+                                    : "text-red-500"
+                                    }`}
+                            >
+                                {isPositive ? (
+                                    <TrendingUp className="w-3 h-3" />
+                                ) : (
+                                    <TrendingDown className="w-3 h-3" />
+                                )}
+                                <span>
+                                    {Math.abs(metric.trend)}%
                                 </span>
-                                <div className="flex items-center gap-3">
-                                    <span className="text-3xl font-bold text-gray-900 tracking-tight">
-                                        {metric.value}
-                                    </span>
-                                    <div
-                                        className={`flex items-center gap-1 text-sm font-medium ${isPositive
-                                            ? "text-green-600"
-                                            : "text-red-500"
-                                            }`}
-                                    >
-                                        {isPositive ? (
-                                            <TrendingUp className="w-4 h-4" />
-                                        ) : (
-                                            <TrendingDown className="w-4 h-4" />
-                                        )}
-                                        <span>
-                                            {isPositive ? "+" : ""}
-                                            {metric.trend}%
-                                        </span>
-                                    </div>
-                                </div>
                             </div>
                         </div>
-
-                        {/* Pipe separator (not after last item) */}
-                        {index < metrics.length - 1 && (
-                            <div className="h-12 w-px bg-gray-200 shrink-0" />
-                        )}
                     </div>
                 );
             })}

@@ -138,7 +138,7 @@ const PageOutletLayout = <T extends string | undefined = undefined>({
         >
           <div
             className={cn(
-              "wrapper-layout gap-2 pt-4 min-h-[calc(100svh-10em-0.1em)]",
+              "wrapper-layout gap-2 min-h-[calc(100svh-10em-0.1em)]",
               layout === "flex" ? "flex flex-col" : "grid grid-cols-12",
               className,
             )}

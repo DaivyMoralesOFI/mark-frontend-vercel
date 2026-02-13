@@ -8,7 +8,7 @@ import {
 } from "@/shared/components/ui/Table";
 
 import { Checkbox } from "@/shared/components/ui/checkbox";
-import { Heart, MessageCircle, Share2, Eye, MoreHorizontal, ChevronDown, ChevronRight, Image as ImageIcon } from "lucide-react";
+import { MoreHorizontal, ChevronDown, ChevronRight, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import {
     DropdownMenu,
@@ -51,20 +51,41 @@ const formatDate = (dateStr: string) => {
 };
 
 export const BestPostsSection = ({ timePeriod }: BestPostsSectionProps) => {
-    const posts = getBestPostsData(timePeriod);
+    const rawPosts = getBestPostsData(timePeriod);
     const [activeTab, setActiveTab] = useState("All");
     const [viewType, setViewType] = useState("Best posts");
+
+    const parseReach = (r: string) => {
+        const num = parseFloat(r.replace(/[^0-9.]/g, ''));
+        if (r.toLowerCase().includes('k')) return num * 1000;
+        if (r.toLowerCase().includes('m')) return num * 1000000;
+        return num;
+    };
+
+    const filteredPosts = rawPosts
+        .filter((post) => {
+            if (activeTab === "All") return true;
+            if (activeTab === "Video") return post.type === "Video" || post.type === "Reel";
+            return post.type === activeTab;
+        })
+        .sort((a, b) => {
+            if (viewType === "Best posts") {
+                return parseReach(b.reach) - parseReach(a.reach);
+            }
+            // For "All Posts", show newest first
+            return new Date(b.date).getTime() - new Date(a.date).getTime();
+        });
 
     const tabs = ["All", "Video", "Image", "Carousel", "Link"];
     const viewOptions = ["Best posts", "All Posts"];
 
     return (
-        <div className="flex flex-col gap-5 mb-8">
+        <div className="flex flex-col gap-5 mb-8 h-full">
             <div className="flex items-center justify-between">
                 <DropdownMenu>
-                    <DropdownMenuTrigger className="flex items-center gap-2 text-xl font-medium text-gray-900 focus:outline-none hover:opacity-80 transition-opacity">
+                    <DropdownMenuTrigger className="flex items-center gap-2 text-xl font-medium text-on-surface focus:outline-none hover:opacity-80 transition-opacity">
                         {viewType}
-                        <ChevronDown className="w-5 h-5 text-gray-400" />
+                        <ChevronDown className="w-5 h-5 text-on-surface-variant" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="start" className="w-48 p-1">
                         {viewOptions.map((option) => (
@@ -73,7 +94,7 @@ export const BestPostsSection = ({ timePeriod }: BestPostsSectionProps) => {
                                 onClick={() => setViewType(option)}
                                 className={cn(
                                     "px-3 py-2 text-sm cursor-pointer rounded-md transition-colors",
-                                    viewType === option ? "bg-gray-100 text-gray-900" : "text-gray-500 hover:text-gray-900"
+                                    viewType === option ? "bg-surface-container text-on-surface" : "text-on-surface-variant hover:text-on-surface"
                                 )}
                             >
                                 {option}
@@ -84,118 +105,125 @@ export const BestPostsSection = ({ timePeriod }: BestPostsSectionProps) => {
             </div>
 
             {/* Header: Tabs and Search */}
-            <div className="flex items-center justify-between border-b border-gray-100 pb-1">
+            <div className="flex items-center justify-between border-b border-outline-variant pb-1">
                 <div className="flex items-center gap-6">
                     {tabs.map((tab) => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`pb-3 text-sm transition-colors relative ${activeTab === tab
-                                ? "text-gray-900 font-medium"
-                                : "text-gray-400 font-normal hover:text-gray-600"
-                                }`}
+                            className={cn(
+                                "pb-3 text-sm transition-all relative",
+                                activeTab === tab
+                                    ? "text-primary font-semibold"
+                                    : "text-on-surface-variant font-normal hover:text-on-surface"
+                            )}
                         >
                             {tab}
+                            {activeTab === tab && (
+                                <div className="absolute bottom-[-1px] left-0 right-0 h-0.5 bg-primary rounded-full" />
+                            )}
                         </button>
                     ))}
                 </div>
             </div>
 
             {/* Table Container */}
-            <div className="bg-white">
-                <Table>
-                    <TableHeader>
-                        <TableRow className="hover:bg-transparent border-b border-gray-100">
-                            <TableHead className="w-[40px] pl-2">
-                                <Checkbox className="rounded-[4px] border-gray-300" />
-                            </TableHead>
-                            <TableHead className="min-w-[200px] text-[11px] font-normal text-gray-500 uppercase tracking-tight py-4 text-left">
-                                Content
-                            </TableHead>
-                            <TableHead className="w-[120px] text-[11px] font-normal text-gray-500 uppercase tracking-tight py-4 text-left">
-                                Platform
-                            </TableHead>
-                            <TableHead className="w-[120px] text-[11px] font-normal text-gray-500 uppercase tracking-tight py-4 cursor-pointer hover:text-gray-600 transition-colors text-left">
-                                <div className="flex items-center gap-1">
-                                    Issue date <ChevronDown className="w-3 h-3" />
-                                </div>
-                            </TableHead>
-                            <TableHead className="w-[100px] text-[11px] font-normal text-gray-500 uppercase tracking-tight py-4 text-left">
-                                Type
-                            </TableHead>
-                            <TableHead className="w-[200px] text-[11px] font-normal text-gray-500 uppercase tracking-tight py-4 text-left">
-                                Reach
-                            </TableHead>
-                            <TableHead className="w-[40px]"></TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {posts.map((post) => {
-                            const IconComp = platformIcons[post.platform];
-                            return (
-                                <TableRow key={post.id} className="group hover:bg-gray-50/30 transition-colors border-b border-gray-50 h-14">
-                                    <TableCell className="pl-2">
-                                        <Checkbox className="rounded-[4px] border-gray-300" />
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded bg-gray-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                                                <ImageIcon className="w-4 h-4 text-gray-400" />
+            <div className="bg-surface w-full flex flex-col overflow-hidden">
+                <div className="overflow-y-auto w-full max-h-[600px] scrollbar-thin scrollbar-thumb-outline-variant pr-1">
+                    <Table className="w-full">
+                        <TableHeader className="sticky top-0 bg-surface z-20">
+                            <TableRow className="hover:bg-transparent border-b border-outline-variant">
+                                <TableHead className="w-[40px] pl-2">
+                                    <Checkbox className="rounded-[4px] border-outline" />
+                                </TableHead>
+                                <TableHead className="min-w-[200px] text-[11px] font-normal text-on-surface-variant uppercase tracking-tight py-3 text-left">
+                                    Content
+                                </TableHead>
+                                <TableHead className="w-[120px] text-[11px] font-normal text-on-surface-variant uppercase tracking-tight py-3 text-left">
+                                    Platform
+                                </TableHead>
+                                <TableHead className="w-[120px] text-[11px] font-normal text-on-surface-variant uppercase tracking-tight py-3 cursor-pointer hover:text-on-surface transition-colors text-left">
+                                    <div className="flex items-center gap-1">
+                                        Issue date <ChevronDown className="w-3 h-3" />
+                                    </div>
+                                </TableHead>
+                                <TableHead className="w-[100px] text-[11px] font-normal text-on-surface-variant uppercase tracking-tight py-3 text-left">
+                                    Type
+                                </TableHead>
+                                <TableHead className="w-[100px] text-[11px] font-normal text-on-surface-variant uppercase tracking-tight py-3 text-left">
+                                    Reach
+                                </TableHead>
+                                <TableHead className="w-[40px]"></TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {filteredPosts.map((post) => {
+                                const IconComp = platformIcons[post.platform];
+                                return (
+                                    <TableRow key={post.id} className="group hover:bg-surface-container/30 transition-colors border-b border-outline-variant h-10">
+                                        <TableCell className="pl-2">
+                                            <Checkbox className="rounded-[4px] border-outline" />
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded bg-surface-container-low flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                                    <ImageIcon className="w-4 h-4 text-on-surface-variant" />
+                                                </div>
+                                                <span className="font-medium text-sm text-on-surface line-clamp-1">{post.caption}</span>
                                             </div>
-                                            <span className="font-medium text-sm text-gray-700 line-clamp-1">{post.caption}</span>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex items-center">
-                                            {IconComp && <IconComp className="w-4 h-4" />}
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="text-sm text-gray-500 tabular-nums">
-                                        {formatDate(post.date)}
-                                    </TableCell>
-                                    <TableCell>
-                                        <span className="text-[10px] font-normal uppercase text-gray-600">
-                                            {post.type}
-                                        </span>
-                                    </TableCell>
-                                    <TableCell className="text-sm font-normal text-gray-900 text-left tabular-nums">
-                                        {post.reach}
-                                    </TableCell>
-                                    <TableCell className="pr-4 text-right">
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-gray-700">
-                                            <MoreHorizontal className="w-4 h-4" />
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            );
-                        })}
-                    </TableBody>
-                </Table>
-            </div>
-
-            {/* Footer: Pagination */}
-            <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                <div className="flex items-center gap-3">
-                    <span className="text-sm text-gray-400">Show by</span>
-                    <Select defaultValue="10">
-                        <SelectTrigger className="w-[70px] h-8 text-xs border-gray-200 bg-white">
-                            <SelectValue placeholder="10" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="10">10</SelectItem>
-                            <SelectItem value="20">20</SelectItem>
-                            <SelectItem value="50">50</SelectItem>
-                        </SelectContent>
-                    </Select>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="flex items-center">
+                                                {IconComp && <IconComp className="w-4 h-4" />}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="text-sm text-on-surface-variant tabular-nums">
+                                            {formatDate(post.date)}
+                                        </TableCell>
+                                        <TableCell>
+                                            <span className="text-[12px] font-normal  text-on-surface-variant">
+                                                {post.type}
+                                            </span>
+                                        </TableCell>
+                                        <TableCell className="text-sm font-normal text-on-surface text-left tabular-nums">
+                                            {post.reach}
+                                        </TableCell>
+                                        <TableCell className="pr-4 text-right">
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-on-surface-variant hover:text-on-surface">
+                                                <MoreHorizontal className="w-4 h-4" />
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                );
+                            })}
+                        </TableBody>
+                    </Table>
                 </div>
-                <div className="flex items-center gap-4 text-sm font-medium text-gray-400">
-                    <div className="flex items-center justify-center w-8 h-8 bg-white border border-gray-200 rounded text-gray-900">
-                        1
+
+                {/* Footer: Pagination */}
+                <div className="mt-auto px-4 py-3 border-t border-outline-variant bg-surface flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <span className="text-sm text-on-surface-variant">Show by</span>
+                        <Select defaultValue="10">
+                            <SelectTrigger className="w-[70px] h-8 text-xs border-outline-variant bg-surface">
+                                <SelectValue placeholder="10" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="10">10</SelectItem>
+                                <SelectItem value="20">20</SelectItem>
+                                <SelectItem value="50">50</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
-                    <span>/ 4</span>
-                    <button className="p-1 hover:text-gray-900 transition-colors">
-                        <ChevronRight className="w-5 h-5" />
-                    </button>
+                    <div className="flex items-center gap-4 text-sm font-medium text-on-surface-variant">
+                        <div className="flex items-center justify-center w-8 h-8 bg-surface border border-outline-variant rounded text-on-surface shadow-sm">
+                            1
+                        </div>
+                        <span>/ 4</span>
+                        <button className="p-1 hover:text-on-surface transition-colors">
+                            <ChevronRight className="w-5 h-5 border rounded" />
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

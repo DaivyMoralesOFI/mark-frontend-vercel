@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
     Select,
     SelectContent,
@@ -42,7 +43,7 @@ const SmallChartCard = ({
         ? "#10b981"  // emerald-500
         : trend !== undefined && trend < 0
             ? "#ef4444"  // red-500
-            : "#8884d8"; // default purple
+            : "#a65698"; // primary purple
 
     const chartConfig = {
         value: {
@@ -54,18 +55,18 @@ const SmallChartCard = ({
     const IconComp = platformIcons[name];
 
     return (
-        <div className="bg-white rounded-xl border-[1px] border-gray-200 p-4 flex flex-col gap-3">
+        <div className="bg-surface rounded-xl border-[1px] border-outline-variant p-4 flex flex-col gap-3 transition-all duration-300 hover:shadow-md">
             {/* Title row with icon */}
             <div className="flex items-center gap-1.5">
                 {IconComp && <IconComp className="w-4 h-4" />}
-                <p className="text-[11px] font-normal uppercase tracking-wider text-gray-400">
+                <p className="text-[11px] font-normal uppercase tracking-wider text-on-surface-variant">
                     {name}
                 </p>
             </div>
 
             {/* Value + Trend */}
             <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-medium text-gray-900">{total}</span>
+                <span className="text-2xl font-medium text-on-surface tabular-nums">{total}</span>
                 {trend !== undefined && (
                     <span
                         className={`flex items-center gap-0.5 text-xs font-medium ${trend > 0 ? "text-emerald-500" : trend < 0 ? "text-red-500" : "text-gray-400"
@@ -101,6 +102,8 @@ const SmallChartCard = ({
                             fillOpacity={1}
                             stroke={chartColor}
                             strokeWidth={1.5}
+                            isAnimationActive={true}
+                            animationDuration={600}
                         />
                     </AreaChart>
                 </ChartContainer>
@@ -114,14 +117,18 @@ interface SocialPerformanceSectionProps {
 }
 
 export const SocialPerformanceSection = ({ timePeriod }: SocialPerformanceSectionProps) => {
-    const networks = getSocialData(timePeriod);
+    const [selectedMetric, setSelectedMetric] = useState<string>("engagement");
+    const networks = getSocialData(timePeriod, selectedMetric);
 
     return (
         <div className="flex flex-col gap-4">
             <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold">Performance by Social Network</h2>
-                <Select defaultValue="engagement">
-                    <SelectTrigger className="w-[180px] bg-white border-outline-variant">
+                <h2 className="text-xl font-medium">Performance by Social Network</h2>
+                <Select
+                    value={selectedMetric}
+                    onValueChange={setSelectedMetric}
+                >
+                    <SelectTrigger className="w-[180px] bg-surface border-outline-variant">
                         <SelectValue placeholder="Metric" />
                     </SelectTrigger>
                     <SelectContent>
