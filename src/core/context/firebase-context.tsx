@@ -1,10 +1,8 @@
-import { auth, firestore } from "@/core/config/firebase-database";
-import { Auth } from "firebase/auth";
+import { firestore } from "@/core/config/firebase-database";
 import { Firestore } from "firebase/firestore";
 import { createContext, useContext, ReactNode } from "react";
 
 interface FirebaseContextType {
-  auth: Auth;
   firestore: Firestore;
 }
 
@@ -12,7 +10,7 @@ const FirebaseContext = createContext<FirebaseContextType | null>(null);
 
 const FirebaseProvider = ({ children }: { children: ReactNode }) => {
   return (
-    <FirebaseContext.Provider value={{ auth, firestore }}>
+    <FirebaseContext.Provider value={{ firestore }}>
       {children}
     </FirebaseContext.Provider>
   );

@@ -7,8 +7,8 @@ import {
 } from "@/shared/components/ui/dropdown-menu";
 import { Button } from "@/shared/components/ui/button";
 import { useState } from "react";
-import { ChevronDown, Plus } from "lucide-react";
-import { tools } from "@/modules/creation-studio/types/content-type";
+import { Plus } from "lucide-react";
+import { tools } from "@/modules/creation-studio/utils/definitions";
 
 const ToolsSelector = () => {
   const [open, setOpen] = useState(false);

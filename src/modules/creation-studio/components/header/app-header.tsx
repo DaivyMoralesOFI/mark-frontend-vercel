@@ -5,16 +5,16 @@ import MarkDevSite from "@/assets/logos/mark-colored.svg";
 
 const AppHeader = () => {
   return (
-    <header className="sticky top-10 left-0 translate-x-1/2 max-w-1/2 max-h-fit w-full m-0 p-0 z-[999] ">
-      <div className="w-full min-h-20 px-8 py-2 relative flex justify-between items-center shadow-xl bg-surface-container-lowest border-2 border-primary rounded-full backdrop-blur-lg">
+    <header className="sticky top-10 left-1/2 -translate-x-1/2 max-w-3xl max-h-fit w-full m-0 p-0 z-[999] ">
+      <div className="w-full min-h-12 px-8 py-2 relative flex justify-between items-center shadow-xl bg-surface-container-lowest border-2 border-primary rounded-full backdrop-blur-lg">
         <div className="flex">
-          <Avatar className="rounded-none w-10 h-10">
+          <Avatar className="rounded-none w-8 h-8">
             <AvatarImage src={MarkDevSite} />
             <AvatarFallback>Mark</AvatarFallback>
           </Avatar>
         </div>
         <div className="flex">
-          <nav className="flex justify-between items-center gap-3 list-none">
+          <nav className="flex justify-between items-center gap-3 list-none ">
             <Link to="">Analytics</Link>
             <Link to="">Brand Identity</Link>
             <Link to="">Bucket Assets</Link>
@@ -22,7 +22,7 @@ const AppHeader = () => {
         </div>
         <div className="flex">
           <nav className="flex justify-between items-center gap-3 list-none">
-            <Avatar className="w-12 h-12 border border-outline rounded-full">
+            <Avatar className="w-10 h-10 border border-outline rounded-full">
               <AvatarImage
                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0bK8rvtpBZu7L_MwWCCfPrW4TGnkT6jxJHA&s"
                 className="object-cover object-center"
