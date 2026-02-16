@@ -262,7 +262,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
                     onAddHashtag={handleAddHashtag}
                   />
                 </div>
-                <PostFeedback errors={validationErrors} />
+                {/* <PostFeedback errors={validationErrors} /> */}
 
                 {/* Image Upload and AI Generation */}
                 <ImageUpload

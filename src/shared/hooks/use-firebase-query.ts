@@ -6,7 +6,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
-import { firebaseQueryOptions } from "@/core/lib/query-client";
+import { firebaseQueryOptions } from "@/shared/utils/query-client";
 
 /**
  * Tipos para callbacks de Firebase onSnapshot
@@ -45,8 +45,8 @@ export function useFirebaseSubscription<
 >(options: {
   queryKey: UseQueryOptions<TData, TError>["queryKey"];
   subscribe:
-    | FirebaseSubscriptionFn<TData>
-    | ((onNext: SubscriptionCallback<TData>) => Promise<UnsubscribeFunction>);
+  | FirebaseSubscriptionFn<TData>
+  | ((onNext: SubscriptionCallback<TData>) => Promise<UnsubscribeFunction>);
   enabled?: boolean;
   onError?: (error: TError) => void;
   onSuccess?: (data: TData) => void;
