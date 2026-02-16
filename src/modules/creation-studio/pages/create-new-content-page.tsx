@@ -12,6 +12,7 @@ import BottomNavbar from "@/modules/creation-studio/components/navbar/bottom-nav
 import WaitingCard from "@/modules/creation-studio/components/card/waiting-card";
 import { StartingAlert } from "@/modules/creation-studio/components/alerts/starting-alert";
 import { useFlowStore } from "@/modules/creation-studio/store/flow-store";
+import BrandDNA from "../components/sidebar/brand-dna";
 
 // Página inicial: Estado "Vacio" o "List para crear"
 const WaitingNode = () => {
@@ -76,6 +77,11 @@ const CreateNewContentPage = () => {
           <Background variant={undefined} />
           <Controls />
         </ReactFlow>
+      </div>
+      <div className="absolute top-10 right-0 w-full max-w-sm z-10 pointer-events-none">
+        <div className="pointer-events-auto">
+          <BrandDNA />
+        </div>
       </div>
       <div className="absolute bottom-0 left-0 w-full z-10 pointer-events-none">
         <div className="pointer-events-auto">

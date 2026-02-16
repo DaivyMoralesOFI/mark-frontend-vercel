@@ -57,3 +57,6 @@ export type Brand = z.infer<typeof brand_schema>;
 
 export const brand_response_schema = z.array(brand_schema);
 export type BrandResponse = z.infer<typeof brand_response_schema>;
+
+export const AllBrands = z.array(brand_schema);
+export type AllBrandsResponse = z.infer<typeof AllBrands>;

@@ -1,5 +1,8 @@
 import { firestore } from "../config/firebase-database";
-import { brand_response_schema, BrandResponse } from "../schemas/brand-schema";
+import {
+  brand_response_schema,
+  BrandResponse,
+} from "../../modules/creation-studio/schemas/brand-schema";
 import { getDocs, query, collection } from "firebase/firestore";
 
 export async function getAllBrands(): Promise<BrandResponse | null> {
