@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { cn } from "@/core/lib/utils"
+import { cn } from "@/shared/utils/utils"
 
 const Table = React.forwardRef<
   HTMLTableElement,
@@ -20,7 +20,7 @@ const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <thead ref={ref} className={cn("bg-surface-container-lowest text-on-surface [&_tr]:border-b", className)} {...props} />
+  <thead ref={ref} className={cn("text-on-surface [&_tr]:border-b", className)} {...props} />
 ))
 TableHeader.displayName = "TableHeader"
 
@@ -30,7 +30,7 @@ const TableBody = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <tbody
     ref={ref}
-    className={cn("[&_tr:last-child]:border-0 bg-surface-container-lowest", className)}
+    className={cn("[&_tr:last-child]:border-0", className)}
     {...props}
   />
 ))

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 import { Actions } from "@/shared/types/types";
-import { cn } from "@/core/lib/utils";
+import { cn } from "@/shared/utils/utils";
 
 // Componente individual para una acción
 const AppHeaderAction: React.FC<Actions> = (props) => {

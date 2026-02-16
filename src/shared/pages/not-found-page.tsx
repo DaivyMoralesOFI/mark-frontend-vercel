@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar";
-import { AppHeader } from "../router";
+import { AppHeader } from "@/core/router/router";
 import { useState } from "react";
 
 export default function NotFoundPage() {

@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { DayButton, DayPicker, getDefaultClassNames } from "react-day-picker";
 
-import { cn } from "@/core/lib/utils";
+import { cn } from "@/shared/utils/utils";
 import { Button, buttonVariants } from "@/shared/components/ui/button";
 
 function Calendar({
@@ -60,7 +60,7 @@ function Calendar({
           defaultClassNames.button_next,
         ),
         month_caption: cn(
-          "flex items-center justify-center h-(--cell-size) w-full px-(--cell-size)",
+          "flex items-center justify-center h-10 w-full px-10 relative",
           defaultClassNames.month_caption,
         ),
         dropdowns: cn(
@@ -73,10 +73,7 @@ function Calendar({
         ),
         dropdown: cn("absolute inset-0 opacity-0", defaultClassNames.dropdown),
         caption_label: cn(
-          "select-none font-medium",
-          captionLayout === "label"
-            ? "text-sm"
-            : "rounded-md pl-2 pr-1 flex items-center gap-1 text-sm h-8 [&>svg]:text-muted-foreground [&>svg]:size-3.5",
+          "select-none font-medium text-base text-on-surface",
           defaultClassNames.caption_label,
         ),
         table: "w-full border-collapse",
@@ -95,21 +92,27 @@ function Calendar({
           defaultClassNames.week_number,
         ),
         day: cn(
-          "relative w-full h-full p-0 text-center [&:first-child[data-selected=true]_button]:rounded-l-md [&:last-child[data-selected=true]_button]:rounded-r-md group/day aspect-square select-none",
+          "relative w-full h-full p-0 text-center group/day aspect-square select-none overflow-hidden",
           defaultClassNames.day,
         ),
         range_start: cn(
-          "rounded-l-md bg-accent",
+          "rounded-l-xl bg-primary-container/40",
           defaultClassNames.range_start,
         ),
-        range_middle: cn("rounded-none", defaultClassNames.range_middle),
-        range_end: cn("rounded-r-md bg-accent", defaultClassNames.range_end),
+        range_middle: cn(
+          "rounded-none bg-primary-container/40",
+          defaultClassNames.range_middle,
+        ),
+        range_end: cn(
+          "rounded-r-xl bg-primary-container/40",
+          defaultClassNames.range_end,
+        ),
         today: cn(
-          "bg-primary-container text-on-primary-container rounded-md data-[selected=true]:rounded-none",
+          "text-primary font-bold data-[selected=true]:text-on-primary",
           defaultClassNames.today,
         ),
         outside: cn(
-          "text-muted-foreground aria-selected:text-muted-foreground",
+          "text-on-surface/20 aria-selected:text-on-surface/40",
           defaultClassNames.outside,
         ),
         disabled: cn(
@@ -196,7 +199,19 @@ function CalendarDayButton({
       data-range-end={modifiers.range_end}
       data-range-middle={modifiers.range_middle}
       className={cn(
-        "data-[selected-single=true]:bg-primary data-[selected-single=true]:text-on-primary data-[selected-single=true]:rounded-full data-[range-middle=true]:bg-accent data-[range-middle=true]:text-accent-foreground data-[range-start=true]:bg-primary data-[range-start=true]:text-primary-foreground data-[range-end=true]:bg-primary data-[range-end=true]:text-primary-foreground group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-ring/50 dark:hover:text-accent-foreground flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 leading-none font-normal group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:ring-[3px] data-[range-end=true]:rounded-md data-[range-end=true]:rounded-r-md data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-md data-[range-start=true]:rounded-l-md [&>span]:text-xs [&>span]:opacity-70 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:ring-ring/50 aria-disabled:opacity-50 aria-disabled:pointer-events-none",
+        // Default ghost state
+        "transition-all duration-200",
+        // Single selection
+        "data-[selected-single=true]:bg-primary data-[selected-single=true]:text-on-primary data-[selected-single=true]:rounded-xl data-[selected-single=true]:font-semibold",
+        // Middle of range
+        "data-[range-middle=true]:bg-transparent data-[range-middle=true]:text-primary data-[range-middle=true]:font-medium data-[range-middle=true]:rounded-none",
+        // Start of range
+        "data-[range-start=true]:bg-primary data-[range-start=true]:text-on-primary data-[range-start=true]:rounded-xl data-[range-start=true]:font-bold data-[range-start=true]:shadow-sm",
+        // End of range
+        "data-[range-end=true]:bg-primary data-[range-end=true]:text-on-primary data-[range-end=true]:rounded-xl data-[range-end=true]:font-bold data-[range-end=true]:shadow-sm",
+        // Interactions & Layout
+        "group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-ring/50",
+        "flex aspect-square size-auto w-full min-w-(--cell-size) items-center justify-center font-normal outline-none hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer",
         defaultClassNames.day,
         className,
       )}

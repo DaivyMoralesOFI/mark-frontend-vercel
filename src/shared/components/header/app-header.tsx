@@ -6,15 +6,13 @@
 import { useState } from "react";
 import {
   Bell,
-  Filter,
-  Search,
   Store,
   GraduationCap,
   MessageCircle,
 } from "lucide-react";
-import { ToggleTheme, TooltipHover } from "@/shared/router";
+import { ToggleTheme, TooltipHover } from "@/core/router/router";
 import { Button } from "@/shared/components/ui/button";
-import { TrainModelModal } from "@/modules/train-model-modal/TrainModelModal";
+import { TrainModelModal } from "@/domains/creation-studio/brand-dna/train-model-modal/TrainModelModal";
 import AccountSelector from "../dropdown/account-selector";
 import OFILogoHDark from "@/assets/logos/ofi-dark.webp";
 import OFILogoHLight from "@/assets/logos/ofi-white.webp";

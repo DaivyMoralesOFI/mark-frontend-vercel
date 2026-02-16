@@ -1,0 +1,1 @@
+export { default as Extractor } from "./pages/brand-extractor"

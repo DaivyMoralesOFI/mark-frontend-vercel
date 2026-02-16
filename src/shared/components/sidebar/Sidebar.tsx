@@ -1,7 +1,4 @@
 import {
-  BarChart3,
-
-  Home,
   Settings,
   TrendingUp,
   Bot,
@@ -9,6 +6,8 @@ import {
   User,
   CirclePlus,
   Calendar,
+  LayoutDashboard,
+  ChevronRight,
 } from "lucide-react";
 import {
   Sidebar as SidebarComponent,
@@ -22,23 +21,65 @@ import {
   SidebarHeader,
   SidebarFooter,
   useSidebar,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
 } from "@/shared/components/ui/sidebar";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/shared/components/ui/collapsible";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "@/shared/components/ui/avatar";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
-import { CreatePostModal } from "@/modules/create-post/components/CreatePostModal";
+import { CreatePostModal } from "@/domains/creation-studio/post-creator/components/CreatePostModal";
 import MarkLogo from "@/assets/logos/mark-colored.svg";
-import { cn } from "@/core/lib/utils";
-import { useUser } from "@/core/hooks/useUser";
+import { cn } from "@/shared/utils/utils";
+import { useUser } from "@/shared/hooks/useUser";
+import { LinkedInIcon } from "@/shared/components/icons/LinkedInIcon";
+import { InstagramIcon } from "@/shared/components/icons/InstagramIcon";
+import { TikTokIcon } from "@/shared/components/icons/TikTokIcon";
+import { FacebookIcon } from "@/shared/components/icons/FacebookIcon";
 
 // Navigation items for the main sidebar menu
 const navigationItems = [
-  { title: "Dashboard", icon: Home, isActive: false, to: "/dashboard" },
-  { title: "Analytics", icon: BarChart3, isActive: false, to: "/analytics" },
+  {
+    title: "Dashboard",
+    icon: LayoutDashboard,
+    isActive: false,
+    to: "/dashboard",
+    items: [
+      {
+        title: "Overview",
+        url: "/dashboard",
+      },
+      {
+        title: "LinkedIn",
+        url: "/dashboard?platform=linkedin",
+        icon: LinkedInIcon,
+      },
+      {
+        title: "Instagram",
+        url: "/dashboard?platform=instagram",
+        icon: InstagramIcon,
+      },
+      {
+        title: "TikTok",
+        url: "/dashboard?platform=tiktok",
+        icon: TikTokIcon,
+      },
+      {
+        title: "Facebook",
+        url: "/dashboard?platform=facebook",
+        icon: FacebookIcon,
+      },
+    ],
+  },
   { title: "Calendar", icon: Calendar, isActive: false, to: "/calendar" },
   { title: "Campaigns", icon: TrendingUp, isActive: false, to: "/campaigns" },
   { title: "Brand DNA", icon: Dna, isActive: false, to: "/brand-dna" },
@@ -58,7 +99,8 @@ export function Sidebar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { state } = useSidebar();
   const isExpanded = state === "expanded";
-  const { user, loading } = useUser("bb355aba-a0e9-4431-9ea9-e94080d85ac2"); // Using the ID from the screenshot
+  const { user, loading } = useUser("KGLTadXoTWGvqb2Tn475"); // Using the ID from the screenshot
+  const location = useLocation();
 
   return (
     <SidebarComponent variant="sidebar" collapsible="icon">
@@ -118,28 +160,65 @@ export function Sidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {navigationItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  {item.to ? (
-                    <SidebarMenuButton
-                      asChild
-                      isActive={item.isActive}
-                      tooltip={item.title}
-                    >
-                      <Link to={item.to}>
-                        <item.icon className="w-4 h-4" />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  ) : (
-                    <SidebarMenuButton
-                      isActive={item.isActive}
-                      tooltip={item.title}
-                    >
-                      <item.icon className="w-4 h-4" />
-                      <span>{item.title}</span>
-                    </SidebarMenuButton>
-                  )}
-                </SidebarMenuItem>
+                <Collapsible
+                  key={item.title}
+                  asChild
+                  defaultOpen={item.isActive}
+                  className="group/collapsible"
+                >
+                  <SidebarMenuItem>
+                    <CollapsibleTrigger asChild>
+                      {item.items ? (
+                        <SidebarMenuButton
+                          tooltip={item.title}
+                          isActive={location.pathname === item.to}
+                        >
+                          <item.icon className="w-4 h-4" />
+                          <span>{item.title}</span>
+                          <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                        </SidebarMenuButton>
+                      ) : (
+                        <SidebarMenuButton
+                          asChild
+                          isActive={location.pathname === item.to}
+                          tooltip={item.title}
+                        >
+                          <Link to={item.to}>
+                            <item.icon className="w-4 h-4" />
+                            <span>{item.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      )}
+                    </CollapsibleTrigger>
+                    {item.items && (
+                      <CollapsibleContent>
+                        <SidebarMenuSub>
+                          {item.items.map((subItem) => (
+                            <SidebarMenuSubItem key={subItem.title}>
+                              <SidebarMenuSubButton
+                                asChild
+                                isActive={
+                                  (subItem.url === "/dashboard" &&
+                                    location.pathname === "/dashboard" &&
+                                    !location.search) ||
+                                  (location.pathname + location.search ===
+                                    subItem.url)
+                                }
+                              >
+                                <Link to={subItem.url}>
+                                  {subItem.icon && (
+                                    <subItem.icon className="w-4 h-4 mr-2" />
+                                  )}
+                                  <span>{subItem.title}</span>
+                                </Link>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          ))}
+                        </SidebarMenuSub>
+                      </CollapsibleContent>
+                    )}
+                  </SidebarMenuItem>
+                </Collapsible>
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
@@ -188,7 +267,11 @@ export function Sidebar() {
                   alt={user?.user_name || "User"}
                 />
                 <AvatarFallback className="rounded-lg">
-                  {user?.user_name?.split("_").map((n: string) => n[0]).join("").toUpperCase() || "OS"}
+                  {user?.user_name
+                    ?.split("_")
+                    .map((n: string) => n[0])
+                    .join("")
+                    .toUpperCase() || "OS"}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">

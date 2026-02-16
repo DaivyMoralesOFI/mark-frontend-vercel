@@ -11,8 +11,8 @@ import {
 } from "@/shared/components/ui/dropdown-menu";
 import { Avatar, AvatarImage } from "@/shared/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
-import { useBrands } from "@/core/hooks/useBrands";
-import { cn } from "@/core/lib/utils";
+import { useBrands } from "@/shared/hooks/useBrands";
+import { cn } from "@/shared/utils/utils";
 
 const AccountSelector = () => {
   const [_, setIsOpen] = useState(false);
@@ -49,8 +49,8 @@ const AccountSelector = () => {
             <>
               <Avatar className="h-7 w-7 rounded-md">
                 <AvatarImage
-                  src={selectedBrand.identity.logo_url}
-                  alt={selectedBrand.identity.name}
+                  src={selectedBrand.logo}
+                  alt={selectedBrand.name}
                 />
               </Avatar>
               <ChevronDown className="" strokeWidth={2} size={10} />
@@ -70,21 +70,21 @@ const AccountSelector = () => {
           {brands?.map((brand) => {
             return (
               <DropdownMenuItem
-                key={brand.uuid}
-                onClick={() => selectBrand(brand.uuid)}
+                key={brand.url}
+                onClick={() => selectBrand(brand.url)}
                 className={cn(
                   "cursor-pointer",
-                  selectedBrand?.uuid === brand.uuid &&
-                    "bg-primary/20 hover:bg-primary/50",
+                  selectedBrand?.url === brand.url &&
+                  "bg-primary/20 hover:bg-primary/50",
                 )}
               >
                 <Avatar className="h-7 w-7 rounded-md">
                   <AvatarImage
-                    src={brand.identity.logo_url}
-                    alt={brand.identity.name}
+                    src={brand.logo}
+                    alt={brand.name}
                   />
                 </Avatar>
-                <p>{brand.identity.name}</p>
+                <p>{brand.name}</p>
               </DropdownMenuItem>
             );
           })}

@@ -1,4 +1,4 @@
-import { cn } from "@/core/lib/utils";
+import { cn } from "@/shared/utils/utils";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import {
   Card,
@@ -54,8 +54,8 @@ const KPICard = ({
               isTrendPositive
                 ? "text-success"
                 : isTrendNegative
-                ? "text-danger"
-                : "text-on-surface-variant"
+                  ? "text-danger"
+                  : "text-on-surface-variant"
             )}
           >
             {trendIcon}

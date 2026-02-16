@@ -5,7 +5,7 @@
 
 import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar";
 import { Sidebar } from "@/shared/components/sidebar/Sidebar";
-import { AppHeader } from "@/shared/router";
+import { AppHeader } from "@/core/router/router";
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
 

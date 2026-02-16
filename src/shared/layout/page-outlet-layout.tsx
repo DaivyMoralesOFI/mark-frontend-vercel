@@ -1,45 +1,46 @@
-import { ScrollArea, ScrollBar } from "@/shared/components/ui/scroll-area";
+import { ScrollArea } from "@/shared/components/ui/scroll-area";
 import { Actions, Trigger } from "@/shared/types/types";
 import { useEffect } from "react";
-import { cn } from "@/core/lib/utils";
+import { cn } from "@/shared/utils/utils";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/shared/components/ui/tabs";
-import { AppHeaderActions, SiteHeader } from "../router";
+import { AppHeaderActions, SiteHeader } from "@/core/router/router";
 
 type PageProps<T extends string | undefined = undefined> = {
   pageTitle: string;
   title?: string;
   className?: string;
   layout?: "flex" | "grid";
+  outerClassName?: string;
 } & (T extends `${string}with-tabs${string}` | "with-tabs"
   ? {
-      triggers: Trigger[];
-      tabsContent: React.ReactNode[];
-      defaultTrigger: string;
-      tabActions?: Actions[];
-      children?: never;
-    }
+    triggers: Trigger[];
+    tabsContent: React.ReactNode[];
+    defaultTrigger: string;
+    tabActions?: Actions[];
+    children?: never;
+  }
   : {
-      triggers?: never;
-      tabsContent?: never;
-      defaultTrigger?: never;
-      tabActions?: never;
-      children: React.ReactNode;
-    }) &
+    triggers?: never;
+    tabsContent?: never;
+    defaultTrigger?: never;
+    tabActions?: never;
+    children: React.ReactNode;
+  }) &
   (T extends `${string}with-actions${string}` | "with-actions"
     ? {
-        actions: Actions[];
-      }
+      actions: Actions[];
+    }
     : { actions?: never }) &
   (T extends `${string}with-SEO${string}` | "with-SEO"
     ? {
-        description: string;
-        content: string;
-      }
+      description: string;
+      content: string;
+    }
     : { description?: never; content?: never });
 
 const PageOutletLayout = <T extends string | undefined = undefined>({
@@ -55,6 +56,7 @@ const PageOutletLayout = <T extends string | undefined = undefined>({
   content,
   className,
   layout = "grid",
+  outerClassName,
 }: PageProps<T>) => {
   // Update document title when component mounts or pageTitle changes
   useEffect(() => {
@@ -81,7 +83,7 @@ const PageOutletLayout = <T extends string | undefined = undefined>({
       return null;
     }
     return (
-      <div className="h-full w-full max-w-full flex flex-col bg-surface-container text-on-surface px-0 overflow-hidden">
+      <div className={cn("h-full w-full max-w-full flex flex-col bg-surface-container text-on-surface px-0 overflow-hidden", outerClassName)}>
         <Tabs defaultValue={defaultTrigger} className="w-full p-0">
           {actions && <SiteHeader title={title || ""} actions={actions} />}
           <TabsList className="h-12 w-full flex justify-between items-center bg-surface border-b-1 border-outline-variant pr-4">
@@ -125,7 +127,7 @@ const PageOutletLayout = <T extends string | undefined = undefined>({
   }
 
   return (
-    <div className="h-full w-full flex flex-col bg-surface-container text-on-surface px-0">
+    <div className={cn("h-full w-full flex flex-col bg-surface-container text-on-surface px-0", outerClassName)}>
       <SiteHeader title={title || ""} actions={actions} />
       <div className="relative w-full">
         <ScrollArea
@@ -136,7 +138,7 @@ const PageOutletLayout = <T extends string | undefined = undefined>({
         >
           <div
             className={cn(
-              "wrapper-layout gap-2 pt-4 min-h-[calc(100svh-10em-0.1em)]",
+              "wrapper-layout gap-2 min-h-[calc(100svh-10em-0.1em)]",
               layout === "flex" ? "flex flex-col" : "grid grid-cols-12",
               className,
             )}

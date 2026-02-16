@@ -4,6 +4,7 @@
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
+
 * {
   box-sizing: border-box;
 }
@@ -61,49 +62,43 @@ body {
   --on-surface: #333231;
   --surface-variant: #e6e3d9;
   --on-surface-variant: #666254;
-  --outline: #807667; /* Se usa para los contornos de elementos como tarjetas, botones y divisores. */
-  --outline-variant: #d1c5b4; /* Se usa para bordes menos prominentes o sutiles. */
-  --shadow: rgb(
-    0 0 0
-  ); /* Se usa en elevaciones para dar profundidad a los elementos. */
-  --scrim: rgb(
-    0 0 0
-  ); /* Se usa para superposiciones oscuras en diálogos, menús y efectos de desenfoque. */
-  --inverse-surface: rgb(
-    52 48 39
-  ); /* Se usa para elementos oscuros en temas claros. */
-  --inverse-on-surface: rgb(
-    249 240 226
-  ); /* Garantiza contraste suficiente en fondos inversos. */
-  --inverse-primary: rgb(
-    237 192 108
-  ); /* Se usa para destacar el color primario en temas oscuros. */
+  --outline: #a39a8e;
+  /* Se usa para los contornos de elementos como tarjetas, botones y divisores. */
+  --outline-variant: #ebe6e0;
+  /* Se usa para bordes menos prominentes o sutiles. */
+  --shadow: rgb(0 0 0);
+  /* Se usa en elevaciones para dar profundidad a los elementos. */
+  --scrim: rgb(0 0 0);
+  /* Se usa para superposiciones oscuras en diálogos, menús y efectos de desenfoque. */
+  --inverse-surface: rgb(52 48 39);
+  /* Se usa para elementos oscuros en temas claros. */
+  --inverse-on-surface: rgb(249 240 226);
+  /* Garantiza contraste suficiente en fondos inversos. */
+  --inverse-primary: rgb(237 192 108);
+  /* Se usa para destacar el color primario en temas oscuros. */
 
   /* Variantes de superficie para diferentes niveles de elevación: Se usan para jerarquizar la UI. */
-  --surface: rgb(
-    250,
-    250,
-    249
-  ); /* Color de superficie base: Fondo principal de la interfaz. Se usa en tarjetas, diálogos y componentes generales. */
-  --surface-variant: #78716c; /* Variante de superficie: Se usa para diferenciar secciones dentro de una misma pantalla sin un contraste fuerte. */
+  --surface: rgb(250, 250, 249);
+  /* Color de superficie base: Fondo principal de la interfaz. Se usa en tarjetas, diálogos y componentes generales. */
+  --surface-variant: #78716c;
+  /* Variante de superficie: Se usa para diferenciar secciones dentro de una misma pantalla sin un contraste fuerte. */
   --fixed-surface: rgb(22 19 11);
   /* Superficie inversa: Se usa en temas oscuros o cuando se quiere contrastar con elementos más claros. */
-  --surface-container-lowest: rgb(
-    255 255 255
-  ); /* Superficie de contenedor más baja: Representa el fondo más plano sin elevación. Se usa en el fondo general de la aplicación. */
-  --surface-container-low: rgb(
-    245,
-    245,
-    244
-  ); /* Superficie de contenedor baja: Se usa en elementos ligeramente elevados sobre el fondo, como tarjetas sin sombra. */
-  --surface-container-low: rgb(
-    245,
-    245,
-    244
-  ); /* Superficie de contenedor baja: Se usa en elementos ligeramente elevados sobre el fondo, como tarjetas sin sombra. */
-  --surface-container: #e7e5e4; /* Superficie de contenedor estándar: Se usa en tarjetas con sombra ligera y elementos de interfaz con algo de elevación. */
-  --surface-container-high: #d6d3d1; /* Superficie de contenedor alta: Para elementos más elevados en la jerarquía visual, como menús desplegables y cuadros de diálogo. */
-  --surface-container-highest: #a8a29e; /* Superficie de contenedor más alta: Se usa en los elementos flotantes de mayor importancia, como tooltips y pop-ups. */
+  --surface-container-lowest: rgb(255 255 255);
+  /* Superficie de contenedor más baja: Representa el fondo más plano sin elevación. Se usa en el fondo general de la aplicación. */
+  --surface-container-low: rgb(245, 245, 244);
+  /* Superficie de contenedor baja: Se usa en elementos ligeramente elevados sobre el fondo, como tarjetas sin sombra. */
+  --surface-container-low: rgb(245, 245, 244);
+  /* Superficie de contenedor baja: Se usa en elementos ligeramente elevados sobre el fondo, como tarjetas sin sombra. */
+  --surface-container: #e7e5e4;
+  /* Superficie de contenedor estándar: Se usa en tarjetas con sombra ligera y elementos de interfaz con algo de elevación. */
+  --surface-container-high: #d6d3d1;
+  /* Superficie de contenedor alta: Para elementos más elevados en la jerarquía visual, como menús desplegables y cuadros de diálogo. */
+  --surface-container-highest: #a8a29e;
+  /* Superficie de contenedor más alta: Se usa en los elementos flotantes de mayor importancia, como tooltips y pop-ups. */
+
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
 
   --radius: 0.625rem;
 
@@ -111,12 +106,18 @@ body {
   --chart-2: #836fad;
   --chart-3: #a869a2;
   --chart-4: #c3658f;
-  --chart-5: #7c8ebd; /* +20% luminosidad respecto a chart-1 */
-  --chart-6: #9b8cc3; /* +20% luminosidad respecto a chart-2 */
-  --chart-7: #bba2d0; /* +20% luminosidad respecto a chart-3 */
-  --chart-8: #d4bedf; /* +20% luminosidad respecto a chart-4 */
-  --chart-9: #e6d4eb; /* +80% luminosidad aproximada */
-  --chart-10: #f3ebf5; /* muy claro, +90% luminosidad */
+  --chart-5: #7c8ebd;
+  /* +20% luminosidad respecto a chart-1 */
+  --chart-6: #9b8cc3;
+  /* +20% luminosidad respecto a chart-2 */
+  --chart-7: #bba2d0;
+  /* +20% luminosidad respecto a chart-3 */
+  --chart-8: #d4bedf;
+  /* +20% luminosidad respecto a chart-4 */
+  --chart-9: #e6d4eb;
+  /* +80% luminosidad aproximada */
+  --chart-10: #f3ebf5;
+  /* muy claro, +90% luminosidad */
 }
 
 [data-theme="dark"],
@@ -147,27 +148,21 @@ body {
   --on-surface: #e6e5e2;
   --surface-variant: #666154;
   --on-surface-variant: #e6e1d4;
-  --outline: #b3ad9f;
-  --outline-variant: rgb(
-    78 70 57
-  ); /* Se usa para bordes menos prominentes o sutiles. */
+  --outline: rgb(120 115 105);
+  --outline-variant: rgb(52 48 40);
+  /* Se usa para bordes menos prominentes o sutiles. */
 
-  --shadow: rgb(
-    0 0 0
-  ); /* Se usa en elevaciones para dar profundidad a los elementos. */
-  --scrim: rgb(
-    0 0 0
-  ); /* Se usa para superposiciones oscuras en diálogos, menús y efectos de desenfoque. */
+  --shadow: rgb(0 0 0);
+  /* Se usa en elevaciones para dar profundidad a los elementos. */
+  --scrim: rgb(0 0 0);
+  /* Se usa para superposiciones oscuras en diálogos, menús y efectos de desenfoque. */
 
-  --inverse-surface: rgb(
-    234 225 212
-  ); /* Superficie inversa: Se usa para elementos oscuros en temas claros. */
-  --inverse-on-surface: rgb(
-    52 48 39
-  ); /* Garantiza contraste suficiente en fondos inversos. */
-  --inverse-primary: rgb(
-    122 89 12
-  ); /* Se usa para destacar el color primario en temas oscuros. */
+  --inverse-surface: rgb(234 225 212);
+  /* Superficie inversa: Se usa para elementos oscuros en temas claros. */
+  --inverse-on-surface: rgb(52 48 39);
+  /* Garantiza contraste suficiente en fondos inversos. */
+  --inverse-primary: rgb(122 89 12);
+  /* Se usa para destacar el color primario en temas oscuros. */
 
   /* Variantes fijadas de los colores primarios, secundarios y terciarios: Se usan en componentes de alto énfasis como botones de acción. */
   --primary-fixed: rgb(255 222 167);
@@ -184,34 +179,40 @@ body {
   --on-tertiary-fixed-variant: rgb(115 51 47);
   --fixed-surface: rgb(22 19 11);
   /* Variantes de superficie para diferentes niveles de elevación: Se usan para jerarquizar la UI. */
-  --surface-dim: rgb(
-    22 19 11
-  ); /* Superficie tenue: Alternativa más oscura del color surface, utilizada en interfaces de bajo contraste o modo oscuro. */
-  --surface-bright: rgb(
-    61 57 47
-  ); /* Superficie brillante: Variante más clara de surface, usada en encabezados o áreas que requieren más luminosidad. */
-  --surface-container-lowest: #110e07; /* Superficie de contenedor más baja: Representa el fondo más plano sin elevación. Se usa en el fondo general de la aplicación. */
-  --surface-container-low: rgb(
-    31 27 19
-  ); /* Superficie de contenedor baja: Se usa en elementos ligeramente elevados sobre el fondo, como tarjetas sin sombra. */
-  --surface-container: #231f17; /* Superficie de contenedor estándar: Se usa en tarjetas con sombra ligera y elementos de interfaz con algo de elevación. */
-  --surface-container-high: rgb(
-    46 42 33
-  ); /* Superficie de contenedor alta: Para elementos más elevados en la jerarquía visual, como menús desplegables y cuadros de diálogo. */
-  --surface-container-highest: rgb(
-    57 52 43
-  ); /* Superficie de contenedor más alta: Se usa en los elementos flotantes de mayor importancia, como tooltips y pop-ups. */
+  --surface-dim: rgb(22 19 11);
+  /* Superficie tenue: Alternativa más oscura del color surface, utilizada en interfaces de bajo contraste o modo oscuro. */
+  --surface-bright: rgb(61 57 47);
+  /* Superficie brillante: Variante más clara de surface, usada en encabezados o áreas que requieren más luminosidad. */
+  --surface-container-lowest: #110e07;
+  /* Superficie de contenedor más baja: Representa el fondo más plano sin elevación. Se usa en el fondo general de la aplicación. */
+  --surface-container-low: rgb(31 27 19);
+  /* Superficie de contenedor baja: Se usa en elementos ligeramente elevados sobre el fondo, como tarjetas sin sombra. */
+  --surface-container: #231f17;
+  /* Superficie de contenedor estándar: Se usa en tarjetas con sombra ligera y elementos de interfaz con algo de elevación. */
+  --surface-container-high: rgb(46 42 33);
+  /* Superficie de contenedor alta: Para elementos más elevados en la jerarquía visual, como menús desplegables y cuadros de diálogo. */
+  --surface-container-highest: rgb(57 52 43);
+  /* Superficie de contenedor más alta: Se usa en los elementos flotantes de mayor importancia, como tooltips y pop-ups. */
+
+  --muted: #3f3f46;
+  --muted-foreground: #a1a1aa;
 
   --chart-1: #5b74ad;
   --chart-2: #836fad;
   --chart-3: #a869a2;
   --chart-4: #c3658f;
-  --chart-5: #7c8ebd; /* +20% luminosidad respecto a chart-1 */
-  --chart-6: #9b8cc3; /* +20% luminosidad respecto a chart-2 */
-  --chart-7: #bba2d0; /* +20% luminosidad respecto a chart-3 */
-  --chart-8: #d4bedf; /* +20% luminosidad respecto a chart-4 */
-  --chart-9: #e6d4eb; /* +80% luminosidad aproximada */
-  --chart-10: #f3ebf5; /* muy claro, +90% luminosidad */
+  --chart-5: #7c8ebd;
+  /* +20% luminosidad respecto a chart-1 */
+  --chart-6: #9b8cc3;
+  /* +20% luminosidad respecto a chart-2 */
+  --chart-7: #bba2d0;
+  /* +20% luminosidad respecto a chart-3 */
+  --chart-8: #d4bedf;
+  /* +20% luminosidad respecto a chart-4 */
+  --chart-9: #e6d4eb;
+  /* +80% luminosidad aproximada */
+  --chart-10: #f3ebf5;
+  /* muy claro, +90% luminosidad */
 }
 
 @theme inline {
@@ -281,6 +282,8 @@ body {
   --color-chart-6: var(--chart-6);
   --color-chart-7: var(--chart-7);
   --color-chart-7: var(--chart-7);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
 }
 
 /** wainting card loader **/

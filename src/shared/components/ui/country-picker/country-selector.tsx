@@ -2,7 +2,7 @@ import { useState, useMemo, forwardRef } from "react";
 import { Check, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { COUNTRIES } from "./countries";
-import { cn } from "@/core/lib/utils";
+import { cn } from "@/shared/utils/utils";
 import "flag-icons/css/flag-icons.min.css";
 
 interface CountrySelectorProps {

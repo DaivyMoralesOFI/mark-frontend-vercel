@@ -1,7 +1,7 @@
 // DynamicTableColumnHeader.tsx
 import { Column } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
-import { cn } from "@/core/lib/utils";
+import { cn } from "@/shared/utils/utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/shared/components/ui/dropdown-menu";
 import { Button } from "@/shared/components/ui/button";
 

@@ -1,6 +1,6 @@
 import { Column } from "@tanstack/react-table";
 import { Check, PlusCircle } from "lucide-react";
-import { cn } from "@/core/lib/utils";
+import { cn } from "@/shared/utils/utils";
 import { FilterOption } from "@/shared/components/table/dynamic-table";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/Popover";
 import { Button } from "@/shared/components/ui/button";
