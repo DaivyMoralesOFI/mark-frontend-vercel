@@ -4,8 +4,8 @@
 // It manages the state for fetching and storing all available brands from Firestore.
 
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { CompanyBrand, BrandDnaResponse } from "@/domains/creation-studio/brand-dna/types/brandDnaTypes";
-import { brandDnaService } from "@/domains/creation-studio/brand-dna/service/brandDnaService";
+import { CompanyBrand, BrandDnaResponse } from "@/modules/brand-dna/types/brandDnaTypes";
+import { brandDnaService } from "@/modules/brand-dna/service/brandDnaService";
 
 /**
  * BrandState interface

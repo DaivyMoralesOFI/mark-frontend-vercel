@@ -10,10 +10,10 @@ export const BackendErrorSchema = z.object({
       msg: z.string(),
       type: z.string().optional(),
     })),
-    z.record(z.unknown()),
+    z.record(z.string(), z.unknown()),
   ]).optional(),
   statusCode: z.number().optional(),
-}).passthrough(); 
+}).passthrough();
 
 export const ValidationErrorSchema = z.object({
   detail: z.array(z.object({

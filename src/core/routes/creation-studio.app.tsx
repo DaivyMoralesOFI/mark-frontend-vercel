@@ -2,11 +2,11 @@ import { Route } from "react-router-dom";
 import { lazy } from "react";
 
 const CreateNewContentPage = lazy(
-  () => import("@/modules/creation-studio/pages/create-new-content-page"),
+  () => import("@/modules/create-post/pages/create-new-content-page"),
 );
 
 const WorkflowContentPage = lazy(
-  () => import("@/modules/creation-studio/pages/workflow-content-page"),
+  () => import("@/modules/create-post/pages/workflow-content-page"),
 );
 
 export const CreationStudioRoutes = () => (

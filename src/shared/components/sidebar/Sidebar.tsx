@@ -47,7 +47,7 @@ import {
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import MarkLogo from "/mark-magic-wand.png";
 import { useUser } from "@/shared/hooks/useUser";
-import { useAuth } from "@/domains/auth/hooks/useAuth";
+import { useAuth } from "@/modules/auth/hooks/useAuth";
 import { LinkedInIcon } from "@/shared/components/icons/LinkedInIcon";
 import { InstagramIcon } from "@/shared/components/icons/InstagramIcon";
 import { TikTokIcon } from "@/shared/components/icons/TikTokIcon";
