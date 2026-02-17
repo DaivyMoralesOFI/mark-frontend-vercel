@@ -1,11 +1,19 @@
 import { queryKeys } from "@/core/config/query-keys";
 import { useFirebaseQuery } from "@/core/hooks/use-firebase-query";
-import { AllBrandsResponse } from "@/modules/creation-studio/schemas/brand-schema";
+import { BrandsResponse } from "@/modules/creation-studio/schemas/brand-schema";
+import {
+  getAllBrands,
+  setBrandExtractor,
+} from "@/modules/creation-studio/service/brand-service";
+import { useMutation } from "@tanstack/react-query";
 
-import { getAllBrands } from "@/modules/creation-studio/service/brand-service";
+export const brandKeys = {
+  all: ["brands"] as const,
+  extractor: () => [...brandKeys.all, "extractor"] as const,
+};
 
 export function useBrands() {
-  const query = useFirebaseQuery<AllBrandsResponse>({
+  const query = useFirebaseQuery<BrandsResponse>({
     queryKey: queryKeys.brands.list(),
     queryFn: async () => {
       const brands = await getAllBrands();
@@ -18,4 +26,16 @@ export function useBrands() {
   return {
     ...query,
   };
+}
+
+export function useBrandExtractor() {
+  return useMutation({
+    mutationFn: (target_url: string) => setBrandExtractor(target_url),
+    onSuccess: () => {
+      console.log("✅ Job updated successfully");
+    },
+    onError: () => {
+      console.log("❌ Error updating job");
+    },
+  });
 }

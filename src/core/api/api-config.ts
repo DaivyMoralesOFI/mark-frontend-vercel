@@ -10,6 +10,9 @@ export const API_CONFIG = {
       getImageCreated: "/generated-image-v2",
       editImage: "/85a5cbee-1808-4d99-9528-f91b9c6cbe31",
     },
+    BRAND_EXTRACTOR: {
+      brandExtractor: "/extract-brand-dna",
+    },
   },
   FIREBASE: {
     BRANDS: {

@@ -12,15 +12,18 @@ import {
   applyNodeChanges,
   applyEdgeChanges,
 } from "reactflow";
+import { BrandExtractor } from "../schemas/brand-schema";
 
 type FlowState = {
   nodes: Node[];
   edges: Edge[];
+  brandData: BrandExtractor | null;
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
   setNodes: (nodes: Node[]) => void;
   setEdges: (edges: Edge[]) => void;
+  setBrandData: (data: BrandExtractor | null) => void;
   // Canvas interactions
   resetFlow: () => void;
 };
@@ -32,6 +35,7 @@ const initialEdges: Edge[] = [];
 export const useFlowStore = create<FlowState>((set, get) => ({
   nodes: initialNodes,
   edges: initialEdges,
+  brandData: null,
   onNodesChange: (changes: NodeChange[]) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),
@@ -49,5 +53,7 @@ export const useFlowStore = create<FlowState>((set, get) => ({
   },
   setNodes: (nodes) => set({ nodes }),
   setEdges: (edges) => set({ edges }),
-  resetFlow: () => set({ nodes: initialNodes, edges: initialEdges }),
+  setBrandData: (brandData) => set({ brandData }),
+  resetFlow: () =>
+    set({ nodes: initialNodes, edges: initialEdges, brandData: null }),
 }));

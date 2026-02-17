@@ -1,62 +1,146 @@
-import z from "zod";
+import { z } from "zod";
 
-export const brand_schema = z.object({
-  uuid: z.string().min(1, "Brand ID is required"),
-  create_at: z.object({
-    seconds: z.number().positive("Creation timestamp seconds must be positive"),
-    nanoseconds: z
-      .number()
-      .nonnegative("Creation timestamp nanoseconds must be non-negative"),
-  }),
-  update_at: z.object({
-    seconds: z.number().positive("Update timestamp seconds must be positive"),
-    nanoseconds: z
-      .number()
-      .nonnegative("Update timestamp nanoseconds must be non-negative"),
-  }),
-  identity: z.object({
-    name: z.string().min(1, "Brand name is required"),
-    logo_url: z
-      .string()
-      .url("Logo must be a valid URL")
-      .or(z.string().length(0)),
-    url: z.string().url("URL must be a valid URL").or(z.string().length(0)),
-    slug: z.string().min(1, "Slug is required"),
-  }),
-  brand_dna: z.object({
-    color_pallete: z.object({
-      primary: z.string().min(1, "Primary color is required"),
-      secondary: z.string().min(1, "Secondary color is required"),
-      accent: z.string().min(1, "Accent color is required"),
-      complementary: z.array(
-        z.string().min(1, "Complementary color is required"),
-      ),
-    }),
-    typography: z.object({
-      headings: z.object({
-        font_family: z.string().min(1, "Heading font is required"),
-        category: z.string().min(1, "Heading category is required"),
-        url_link: z.string(),
-      }),
-      body: z.object({
-        font_family: z.string().min(1, "Body font is required"),
-        category: z.string().min(1, "Body category is required"),
-        url_link: z.string(),
-      }),
-    }),
-  }),
-  brand_tone_mood: z.object({
-    description: z.string().min(1, "Description is required"),
-    keywords: z.array(z.string().min(1, "Keyword is required")),
-    voice: z.string().min(1, "Voice tone is required"),
-  }),
-  isActive: z.boolean(),
+// --- Sub-schemas reutilizables ---
+const LogoSchema = z.object({
+  url: z.url(),
+  format: z.string(),
+  placement_confidence: z.enum(["high", "medium", "low"]),
+  usage_hint: z.string(),
+  is_inline_svg: z.boolean(),
+  found_in_header: z.boolean(),
+  candidates: z.array(z.url()),
+});
+const BrandIdentitySchema = z.object({
+  name: z.string(),
+  url: z.url(),
+  logo: LogoSchema,
+  brand_archetype: z.string(),
+  industry: z.string(),
+});
+const FontSchema = z.object({
+  font_family: z.string(),
+  classification: z.string(),
+  optical_size: z.string(),
+  personality_signal: z.string(),
 });
 
-export type Brand = z.infer<typeof brand_schema>;
+const TypographySchema = z.object({
+  headings: FontSchema,
+  body: FontSchema,
+  all_detected: z.array(z.string()),
+});
+// Helper para roles de color — hex + derived, con contrast_ratio opcional
+const ColorRoleSchema = z.object({
+  hex: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+  derived: z.boolean(),
+  contrast_ratio: z.number().optional(),
+});
+const ColorRolesSchema = z.object({
+  primary: ColorRoleSchema,
+  on_primary: ColorRoleSchema,
+  primary_container: ColorRoleSchema,
+  on_primary_container: ColorRoleSchema,
+  secondary: ColorRoleSchema,
+  on_secondary: ColorRoleSchema,
+  secondary_container: ColorRoleSchema,
+  on_secondary_container: ColorRoleSchema,
+  tertiary: ColorRoleSchema,
+  on_tertiary: ColorRoleSchema,
+  tertiary_container: ColorRoleSchema,
+  on_tertiary_container: ColorRoleSchema,
+  surface: ColorRoleSchema,
+  on_surface: ColorRoleSchema,
+  surface_variant: ColorRoleSchema,
+  outline: ColorRoleSchema,
+});
 
-export const brand_response_schema = z.array(brand_schema);
-export type BrandResponse = z.infer<typeof brand_response_schema>;
+const ColorSystemSchema = z.object({
+  source_palette: z.array(z.string().regex(/^#[0-9A-Fa-f]{6}$/)),
+  source: z.string(),
+  total_detected: z.number().int().nonnegative(),
+  roles: ColorRolesSchema,
+});
 
-export const AllBrands = z.array(brand_schema);
-export type AllBrandsResponse = z.infer<typeof AllBrands>;
+const BrandVoiceSchema = z.object({
+  meta_description: z.string(),
+  headings: z.array(z.string()),
+  sample_text: z.string(),
+  tone_of_voice: z.array(z.string()),
+  communication_style: z.string(),
+  target_audience: z.string(),
+  brand_archetype: z.string(),
+  positioning_statement: z.string(),
+});
+
+const SocialPresenceSchema = z.object({
+  twitter: z.union([z.url(), z.literal("unknown")]),
+  instagram: z.union([z.url(), z.literal("unknown")]),
+  youtube: z.union([z.url(), z.literal("unknown")]),
+  facebook: z.union([z.url(), z.literal("unknown")]),
+});
+
+const MetaSchema = z.object({
+  uuid: z.string(),
+  scraped_at: z.string(),
+  html_bytes: z.number().int().nonnegative(),
+  color_source: z.string(),
+  logo_tier: z.string(),
+  hostname: z.string(),
+  pipeline_version: z.string(),
+});
+
+// --- Schema raíz ---
+
+const BrandExtractorSchema = z.object({
+  brand_identity: BrandIdentitySchema,
+  typography: TypographySchema,
+  color_system: ColorSystemSchema,
+  brand_voice: BrandVoiceSchema,
+  social_presence: SocialPresenceSchema,
+  _meta: MetaSchema,
+});
+
+export const BrandExtractorResponseSchema = z.object({
+  output: BrandExtractorSchema,
+});
+
+export const BrandResponseSchema = z.array(BrandExtractorSchema);
+
+export type BrandExtractorResponse = z.infer<
+  typeof BrandExtractorResponseSchema
+>;
+export type BrandExtractor = z.infer<typeof BrandExtractorSchema>;
+export type ColorSystem = z.infer<typeof ColorSystemSchema>;
+export type BrandsResponse = z.infer<typeof BrandResponseSchema>;
+
+export const extractorFormSchema = z.object({
+  brandUrl: z
+    .string()
+    .min(1, "Please enter a URL")
+    .transform((val: string) => {
+      // Si la URL no comienza con http:// o https://, agregar https://
+      if (!val.startsWith("http://") && !val.startsWith("https://")) {
+        return `https://${val}`;
+      }
+      return val;
+    })
+    .pipe(
+      z.string().refine(
+        (val: string) => {
+          try {
+            new URL(val);
+            return true;
+          } catch {
+            return false;
+          }
+        },
+        { message: "Please enter a valid URL" },
+      ),
+    ),
+});
+
+export type ExtractorFormData = z.infer<typeof extractorFormSchema>;
+
+export const defaultExtractorForm: ExtractorFormData = {
+  brandUrl: "",
+};
