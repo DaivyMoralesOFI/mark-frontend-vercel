@@ -3,19 +3,15 @@
 // This file defines the AppHeader component, which renders the main application header bar.
 // It includes search, assistant, notifications, theme toggle, filters, and user profile actions, styled with Tailwind CSS.
 
-import { useState } from "react";
 import {
   Bell,
   Store,
-  GraduationCap,
   MessageCircle,
 } from "lucide-react";
 import { ToggleTheme, TooltipHover } from "@/core/router/router";
 import { Button } from "@/shared/components/ui/button";
-import { TrainModelModal } from "@/domains/creation-studio/brand-dna/train-model-modal/TrainModelModal";
 import AccountSelector from "../dropdown/account-selector";
-import OFILogoHDark from "@/assets/logos/ofi-dark.webp";
-import OFILogoHLight from "@/assets/logos/ofi-white.webp";
+
 
 /**
  * AppHeader
@@ -26,62 +22,41 @@ import OFILogoHLight from "@/assets/logos/ofi-white.webp";
  * - Responsive and styled for a modern UI
  */
 export default function AppHeader() {
-  const [isTrainModalOpen, setIsTrainModalOpen] = useState(false);
   return (
-    <header className="bg-sidebar group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 w-full transition-[width,height] ease-linear">
+    <header className="bg-surface group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 w-full transition-[width,height] ease-linear">
       <div className="flex flex-row items-center justify-between px-3 py-2 w-auto max-w-svw">
-        <div className="navbar-brand min-w-[200px] 2xl::min-w-[300px] min-h-8 h-full flex flex-row justify-start items-center relative">
-          <div className="flex flex-row justify-start items-center relative">
-            <picture className="absolute h-full -top-3 -left-1 inline-flex dark:hidden">
-              <source src={OFILogoHLight} />
-              <img
-                src={OFILogoHLight}
-                alt="SOFIA Technology logo concept"
-                className="w-10 h-10"
-              />
-            </picture>
-            <picture className="absolute h-full -top-3 -left-1 hidden dark:inline-flex">
-              <source src={OFILogoHDark} />
-              <img
-                src={OFILogoHDark}
-                alt="SOFIA Technology logo concept"
-                className="w-10 h-10"
-              />
-            </picture>
-            <p className="navbar-brand pl-10 font-bold">SERVICES</p>
-          </div>
+        <div className="navbar-brand min-w-[200px] 2xl:min-w-[300px] min-h-8 h-full flex flex-row justify-start items-center relative">
+          {/* Brand logo and name removed as requested */}
         </div>
         {/* Actions section: marketplace, notifications, theme, filters, profile */}
         <div className="appbar-cta flex items-center justify-between gap-2">
-          <TooltipHover title="Train your AI model" content="" className="">
+          <TooltipHover title="Explore AI Agents" content="" className="">
             <Button
               variant="default"
-              size="icon"
-              onClick={() => setIsTrainModalOpen(true)}
-              className="cursor-pointer pr-3 pl-2 py-1 border-1 border-secondary w-auto h-7 rounded-sm"
+              size="sm"
+              className="group cursor-pointer border-primary/20 hover:border-primary/50 transition-colors shadow-none bg-surface-container-low"
             >
-              <GraduationCap strokeWidth={2} size={16} />
-              <span>Train</span>
+              <div className="flex items-center gap-2">
+                <Store size={16} className="text-primary group-hover:scale-110 transition-transform" />
+                <span className="font-medium text-[12px]">Agents Marketplace</span>
+              </div>
             </Button>
           </TooltipHover>
-          <TooltipHover title="Integrate new agents" content="" className="">
-            <Button
-              variant="default"
-              size="icon"
-              className="cursor-pointer pr-3 pl-2 py-1 border-0 w-auto h-7 rounded-sm bg-linear-to-r/oklab from-pink-300 to-purple-300 text-on-secondary"
-            >
-              <Store strokeWidth={2} size={16} />
-              <span>Agents MarketPlace</span>
-            </Button>
-          </TooltipHover>
+
           <TooltipHover
-            title="Ask Mark"
+            title="Chat with Mark"
             content=""
             className="hidden md:inline-flex"
           >
-            <Button variant="secondary">
-              <MessageCircle strokeWidth={2} size={16} />
-              <span>Ask Mark</span>
+            <Button
+              variant="default"
+              size="sm"
+              className="group cursor-pointer border-primary/20 hover:border-primary/50 transition-colors shadow-none bg-surface-container-low"
+            >
+              <div className="flex items-center gap-2">
+                <MessageCircle size={16} className="text-primary group-hover:scale-110 transition-transform" />
+                <span className="font-medium text-[12px]">Ask Mark</span>
+              </div>
             </Button>
           </TooltipHover>
           <TooltipHover
@@ -107,10 +82,6 @@ export default function AppHeader() {
           <AccountSelector />
         </div>
       </div>
-      <TrainModelModal
-        isOpen={isTrainModalOpen}
-        onClose={() => setIsTrainModalOpen(false)}
-      />
     </header>
   );
 }

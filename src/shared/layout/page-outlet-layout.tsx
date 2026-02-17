@@ -83,7 +83,7 @@ const PageOutletLayout = <T extends string | undefined = undefined>({
       return null;
     }
     return (
-      <div className={cn("h-full w-full max-w-full flex flex-col bg-surface-container text-on-surface px-0 overflow-hidden", outerClassName)}>
+      <div className={cn("h-full w-full max-w-full flex flex-col bg-surface text-on-surface px-0 overflow-hidden", outerClassName)}>
         <Tabs defaultValue={defaultTrigger} className="w-full p-0">
           {actions && <SiteHeader title={title || ""} actions={actions} />}
           <TabsList className="h-12 w-full flex justify-between items-center bg-surface border-b-1 border-outline-variant pr-4">
@@ -127,7 +127,7 @@ const PageOutletLayout = <T extends string | undefined = undefined>({
   }
 
   return (
-    <div className={cn("h-full w-full flex flex-col bg-surface-container text-on-surface px-0", outerClassName)}>
+    <div className={cn("h-full w-full flex flex-col bg-surface text-on-surface px-0", outerClassName)}>
       <SiteHeader title={title || ""} actions={actions} />
       <div className="relative w-full">
         <ScrollArea

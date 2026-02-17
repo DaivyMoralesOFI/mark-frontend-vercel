@@ -323,7 +323,7 @@ export function Sidebar() {
                                 (sub) => location.pathname === sub.url
                               )
                             }
-                            className="font-medium text-foreground/80 h-9"
+                            className="font-medium text-foreground/80 h-9 data-[active=true]:bg-sidebar-accent/50"
                           >
                             <item.icon className="w-4 h-4 text-muted-foreground group-data-[active=true]/menu-button:text-foreground" />
                             <span>{item.title}</span>
@@ -343,7 +343,7 @@ export function Sidebar() {
                                     (location.pathname + location.search ===
                                       subItem.url)
                                   }
-                                  className="text-muted-foreground/80 hover:text-foreground h-8"
+                                  className="text-muted-foreground/80 hover:text-foreground h-8 data-[active=true]:bg-sidebar-accent/50"
                                 >
                                   <Link to={subItem.url}>
                                     {subItem.icon && (
@@ -365,7 +365,7 @@ export function Sidebar() {
                         asChild
                         isActive={location.pathname === item.to}
                         tooltip={item.title}
-                        className="font-medium text-foreground/80 h-9"
+                        className="font-medium text-foreground/80 h-9 data-[active=true]:bg-sidebar-accent/50"
                       >
                         <Link to={item.to}>
                           <item.icon className="w-4 h-4 text-muted-foreground group-data-[active=true]/menu-button:text-foreground" />

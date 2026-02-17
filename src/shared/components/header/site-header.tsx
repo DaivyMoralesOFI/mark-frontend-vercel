@@ -10,7 +10,7 @@ interface SiteHeaderProps {
 
 const SiteHeader = ({ title, actions }: SiteHeaderProps) => {
   return (
-    <div className="page-header w-full min-h-10 h-fit flex flex-col md:flex-row items-start md:items-end justify-between gap-2 py-2 px-4 bg-surface-container-lowest border-b border-outline-variant">
+    <div className="page-header w-full min-h-10 h-fit flex flex-col md:flex-row items-start md:items-end justify-between gap-2 py-2 px-4 border-b border-outline-variant">
       <div className="title-content flex flex-row lg:flex-col gap-1">
         <div className="flex flex-row gap-2 items-center">
           <SidebarTrigger />

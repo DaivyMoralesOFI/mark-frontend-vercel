@@ -23,7 +23,7 @@ const DashboardLayout = () => {
   // State for sidebar open/close
   const [isOpen, setIsOpen] = useState(true);
   return (
-    <div className="dashboard-layout text-on-surface max-w-screen min-h-screen bg-surface-container-low relative">
+    <div className="dashboard-layout text-on-surface max-w-screen min-h-screen bg-surface relative">
       <SidebarProvider
         open={isOpen}
         onOpenChange={setIsOpen}
@@ -34,7 +34,7 @@ const DashboardLayout = () => {
         <div className="w-screen h-full px-3">
           <AppHeader />
           <SidebarInset>
-            <div className="outlet-container overflow-hidden border border-outline-variant bg-surface-container rounded-lg max-h-[calc(100vh-5px)]  md:max-h-[calc(100vh-5em)]">
+            <div className="outlet-container overflow-hidden border border-outline-variant bg-surface rounded-lg max-h-[calc(100vh-5px)]  md:max-h-[calc(100vh-5em)]">
               <Outlet />
             </div>
           </SidebarInset>

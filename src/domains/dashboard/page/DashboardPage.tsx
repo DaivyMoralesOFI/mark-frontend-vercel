@@ -5,7 +5,6 @@ import { OverviewSection } from "../components/dashboard-view/overview/OverviewS
 import { SocialPerformanceSection } from "../components/dashboard-view/social/SocialPerformanceSection";
 import { BestPostsSection } from "../components/dashboard-view/posts/BestPostsSection";
 import PageOutletLayout from "@/shared/layout/page-outlet-layout";
-import { Plus, Filter } from "lucide-react";
 import { useModals } from "@/shared/hooks/useModals";
 import { CreatePostModal } from "@/domains/creation-studio/post-creator/components/CreatePostModal";
 import { Actions } from "@/shared/types/types";
@@ -28,28 +27,13 @@ const platformIcons: Record<string, React.FC<{ className?: string }>> = {
 };
 
 export const DashboardPage = () => {
-    const { showCreatePost, openCreatePost, closeCreatePost } = useModals();
+    const { showCreatePost, closeCreatePost } = useModals();
     const [searchParams] = useSearchParams();
     const platform = searchParams.get("platform");
     const [timePeriod, setTimePeriod] = useState<TimePeriod>("30days");
     const [customRange, setCustomRange] = useState<DateRange | undefined>(undefined);
 
-    const pageActions: Actions[] = [
-        {
-            type: "button" as const,
-            children: "Filters",
-            icon: Filter,
-            onClick: () => console.log("Filters clicked"),
-            variant: "outline" as const,
-        },
-        {
-            type: "button" as const,
-            children: "Create Post",
-            icon: Plus,
-            onClick: openCreatePost,
-            variant: "default" as const,
-        },
-    ];
+    const pageActions: Actions[] = [];
 
     // Unified header with title and time switcher
     const renderHeader = (title: React.ReactNode, showSwitcher: boolean = true) => (
