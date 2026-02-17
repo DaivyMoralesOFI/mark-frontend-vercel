@@ -1,9 +1,6 @@
-// authProvider.tsx
-//
-// This file defines the AuthProvider and AuthContext for managing authentication state in a React context.
-// It provides login and logout functions, stores the token in localStorage, and exposes authentication state to the app.
-
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useEffect } from "react";
+import { getAuth, onAuthStateChanged, User } from "firebase/auth";
+import app from "@/core/config/firebase-database";
 
 /**
  * AuthContextType
@@ -12,6 +9,7 @@ import React, { createContext, useState } from "react";
 export interface AuthContextType {
   isAuthenticated: boolean;
   token: string | null;
+  user: User | null;
   login: (token: string) => void;
   logout: () => void;
 }
@@ -31,6 +29,27 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // State for the authentication token
   const [token, setToken] = useState<string | null>(() => localStorage.getItem("token"));
+  // State for the authenticated user
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const auth = getAuth(app);
+    // Listen for authentication state changes
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        currentUser.getIdToken().then((idToken) => {
+          setToken(idToken);
+          localStorage.setItem("token", idToken);
+        });
+      } else {
+        setToken(null);
+        localStorage.removeItem("token");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   /**
    * Logs in by setting the token and saving it to localStorage.
@@ -44,12 +63,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
    * Logs out by clearing the token from state and localStorage.
    */
   const logout = () => {
+    const auth = getAuth(app);
+    auth.signOut();
     setToken(null);
     localStorage.removeItem("token");
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated: !!token, token, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated: !!token || !!user, token, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

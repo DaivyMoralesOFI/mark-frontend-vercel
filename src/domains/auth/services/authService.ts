@@ -131,3 +131,23 @@ export async function login(username: string, password: string) {
 
 // Export a singleton instance of AuthService
 export const authService = new AuthService();
+
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword, // Import this
+  UserCredential
+} from "firebase/auth";
+import app from "@/core/config/firebase-database";
+
+// const auth = getAuth(app); // Removed unused variable
+
+export const signInWithEmailAndPasswordsupafast = async (email: string, password: string): Promise<UserCredential> => {
+  const auth = getAuth(app);
+  return signInWithEmailAndPassword(auth, email, password);
+};
+
+export const signUpWithEmailAndPassword = async (email: string, password: string): Promise<UserCredential> => {
+  const auth = getAuth(app);
+  return createUserWithEmailAndPassword(auth, email, password);
+};

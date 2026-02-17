@@ -371,8 +371,8 @@ export function CreateVideoModal({ isOpen, onClose }: CreateVideoModalProps) {
                         key={seconds}
                         onClick={() => setDuration(seconds as VideoDuration)}
                         className={`p-3 rounded-lg border-2 transition-all ${duration === seconds
-                            ? "border-purple-600 bg-purple-50 text-purple-900"
-                            : "border-gray-200 hover:border-gray-300"
+                          ? "border-purple-600 bg-purple-50 text-purple-900"
+                          : "border-gray-200 hover:border-gray-300"
                           }`}
                       >
                         <div className="text-center">
@@ -482,9 +482,9 @@ export function CreateVideoModal({ isOpen, onClose }: CreateVideoModalProps) {
                       <Loader className="animate-spin w-4 h-4 text-green-600" />
                     ) : (
                       <img
-                        src="/mark-yellow.svg"
+                        src="/mark-magic-wand.png"
                         alt="Mark icon"
-                        className="w-6 h-6"
+                        className="w-12 h-12"
                       />
                     )}
                     <span className="sr-only">

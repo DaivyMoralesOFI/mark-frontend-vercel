@@ -108,15 +108,15 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         >
           {loadingImage ? (
             // Progress bar
-            <div className="relative w-7 h-7 flex items-center justify-center">
+            <div className="relative w-8 h-8 flex items-center justify-center">
               <div className="absolute inset-0 rounded-full bg-green-400 flex items-center justify-center">
-                <span className="text-xs text-white font-bold">
+                <span className="text-[10px] text-white font-bold">
                   {Math.round(progress)}%
                 </span>
               </div>
             </div>
           ) : (
-            <img src="/mark-yellow.svg" alt="Mark icon" className="w-6 h-6" />
+            <img src="/mark-magic-wand.png" alt="Mark icon" className="w-8 h-8" />
           )}
           <span className="sr-only">Suggest image with AI</span>
         </Button>

@@ -8,8 +8,8 @@ import { CreateImage } from "@/modules/creation-studio/schemas/create-image";
 import {
   SubscriptionCallback,
   useFirebaseSubscription,
-} from "@/core/hooks/use-firebase-query";
-import { queryKeys } from "@/core/lib/query-keys";
+} from "@/shared/hooks/use-firebase-query";
+import { queryKeys } from "@/shared/utils/query-keys";
 import { CreationStore } from "@/modules/creation-studio/schemas/create-image";
 import { FirebaseSubscriptionError } from "@/modules/creation-studio/service/firebase-services";
 import { useState } from "react";

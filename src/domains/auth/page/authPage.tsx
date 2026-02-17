@@ -1,60 +1,80 @@
 // authPage.tsx
 //
-// This file defines the AuthPage component, which renders the login form and handles user authentication.
-// It manages form state, error handling, and redirects after successful login.
-// The page is styled with Tailwind CSS and uses UI primitives for layout and interactivity.
+// This file defines the AuthPage component, which renders the login/signup forms with a modern card UI.
+// It handles authentication state, toggles between login and signup views, and integrates with Firebase auth services.
 
 import React, { useState } from "react"
-import { Eye, EyeOff, User, Lock } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card"
+import { Eye, EyeOff } from "lucide-react"
+import { Card, CardContent } from "@/shared/components/ui/card"
 import { Label } from "@/shared/components/ui/label"
 import { Input } from "@/shared/components/ui/Input"
 import { Button } from "@/shared/components/ui/button"
 import { useNavigate, useLocation } from "react-router-dom"
-import { login as loginService } from "../services/authService"
+import { signInWithEmailAndPasswordsupafast, signUpWithEmailAndPassword } from "../services/authService"
 import { useAuth } from "../hooks/useAuth"
 
 /**
  * AuthPage
  *
- * Renders the login form and handles authentication logic.
- * - Manages form state and error handling
- * - Redirects to the intended page after login
- * - Styled with Tailwind CSS and UI primitives
+ * Renders the authentication page with Login and Sign Up modes.
+ * Matches the design with social login options, tabs, and specific layouts for each mode.
  */
 export default function AuthPage() {
+  // State for view mode: 'login' or 'signup'
+  const [view, setView] = useState<'login' | 'signup'>('login')
   // State for password visibility
   const [showPassword, setShowPassword] = useState(false)
   // State for form data
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     password: "",
   })
   // State for error message
   const [error, setError] = useState("")
   // State for loading indicator
   const [loading, setLoading] = useState(false)
+
   // Auth context
   const { login } = useAuth()
   // Router navigation and location
   const navigate = useNavigate()
   const location = useLocation()
+
   // Destination after login
   const from = (location.state as any)?.from?.pathname || "/dashboard"
 
   /**
-   * Handles form submission for login
+   * Handles form submission for login and signup
    */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError("")
+
     try {
-      const data = await loginService(formData.username, formData.password)
-      login(data.access_token)
-      navigate(from, { replace: true })
-    } catch (err) {
-      setError("Invalid credentials")
+      if (view === 'signup') {
+        const userCredential = await signUpWithEmailAndPassword(formData.email, formData.password)
+        const token = await userCredential.user.getIdToken()
+        login(token)
+        navigate(from, { replace: true })
+      } else {
+        const userCredential = await signInWithEmailAndPasswordsupafast(formData.email, formData.password)
+        const token = await userCredential.user.getIdToken()
+        login(token)
+        navigate(from, { replace: true })
+      }
+    } catch (err: any) {
+      console.error(err)
+      // improved error handling
+      if (err.code === 'auth/email-already-in-use') {
+        setError("Email already in use. Please login instead.")
+      } else if (err.code === 'auth/weak-password') {
+        setError("Password should be at least 6 characters.")
+      } else if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
+        setError("Invalid email or password.")
+      } else {
+        setError(err.message || "Authentication failed. Please try again.")
+      }
     } finally {
       setLoading(false)
     }
@@ -70,113 +90,166 @@ export default function AuthPage() {
     })
   }
 
+
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-100 via-purple-50 to-pink-50 p-4">
-      <Card className="w-full max-w-md shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
-        <CardHeader className="space-y-1 text-center pb-8">
-          <div className="mx-auto w-16 h-16 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center mb-4">
-            <User className="w-8 h-8 text-white" />
-          </div>
-          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-            Login
-          </CardTitle>
-          <CardDescription className="text-gray-600">Enter your credentials to access your account</CardDescription>
-        </CardHeader>
+    <div className="min-h-screen flex items-center justify-center bg-surface-container-low p-4 text-on-surface text-center">
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-10px) rotate(2deg); }
+        }
+        @keyframes appear {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-float {
+          animation: float 4s ease-in-out infinite;
+        }
+        .animate-appear {
+          animation: appear 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
+      `}</style>
 
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="username" className="text-gray-700 font-medium">
-                Username
-              </Label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400 w-5 h-5" />
-                <Input
-                  id="username"
-                  name="username"
-                  type="text"
-                  placeholder="Enter your username"
-                  value={formData.username}
-                  onChange={handleInputChange}
-                  className="pl-10 h-12 border-gray-200 text-black focus:border-pink-400 focus:ring-pink-400"
-                  required
-                  disabled={loading}
-                />
-              </div>
-            </div>
+      <div className="w-full max-w-md space-y-4">
+        <div className="flex flex-col items-center mb-8 animate-appear opacity-0">
+          <img
+            src="/mark-apple-icon.png"
+            alt="Mark Logo"
+            className="w-16 h-16 object-contain"
+          />
+          <h1 className="mt-6 text-2xl font-bold tracking-tight text-on-surface">
+            Mark
+          </h1>
+          <p className="text-on-surface-variant text-sm mt-1">
+            {view === 'login' ? 'Welcome back to your AI workspace' : 'Start your journey with Mark'}
+          </p>
+        </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-gray-700 font-medium">
-                Password
-              </Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400 w-5 h-5" />
-                <Input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className="pl-10 pr-10 h-12 border-gray-200 text-black focus:border-pink-400 focus:ring-pink-400"
-                  required
-                  disabled={loading}
-                />
-                {/* Toggle password visibility button */}
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  tabIndex={-1}
-                  disabled={loading}
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
-            </div>
+        <div className="animate-appear opacity-0 delay-100">
+          <Card className="bg-surface overflow-hidden border-none shadow-none text-left">
+            <CardContent className="px-6 pb-6 pt-6">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-on-surface text-sm font-medium">
+                    Email address
+                  </Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="Enter your email address"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="h-11 border-outline bg-surface-container-lowest text-on-surface placeholder:text-muted-foreground focus:border-primary focus:ring-primary rounded-lg transition-all"
+                    required
+                    disabled={loading}
+                  />
+                </div>
 
-            <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input type="checkbox" className="rounded border-gray-300 text-pink-500 focus:ring-pink-400" disabled={loading} />
-                <span className="text-gray-600">Remember me</span>
-              </label>
-              <a href="#" className="text-purple-600 hover:text-purple-800 font-medium">
-                Forgot password?
-              </a>
-            </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password" className="text-on-surface text-sm font-medium">
+                      Password
+                    </Label>
+                    {view === 'login' && (
+                      <a href="#" className="text-xs font-medium text-primary hover:underline">
+                        Forgot password?
+                      </a>
+                    )}
+                  </div>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      className="pr-10 h-11 border-outline bg-surface-container-lowest text-on-surface placeholder:text-muted-foreground focus:border-primary focus:ring-primary rounded-lg transition-all"
+                      required
+                      disabled={loading}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-on-surface-variant hover:text-on-surface opacity-70 transition-colors"
+                      tabIndex={-1}
+                      disabled={loading}
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
 
-            <Button
-              type="submit"
-              className="w-full h-12 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
-              disabled={loading}
-            >
-              {loading ? (
-                <span className="flex items-center justify-center">
-                  <svg className="animate-spin h-5 w-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-                  </svg>
-                  Loading...
-                </span>
-              ) : (
-                "Login"
+                {view === 'login' ? (
+                  <Button
+                    type="submit"
+                    className="w-full h-11 mt-4 bg-[#1a1a1a] hover:bg-black text-white font-medium rounded-xl shadow-lg hover:shadow-xl transition-all active:scale-[0.98]"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        Logging in...
+                      </div>
+                    ) : "Log In"}
+                  </Button>
+                ) : (
+                  <>
+                    <div className="flex items-start space-x-2 pt-2 pb-2">
+                      <input
+                        id="newsletter"
+                        type="checkbox"
+                        className="mt-1 rounded border-outline text-primary focus:ring-primary h-4 w-4"
+                      />
+                      <label htmlFor="newsletter" className="text-xs text-on-surface-variant leading-relaxed select-none">
+                        Please keep me updated by email with the latest news, research findings, reward programs, and event updates.
+                      </label>
+                    </div>
+                    <Button
+                      type="submit"
+                      className="w-full h-11 mt-2 bg-primary hover:bg-primary/90 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transition-all active:scale-[0.98]"
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          Creating account...
+                        </div>
+                      ) : "Create an account"}
+                    </Button>
+                  </>
+                )}
+              </form>
+
+              {error && (
+                <div className="mt-6 text-center text-sm text-error font-medium bg-error/5 border border-error/10 p-3 rounded-xl animate-in fade-in slide-in-from-top-1">
+                  {error}
+                </div>
               )}
-            </Button>
-          </form>
+            </CardContent>
+          </Card>
+        </div>
 
-          {/* Error message if present */}
-          {error && <div className="mt-4 text-center text-red-500">{error}</div>}
-
-          <div className="mt-8 text-center">
-            <p className="text-gray-600">
-              Don't have an account?{" "}
-              <a href="#" className="text-purple-600 hover:text-purple-800 font-semibold">
-                Register
-              </a>
+        <div className="animate-appear opacity-0 delay-200">
+          <Card className="bg-surface rounded-2xl p-4 text-center border-none shadow-none">
+            <p className="text-sm text-on-surface-variant">
+              {view === 'login' ? "Don't have an account yet?" : "Already have an account?"}{" "}
+              <button
+                onClick={() => setView(view === 'login' ? 'signup' : 'login')}
+                className="font-semibold text-primary hover:text-primary/80 transition-colors underline decoration-1 underline-offset-4"
+              >
+                {view === 'login' ? "Sign up" : "Login"}
+              </button>
             </p>
-          </div>
-        </CardContent>
-      </Card>
+          </Card>
+        </div>
+      </div>
     </div>
   )
+
 }

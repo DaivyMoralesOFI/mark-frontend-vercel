@@ -25,7 +25,14 @@ const AppRoutes = () => {
         <Route path="/auth" element={<AuthPage />} />
 
         {/* Experimental Brand DNA routes */}
-        <Route path="/brand-dna-extractor" element={<ExtractorDNAPage />} />
+        <Route
+          path="/brand-dna-extractor"
+          element={
+            <RequireAuth>
+              <ExtractorDNAPage />
+            </RequireAuth>
+          }
+        />
 
         {/* Protected routes: require authentication */}
         <Route
@@ -47,7 +54,14 @@ const AppRoutes = () => {
         </Route>
 
         {/* Creation Studio Routes */}
-        <Route path="app" element={<CreationStudioLayout />}>
+        <Route
+          path="app"
+          element={
+            <RequireAuth>
+              <CreationStudioLayout />
+            </RequireAuth>
+          }
+        >
           {CreationStudioRoutes()}
         </Route>
       </Routes>

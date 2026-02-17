@@ -23,7 +23,7 @@ const DashboardLayout = () => {
   // State for sidebar open/close
   const [isOpen, setIsOpen] = useState(true);
   return (
-    <div className="dashboard-layout text-on-surface max-w-screen min-h-screen bg-surface relative">
+    <div className="dashboard-layout text-on-surface max-w-screen min-h-screen bg-surface-container-low relative">
       <SidebarProvider
         open={isOpen}
         onOpenChange={setIsOpen}
