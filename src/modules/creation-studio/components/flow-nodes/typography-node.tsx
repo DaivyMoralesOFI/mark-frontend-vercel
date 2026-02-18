@@ -6,6 +6,7 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 import { Type } from "lucide-react";
+import { useGoogleFonts } from "@/shared/hooks/use-google-fonts";
 
 interface FontData {
   font_family: string;
@@ -22,26 +23,25 @@ interface TypographyNodeProps {
 }
 
 export const TypographyNode = ({ data }: TypographyNodeProps) => {
+  useGoogleFonts([data.headings.font_family, data.body.font_family]);
+
   return (
     <div className="relative group">
-      <Handle
-        type="target"
-        position={Position.Top}
-        className="w-3 h-3 bg-primary border-2 border-white"
-      />
-      <Card className="w-72 border-tertiary/20 bg-surface-container-lowest/80 backdrop-blur-xl shadow-xl transition-all duration-300 group-hover:border-tertiary/50">
-        <CardHeader className="p-3 border-b border-outline-variant/30 bg-tertiary/5">
-          <CardTitle className="text-sm font-medium flex items-center gap-2">
-            <Type className="w-4 h-4 text-tertiary" />
-            {data.label || "Typography"}
+      <Handle type="target" position={Position.Right} className="w-3 h-3" />
+      <Card className="w-80 backdrop-blur-xl shadow-xl transition-all duration-300 group-hover:border-primary">
+        <CardHeader>
+          <CardTitle className="font-medium flex items-center gap-2">
+            <Type className="w-4 h-4" />
+            Typography
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-4 space-y-4">
-          {/* Headings */}
-          <div className="space-y-1">
-            <span className="text-[10px] uppercase text-on-surface-variant font-bold">
-              Headings
-            </span>
+        <CardContent className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <span className="text-sm uppercase text-outline font-bold">
+                Headings
+              </span>
+            </div>
             <div className="bg-surface-container-low p-2 rounded-md">
               <p
                 className="text-sm font-bold truncate"
@@ -60,11 +60,12 @@ export const TypographyNode = ({ data }: TypographyNodeProps) => {
             </div>
           </div>
 
-          {/* Body */}
-          <div className="space-y-1">
-            <span className="text-[10px] uppercase text-on-surface-variant font-bold">
-              Body Content
-            </span>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <span className="text-sm uppercase text-outline font-bold">
+                Body Content
+              </span>
+            </div>
             <div className="bg-surface-container-low p-2 rounded-md">
               <p
                 className="text-sm truncate"

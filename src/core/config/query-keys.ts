@@ -17,5 +17,6 @@ export const queryKeys = {
     list: () => [...queryKeys.brands.all, "list"] as const,
     getBrand: (uuid: string) =>
       [...queryKeys.brands.all, "get-brand", uuid] as const,
+    setBrand: () => [...queryKeys.brands.all, "set-brand"] as const,
   },
 };

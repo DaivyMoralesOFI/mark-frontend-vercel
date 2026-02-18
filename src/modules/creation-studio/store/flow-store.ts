@@ -18,12 +18,16 @@ type FlowState = {
   nodes: Node[];
   edges: Edge[];
   brandData: BrandExtractor | null;
+  isLoading: boolean;
+  error: string | null;
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
   setNodes: (nodes: Node[]) => void;
   setEdges: (edges: Edge[]) => void;
   setBrandData: (data: BrandExtractor | null) => void;
+  setIsLoading: (isLoading: boolean) => void;
+  setError: (error: string | null) => void;
   // Canvas interactions
   resetFlow: () => void;
 };
@@ -36,6 +40,8 @@ export const useFlowStore = create<FlowState>((set, get) => ({
   nodes: initialNodes,
   edges: initialEdges,
   brandData: null,
+  isLoading: false,
+  error: null,
   onNodesChange: (changes: NodeChange[]) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),
@@ -54,6 +60,14 @@ export const useFlowStore = create<FlowState>((set, get) => ({
   setNodes: (nodes) => set({ nodes }),
   setEdges: (edges) => set({ edges }),
   setBrandData: (brandData) => set({ brandData }),
+  setIsLoading: (isLoading) => set({ isLoading }),
+  setError: (error) => set({ error }),
   resetFlow: () =>
-    set({ nodes: initialNodes, edges: initialEdges, brandData: null }),
+    set({
+      nodes: initialNodes,
+      edges: initialEdges,
+      brandData: null,
+      isLoading: false,
+      error: null,
+    }),
 }));

@@ -17,6 +17,7 @@ export const API_CONFIG = {
   FIREBASE: {
     BRANDS: {
       list: "brands",
+      setBrand: "brands",
     },
   },
 };

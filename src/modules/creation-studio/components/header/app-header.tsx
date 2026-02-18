@@ -5,8 +5,8 @@ import MarkDevSite from "@/assets/logos/mark-colored.svg";
 
 const AppHeader = () => {
   return (
-    <header className="sticky top-10 left-1/2 -translate-x-1/2 max-w-3xl max-h-fit w-full m-0 p-0 z-[999] ">
-      <div className="w-full min-h-12 px-8 py-2 relative flex justify-between items-center shadow-xl bg-surface-container-lowest border-2 border-primary rounded-full backdrop-blur-lg">
+    <header className="sticky top-10 left-1/2 -translate-x-1/2 max-w-3xl max-h-fit w-full m-0 p-0 z-999 ">
+      <div className="w-full min-h-10 px-8 py-2 relative flex justify-between items-center shadow-xl bg-surface-container-lowest border border-primary rounded-xl backdrop-blur-lg">
         <div className="flex">
           <Avatar className="rounded-none w-8 h-8">
             <AvatarImage src={MarkDevSite} />
@@ -15,9 +15,9 @@ const AppHeader = () => {
         </div>
         <div className="flex">
           <nav className="flex justify-between items-center gap-3 list-none ">
-            <Link to="">Analytics</Link>
-            <Link to="">Brand Identity</Link>
-            <Link to="">Bucket Assets</Link>
+            <Link to="/dashboard">Analytics</Link>
+            <Link to="/app/creation-studio/new/content">Create content</Link>
+            <Link to="/app/creation-studio/brands">Brands Identity</Link>
           </nav>
         </div>
         <div className="flex">

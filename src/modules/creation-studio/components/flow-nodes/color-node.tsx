@@ -33,16 +33,12 @@ export const ColorNode = ({ data }: ColorNodeProps) => {
 
   return (
     <div className="relative group">
-      <Handle
-        type="target"
-        position={Position.Top}
-        className="w-3 h-3 bg-primary border-2 border-white"
-      />
-      <Card className="w-64 border-primary/20 bg-surface-container-lowest/80 backdrop-blur-xl shadow-xl transition-all duration-300 group-hover:border-primary/50">
-        <CardHeader className="p-3 border-b border-outline-variant/30 bg-primary/5">
-          <CardTitle className="text-sm font-medium flex items-center gap-2">
-            <Palette className="w-4 h-4 text-primary" />
-            {data.label || "Color System"}
+      <Handle type="target" position={Position.Left} className="w-3 h-3" />
+      <Card className="w-80 backdrop-blur-xl shadow-xl transition-all duration-300 group-hover:border-primary">
+        <CardHeader>
+          <CardTitle className="font-medium flex items-center gap-2">
+            <Palette className="w-4 h-4" />
+            Color System
           </CardTitle>
         </CardHeader>
         <CardContent className="p-4 space-y-4">
@@ -70,20 +66,16 @@ export const ColorNode = ({ data }: ColorNodeProps) => {
 
           <div className="flex flex-col gap-1.5 pt-2 border-t border-outline-variant/20">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] text-on-surface-variant italic">
-                Surface
-              </span>
+              <span>Surface</span>
               <div
-                className="w-12 h-2 rounded-full border border-outline-variant/20"
+                className="w-12 h-10 rounded-md border border-outline"
                 style={{ backgroundColor: data.roles?.surface?.hex || "#fff" }}
               />
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-[10px] text-on-surface-variant italic">
-                Outline
-              </span>
+              <span>Outline</span>
               <div
-                className="w-12 h-2 rounded-full border border-outline-variant/20"
+                className="w-12 h-10 rounded-md border border-outline"
                 style={{ backgroundColor: data.roles?.outline?.hex || "#000" }}
               />
             </div>

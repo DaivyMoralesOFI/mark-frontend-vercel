@@ -18,7 +18,10 @@ import BrandDNA from "../components/sidebar/brand-dna";
 const WaitingNode = () => {
   return (
     <div className="relative p-0 flex justify-center items-center">
-      <WaitingCard />
+      <WaitingCard
+        title="Heello again"
+        description="What would you like to create today?"
+      />
       <Handle type="source" position={Position.Right} className="opacity-0" />
     </div>
   );
@@ -78,7 +81,7 @@ const CreateNewContentPage = () => {
           <Controls />
         </ReactFlow>
       </div>
-      <div className="absolute top-10 right-0 w-full max-w-sm z-10 pointer-events-none">
+      <div className="absolute top-1/2 right-10 -translate-y-1/2 w-full max-w-sm z-10 pointer-events-none">
         <div className="pointer-events-auto">
           <BrandDNA />
         </div>

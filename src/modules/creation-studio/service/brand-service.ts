@@ -3,9 +3,20 @@ import {
   BrandResponseSchema,
   BrandExtractorResponse,
   BrandExtractorResponseSchema,
+  BrandExtractor,
+  BrandExtractorSchema,
 } from "@/modules/creation-studio/schemas/brand-schema";
 import { validateSchemaSoft } from "@/core/utils/schema-validator";
-import { collection, getDocs } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  limit,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { firestore } from "@/core/config/firebase-database";
 import { API_CLIENT, API_CONFIG } from "@/core/api/api-config";
 import { isApiError } from "@/core/utils/api-error-handler";
@@ -23,6 +34,33 @@ export const getAllBrands = async (): Promise<BrandsResponse> => {
       operation: "getAllBrands",
       endpoint: API_CONFIG.FIREBASE.BRANDS.list,
     }) as BrandsResponse;
+    return validationResult;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getActiveBrand = async (): Promise<BrandExtractor | null> => {
+  try {
+    const snapshot = await getDocs(
+      query(
+        collection(firestore, API_CONFIG.FIREBASE.BRANDS.list),
+        where("isActive", "==", true),
+        limit(1),
+      ),
+    );
+    if (snapshot.empty) {
+      return null;
+    }
+    const brandData = snapshot.docs[0].data();
+    const validationResult = validateSchemaSoft(
+      BrandExtractorSchema,
+      brandData,
+      {
+        operation: "getActiveBrand",
+        endpoint: API_CONFIG.FIREBASE.BRANDS.list,
+      },
+    ) as BrandExtractor;
     return validationResult;
   } catch (error) {
     throw error;
@@ -67,5 +105,27 @@ export const setBrandExtractor = async (
     throw new Error(
       `Failed to create brand extractor ${target_url}: ${errorMessage}`,
     );
+  }
+};
+
+export const setNewBrand = async (brand: BrandExtractor) => {
+  try {
+    const result = await addDoc(
+      collection(firestore, API_CONFIG.FIREBASE.BRANDS.setBrand),
+      brand,
+    );
+    const doc_id = result.id;
+    await updateDoc(
+      doc(firestore, API_CONFIG.FIREBASE.BRANDS.setBrand, doc_id),
+      { id: doc_id },
+    ).then(() => {
+      console.log("Document successfully updated!");
+    });
+  } catch (error) {
+    console.error("❌ Failed to create brand extractor:", {
+      operation: "setBrandExtractor",
+      brand,
+      error: error,
+    });
   }
 };

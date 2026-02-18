@@ -91,7 +91,7 @@ const MetaSchema = z.object({
 
 // --- Schema raíz ---
 
-const BrandExtractorSchema = z.object({
+export const BrandExtractorSchema = z.object({
   brand_identity: BrandIdentitySchema,
   typography: TypographySchema,
   color_system: ColorSystemSchema,

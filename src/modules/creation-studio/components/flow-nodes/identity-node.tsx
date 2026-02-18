@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
-import { User, Briefcase, Landmark } from "lucide-react";
+import { User } from "lucide-react";
 
 interface IdentityNodeProps {
   data: {
@@ -19,48 +19,30 @@ interface IdentityNodeProps {
 export const IdentityNode = ({ data }: IdentityNodeProps) => {
   return (
     <div className="relative group">
-      <Handle
-        type="target"
-        position={Position.Top}
-        className="w-3 h-3 bg-primary border-2 border-white"
-      />
-      <Card className="w-64 border-secondary/20 bg-surface-container-lowest/80 backdrop-blur-xl shadow-xl transition-all duration-300 group-hover:border-secondary/50">
-        <CardHeader className="p-3 border-b border-outline-variant/30 bg-secondary/5">
+      <Handle type="target" position={Position.Right} className="w-3 h-3" />
+      <Card className="w-72 h-fit bg-surface-container-lowest backdrop-blur-xl shadow-xl transition-all duration-300 group-hover:border-primary">
+        <CardHeader>
           <CardTitle className="text-sm font-medium flex items-center gap-2">
             <User className="w-4 h-4 text-secondary" />
-            {data.label || "Brand Identity"}
+            Identity
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-4 space-y-3">
-          <div className="flex flex-col">
-            <span className="text-[10px] uppercase text-on-surface-variant font-bold">
+        <CardContent className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <span className="text-sm  uppercase text-outline font-bold">
               Brand Name
             </span>
-            <span className="text-sm font-semibold text-on-surface">
-              {data.name || "N/A"}
-            </span>
+            <span className="font-semibold">{data.name || "Not found"}</span>
           </div>
-          <div className="flex flex-col">
-            <span className="text-[10px] uppercase text-on-surface-variant font-bold">
-              Archetype
-            </span>
-            <div className="flex items-center gap-1.5 mt-1">
-              <Landmark className="w-3 h-3 text-secondary" />
-              <span className="text-xs text-on-surface">
-                {data.brand_archetype || "N/A"}
-              </span>
-            </div>
+          <div className="flex flex-col gap-2">
+            <span className="uppercase text-outline font-bold">Archetype</span>
+
+            <span className="font-medium">{data.brand_archetype || "N/A"}</span>
           </div>
-          <div className="flex flex-col">
-            <span className="text-[10px] uppercase text-on-surface-variant font-bold">
-              Industry
-            </span>
-            <div className="flex items-center gap-1.5 mt-1">
-              <Briefcase className="w-3 h-3 text-secondary" />
-              <span className="text-xs text-on-surface">
-                {data.industry || "N/A"}
-              </span>
-            </div>
+          <div className="flex flex-col gap-2">
+            <span className="uppercase text-outline font-bold">Industry</span>
+
+            <span className="font-medium">{data.industry || "N/A"}</span>
           </div>
         </CardContent>
       </Card>
