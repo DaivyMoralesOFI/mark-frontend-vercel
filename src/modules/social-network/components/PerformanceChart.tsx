@@ -112,7 +112,7 @@ export const PerformanceChart = ({ data }: PerformanceChartProps) => {
                         value={viewMode}
                         onValueChange={(v) => setViewMode(v as any)}
                     >
-                        <SelectTrigger className="w-[140px] bg-surface-container-low border-outline-variant h-9 text-xs">
+                        <SelectTrigger className="w-[140px] bg-surface-container-low dark:bg-transparent border-outline-variant h-9 text-xs">
                             <SelectValue placeholder="View Mode" />
                         </SelectTrigger>
                         <SelectContent>

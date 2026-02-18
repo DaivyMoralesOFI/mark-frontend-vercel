@@ -79,7 +79,7 @@ export const OverviewSection = ({ timePeriod }: OverviewSectionProps) => {
                             value={selectedMetric}
                             onValueChange={(v) => setSelectedMetric(v as any)}
                         >
-                            <SelectTrigger className="w-[180px] bg-surface border-outline-variant">
+                            <SelectTrigger className="w-[180px] bg-surface dark:bg-transparent border-outline-variant">
                                 <SelectValue placeholder="Metric" />
                             </SelectTrigger>
                             <SelectContent>

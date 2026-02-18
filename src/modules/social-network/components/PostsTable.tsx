@@ -38,7 +38,7 @@ export const PostsTable = ({ posts }: PostsTableProps) => {
     }, [posts, activeTab]);
 
     return (
-        <div className="flex flex-col h-full bg-surface">
+        <div className="flex flex-col h-full bg-surface dark:bg-transparent">
             {/* Header Tabs with Title */}
             <div className="flex items-center justify-between border-b border-outline-variant mb-2 min-h-[44px]">
                 <div className="flex items-center gap-8">
@@ -69,7 +69,7 @@ export const PostsTable = ({ posts }: PostsTableProps) => {
             <div className="flex flex-col overflow-hidden">
                 <div className="overflow-y-auto w-full max-h-[600px] scrollbar-thin scrollbar-thumb-outline-variant pr-1">
                     <Table className="w-full">
-                        <TableHeader className="sticky top-0 bg-surface z-20">
+                        <TableHeader className="sticky top-0 bg-surface dark:bg-[#1c1a14] z-20">
                             <TableRow className="hover:bg-transparent border-b border-outline-variant">
                                 <TableHead className="w-[40px] pl-2">
                                     <Checkbox className="rounded-[4px] border-outline" />

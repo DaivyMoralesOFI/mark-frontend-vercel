@@ -127,7 +127,7 @@ export const DashboardPage = () => {
                     pageTitle={data ? data.profile.name : "Analytics"}
                     actions={pageActions}
                     className="px-6 pt-6 pb-6 gap-0 h-full overflow-hidden"
-                    outerClassName="bg-surface"
+                    outerClassName="bg-surface dark:bg-[#1c1a14]"
                 >
                     {renderHeader(richTitle)}
                     <div className="col-span-12 mt-4 h-[calc(100vh-200px)]">
@@ -145,7 +145,7 @@ export const DashboardPage = () => {
                 pageTitle="Dashboard"
                 actions={pageActions}
                 className="px-6 py-6 gap-6"
-                outerClassName="bg-surface"
+                outerClassName="bg-surface dark:bg-[#1c1a14]"
             >
                 {renderHeader("Overview")}
                 <div className="col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-6">

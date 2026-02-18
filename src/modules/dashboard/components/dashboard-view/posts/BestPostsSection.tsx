@@ -128,10 +128,10 @@ export const BestPostsSection = ({ timePeriod }: BestPostsSectionProps) => {
             </div>
 
             {/* Table Container */}
-            <div className="bg-surface w-full flex flex-col overflow-hidden">
+            <div className="bg-surface dark:bg-transparent w-full flex flex-col overflow-hidden">
                 <div className="overflow-y-auto w-full max-h-[600px] scrollbar-thin scrollbar-thumb-outline-variant pr-1">
                     <Table className="w-full">
-                        <TableHeader className="sticky top-0 bg-surface z-20">
+                        <TableHeader className="sticky top-0 bg-surface dark:bg-[#1c1a14] z-20">
                             <TableRow className="hover:bg-transparent border-b border-outline-variant">
                                 <TableHead className="w-[40px] pl-2">
                                     <Checkbox className="rounded-[4px] border-outline" />
@@ -201,11 +201,11 @@ export const BestPostsSection = ({ timePeriod }: BestPostsSectionProps) => {
                 </div>
 
                 {/* Footer: Pagination */}
-                <div className="mt-auto px-4 py-3 border-t border-outline-variant bg-surface flex items-center justify-between">
+                <div className="mt-auto px-4 py-3 border-t border-outline-variant bg-surface dark:bg-transparent flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <span className="text-sm text-on-surface-variant">Show by</span>
                         <Select defaultValue="10">
-                            <SelectTrigger className="w-[70px] h-8 text-xs border-outline-variant bg-surface">
+                            <SelectTrigger className="w-[70px] h-8 text-xs border-outline-variant bg-surface dark:bg-transparent">
                                 <SelectValue placeholder="10" />
                             </SelectTrigger>
                             <SelectContent>
@@ -216,7 +216,7 @@ export const BestPostsSection = ({ timePeriod }: BestPostsSectionProps) => {
                         </Select>
                     </div>
                     <div className="flex items-center gap-4 text-sm font-medium text-on-surface-variant">
-                        <div className="flex items-center justify-center w-8 h-8 bg-surface border border-outline-variant rounded text-on-surface shadow-sm">
+                        <div className="flex items-center justify-center w-8 h-8 bg-surface dark:bg-transparent border border-outline-variant rounded text-on-surface shadow-sm">
                             1
                         </div>
                         <span>/ 4</span>

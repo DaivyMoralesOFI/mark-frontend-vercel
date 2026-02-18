@@ -24,7 +24,7 @@ export const SocialNetworkPage = ({ timePeriod }: SocialNetworkPageProps) => {
     }
 
     return (
-        <div className="col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-8 bg-surface h-full py-2 px-4 overflow-hidden">
+        <div className="col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-8 bg-surface dark:bg-transparent h-full py-2 px-4 overflow-hidden">
             {/* Left column: KPIs + Chart - Scrollable */}
             <div className="lg:col-span-7 flex flex-col gap-8 lg:border-r lg:border-outline-variant lg:pr-10 h-full overflow-y-auto scrollbar-thin scrollbar-thumb-outline-variant scrollbar-track-transparent">
                 <div className="flex flex-col gap-4">

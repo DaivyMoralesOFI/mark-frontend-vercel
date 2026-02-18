@@ -135,7 +135,10 @@ export const authService = new AuthService();
 import {
   getAuth,
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword, // Import this
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  OAuthProvider,
   UserCredential
 } from "firebase/auth";
 import app from "@/core/config/firebase-database";
@@ -150,4 +153,16 @@ export const signInWithEmailAndPasswordsupafast = async (email: string, password
 export const signUpWithEmailAndPassword = async (email: string, password: string): Promise<UserCredential> => {
   const auth = getAuth(app);
   return createUserWithEmailAndPassword(auth, email, password);
+};
+
+export const signInWithGoogle = async (): Promise<UserCredential> => {
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+  return signInWithPopup(auth, provider);
+};
+
+export const signInWithApple = async (): Promise<UserCredential> => {
+  const auth = getAuth(app);
+  const provider = new OAuthProvider('apple.com');
+  return signInWithPopup(auth, provider);
 };
