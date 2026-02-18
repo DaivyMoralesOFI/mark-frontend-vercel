@@ -1,4 +1,4 @@
-import { Brand } from "@/core/schemas/brand-schema";
+import { Brand } from "@/modules/creation-studio/schemas/brand-schema";
 
 export const brandMock: Brand = {
   uuid: "mock-brand-001",

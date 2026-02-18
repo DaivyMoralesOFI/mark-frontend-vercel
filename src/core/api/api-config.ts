@@ -10,6 +10,15 @@ export const API_CONFIG = {
       getImageCreated: "/generated-image-v2",
       editImage: "/85a5cbee-1808-4d99-9528-f91b9c6cbe31",
     },
+    BRAND_EXTRACTOR: {
+      brandExtractor: "/extract-brand-dna",
+    },
+  },
+  FIREBASE: {
+    BRANDS: {
+      list: "brands",
+      setBrand: "brands",
+    },
   },
 };
 
@@ -25,14 +34,15 @@ export const API_CLIENT = axios.create({
 
 // Request logging (development only)
 if (import.meta.env.DEV) {
-  API_CLIENT.interceptors.request.use(
-    (config) => {
-      console.log(`📤 API Request: ${config.method?.toUpperCase()} ${config.url}`, {
+  API_CLIENT.interceptors.request.use((config) => {
+    console.log(
+      `📤 API Request: ${config.method?.toUpperCase()} ${config.url}`,
+      {
         data: config.data,
-      });
-      return config;
-    }
-  );
+      },
+    );
+    return config;
+  });
 
   API_CLIENT.interceptors.response.use(
     (response) => {
@@ -54,14 +64,14 @@ if (import.meta.env.DEV) {
       };
 
       if (status === 400) {
-        console.error('❌ Bad Request (400):', errorDetails);
+        console.error("❌ Bad Request (400):", errorDetails);
       } else if (status) {
         console.error(`❌ API Error (${status}):`, errorDetails);
       } else {
-        console.error('❌ Network/Unknown Error:', errorDetails);
+        console.error("❌ Network/Unknown Error:", errorDetails);
       }
 
       return Promise.reject(error);
-    }
+    },
   );
 }

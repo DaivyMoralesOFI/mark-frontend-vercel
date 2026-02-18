@@ -24,9 +24,6 @@ const AppRoutes = () => {
         {/* Public route: authentication page */}
         <Route path="/auth" element={<AuthPage />} />
 
-        {/* Experimental Brand DNA routes */}
-        <Route path="/brand-dna-extractor" element={<ExtractorDNAPage />} />
-
         {/* Protected routes: require authentication */}
         <Route
           element={
