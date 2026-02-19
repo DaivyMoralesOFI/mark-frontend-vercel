@@ -45,7 +45,7 @@ import {
   AvatarImage,
 } from "@/shared/components/ui/avatar";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import MarkLogo from "/mark-magic-wand.png";
+
 import { useUser } from "@/shared/hooks/useUser";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
 import { LinkedInIcon } from "@/shared/components/icons/LinkedInIcon";
@@ -270,7 +270,7 @@ export function Sidebar() {
                 </DropdownMenuGroup>
 
                 <div className="mt-2 pt-2 border-t border-outline-variant flex items-center px-2 pb-1">
-                  <img src={MarkLogo} alt="Logo" className="w-10 h-10" />
+                  <img src="/mark-magic-wand.png" alt="Logo" className="w-10 h-10 object-contain" />
                   <span className="font-semibold text-sm">Mark</span>
                   <span className="text-muted-foreground text-xs ml-auto">v1.0</span>
                 </div>
@@ -386,7 +386,7 @@ export function Sidebar() {
         {isExpanded ? (
           <div className="flex items-center gap-2 px-1">
             <div className="flex aspect-square items-center justify-center size-10">
-              <img src="/mark-apple-icon.png" alt="Logo" className="w-full h-full" />
+              <img src="/mark-apple-icon.png" alt="Logo" className="w-full h-full object-contain" />
             </div>
             <div className="flex flex-col leading-none">
               <span className="font-semibold text-sm">Mark</span>
@@ -395,7 +395,7 @@ export function Sidebar() {
           </div>
         ) : (
           <div className="flex aspect-square items-center justify-center size-10 mx-auto">
-            <img src="/mark-apple-icon.png" alt="Logo" className="w-full h-full" />
+            <img src="/mark-apple-icon.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
         )}
       </SidebarFooter>

@@ -99,7 +99,9 @@ export default function AuthPage() {
 
   const handleError = (err: any) => {
     // improved error handling
-    if (err.code === 'auth/email-already-in-use') {
+    if (err.message === "User not found in database") {
+      setError("User not found in database. Please contact support.");
+    } else if (err.code === 'auth/email-already-in-use') {
       setError("Email already in use. Please login instead.")
     } else if (err.code === 'auth/weak-password') {
       setError("Password should be at least 6 characters.")
