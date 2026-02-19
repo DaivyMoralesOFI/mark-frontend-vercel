@@ -15,9 +15,11 @@ const AppHeader = () => {
         </div>
         <div className="flex">
           <nav className="flex justify-between items-center gap-3 list-none ">
-            <Link to="/dashboard">Analytics</Link>
+            <Link to="/app/dashboard">Analytics</Link>
             <Link to="/app/creation-studio/new/content">Create content</Link>
-            <Link to="/app/creation-studio/brands">Brands Identity</Link>
+            <Link to="/app/creation-studio/brand-dna-extractor">
+              Brands Extractor
+            </Link>
           </nav>
         </div>
         <div className="flex">

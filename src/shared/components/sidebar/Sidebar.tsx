@@ -8,6 +8,7 @@ import {
   Calendar,
   LayoutDashboard,
   ChevronRight,
+  Sparkles,
 } from "lucide-react";
 import {
   Sidebar as SidebarComponent,
@@ -143,11 +144,15 @@ export function Sidebar() {
               <SidebarMenuItem className="flex items-center gap-2">
                 <SidebarMenuButton
                   tooltip="Quick Create"
-                  className="cursor-pointer text-on-secondary bg-secondary min-w-8 duration-300 ease-linear font-medium hover:bg-on-secondary hover:text-secondary hover:border-secondary border"
-                  onClick={() => setIsModalOpen(true)}
+                  className="w-full h-fit"
                 >
-                  <CirclePlus />
-                  <span>Create post</span>
+                  <Link
+                    to="/app/creation-studio/new/content"
+                    className="flex items-center gap-2 py-2 px-3 rounded-xl w-full cursor-pointer text-on-secondary bg-secondary min-w-8 duration-300 ease-linear font-medium hover:bg-on-secondary hover:text-secondary hover:border-secondary border"
+                  >
+                    <Sparkles size={16} />
+                    <span>Creation studio</span>
+                  </Link>
                 </SidebarMenuButton>
                 <CreatePostModal
                   isOpen={isModalOpen}
@@ -201,8 +206,8 @@ export function Sidebar() {
                                   (subItem.url === "/dashboard" &&
                                     location.pathname === "/dashboard" &&
                                     !location.search) ||
-                                  (location.pathname + location.search ===
-                                    subItem.url)
+                                  location.pathname + location.search ===
+                                    subItem.url
                                 }
                               >
                                 <Link to={subItem.url}>
