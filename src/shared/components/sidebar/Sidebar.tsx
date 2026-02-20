@@ -138,146 +138,23 @@ export function Sidebar() {
 
   return (
     <SidebarComponent variant="sidebar" collapsible="icon">
-      {/* 1. Sidebar Header: User Profile */}
+      {/* 1. Sidebar Header: Logo */}
       <SidebarHeader className="p-3">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton
-                  size="lg"
-                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground border border-transparent hover:border-sidebar-border hover:bg-sidebar-accent transition-all"
-                >
-                  <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage
-                      src={displayPhoto}
-                      alt={displayName}
-                    />
-                    <AvatarFallback className="rounded-lg">
-                      {displayName
-                        ?.split(" ")
-                        .map((n: string) => n[0])
-                        .join("")
-                        .toUpperCase() || "OS"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    {profileLoading && !firebaseUser ? (
-                      <>
-                        <div className="h-4 w-24 bg-gray-200 animate-pulse rounded" />
-                        <div className="mt-1 h-3 w-32 bg-gray-100 animate-pulse rounded" />
-                      </>
-                    ) : (
-                      <>
-                        <span className="truncate font-semibold text-foreground">
-                          {displayName}
-                        </span>
-                        <span className="truncate text-xs text-muted-foreground/70">
-                          {displayEmail}
-                        </span>
-                      </>
-                    )}
-                  </div>
-                  <ChevronRight className="ml-auto size-4 text-muted-foreground/50 rotate-90" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="rounded-xl p-2 gap-1 border-outline-variant shadow-xs"
-                side="right"
-                align="start"
-                sideOffset={12}
-              >
-                {/* User Switcher Section */}
-                <div className="flex flex-col gap-1 mb-1">
-                  {/* Current User (Active) */}
-                  <div className="flex items-center gap-3 p-2 rounded-md bg-muted/50">
-                    <div className="relative">
-                      <Avatar className="h-10 w-10 rounded-lg">
-                        <AvatarImage
-                          src={displayPhoto}
-                          alt={displayName}
-                        />
-                        <AvatarFallback className="rounded-lg">
-                          {displayName[0]}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-background"></div>
-                    </div>
-                    <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold text-foreground">
-                        {displayName}
-                      </span>
-                      <span className="truncate text-xs text-muted-foreground">
-                        {displayEmail}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-center p-1">
-                      <div className="w-4 h-4 rounded-full border-[4px] border-foreground/80"></div>
-                    </div>
-                  </div>
-
-                  {/* Other User (Inactive) */}
-                  <div className="flex items-center gap-3 p-2 rounded-md hover:bg-sidebar-accent cursor-pointer transition-colors">
-                    <div className="relative">
-                      <Avatar className="h-10 w-10 rounded-lg">
-                        <AvatarImage
-                          src={mockOtherUser.photo_url}
-                          alt={mockOtherUser.user_name}
-                        />
-                        <AvatarFallback className="rounded-lg">L</AvatarFallback>
-                      </Avatar>
-                      <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-background"></div>
-                    </div>
-                    <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-medium text-foreground">
-                        {mockOtherUser.user_name}
-                      </span>
-                      <span className="truncate text-xs text-muted-foreground">
-                        {mockOtherUser.email}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-center p-1">
-                      <div className="w-4 h-4 rounded-full border border-muted-foreground/40"></div>
-                    </div>
-                  </div>
-                </div>
-
-                <DropdownMenuSeparator className="my-1" />
-
-                <DropdownMenuGroup>
-                  <DropdownMenuItem className="p-2 cursor-pointer">
-                    <User className="mr-2 h-4 w-4 text-muted-foreground" />
-                    My profile @{displayName?.split(" ")[0].toLowerCase() || "user"}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="p-2 cursor-pointer">
-                    <Settings className="mr-2 h-4 w-4 text-muted-foreground" />
-                    Account settings
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="p-2 cursor-pointer">
-                    <Monitor className="mr-2 h-4 w-4 text-muted-foreground" />
-                    Device management
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-
-                <DropdownMenuGroup>
-                  <DropdownMenuItem
-                    className="p-2 cursor-pointer"
-                    onClick={handleLogout}
-                  >
-                    <LogOut className="mr-2 h-4 w-4 text-muted-foreground" />
-                    Sign out
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-
-                <div className="mt-2 pt-2 border-t border-outline-variant flex items-center px-2 pb-1">
-                  <img src="/mark-magic-wand.png" alt="Logo" className="w-10 h-10 object-contain" />
-                  <span className="font-semibold text-sm">Mark</span>
-                  <span className="text-muted-foreground text-xs ml-auto">v1.0</span>
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        {isExpanded ? (
+          <div className="flex items-center gap-2 px-1">
+            <div className="flex aspect-square items-center justify-center size-10">
+              <img src="/mark-apple-icon.png" alt="Logo" className="w-full h-full object-contain" />
+            </div>
+            <div className="flex flex-col leading-none">
+              <span className="font-semibold text-sm">Mark</span>
+              <span className="text-muted-foreground text-[10px]">v1.0</span>
+            </div>
+          </div>
+        ) : (
+          <div className="flex aspect-square items-center justify-center size-10 mx-auto">
+            <img src="/mark-apple-icon.png" alt="Logo" className="w-full h-full object-contain" />
+          </div>
+        )}
       </SidebarHeader>
 
       {/* 2. Sidebar Content: Navigation Groups */}
@@ -381,23 +258,146 @@ export function Sidebar() {
         ))}
       </SidebarContent>
 
-      {/* 3. Sidebar Footer: Logo & Version */}
-      <SidebarFooter className="p-4">
-        {isExpanded ? (
-          <div className="flex items-center gap-2 px-1">
-            <div className="flex aspect-square items-center justify-center size-10">
-              <img src="/mark-apple-icon.png" alt="Logo" className="w-full h-full object-contain" />
-            </div>
-            <div className="flex flex-col leading-none">
-              <span className="font-semibold text-sm">Mark</span>
-              <span className="text-muted-foreground text-[10px]">v1.0</span>
-            </div>
-          </div>
-        ) : (
-          <div className="flex aspect-square items-center justify-center size-10 mx-auto">
-            <img src="/mark-apple-icon.png" alt="Logo" className="w-full h-full object-contain" />
-          </div>
-        )}
+      {/* 3. Sidebar Footer: User Profile */}
+      <SidebarFooter className="p-3">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton
+                  size="lg"
+                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground border border-transparent hover:border-sidebar-border hover:bg-sidebar-accent transition-all"
+                >
+                  <Avatar className="h-8 w-8 rounded-lg">
+                    <AvatarImage
+                      src={displayPhoto}
+                      alt={displayName}
+                    />
+                    <AvatarFallback className="rounded-lg">
+                      {displayName
+                        ?.split(" ")
+                        .map((n: string) => n[0])
+                        .join("")
+                        .toUpperCase() || "OS"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    {profileLoading && !firebaseUser ? (
+                      <>
+                        <div className="h-4 w-24 bg-gray-200 animate-pulse rounded" />
+                        <div className="mt-1 h-3 w-32 bg-gray-100 animate-pulse rounded" />
+                      </>
+                    ) : (
+                      <>
+                        <span className="truncate font-semibold text-foreground">
+                          {displayName}
+                        </span>
+                        <span className="truncate text-xs text-muted-foreground/70">
+                          {displayEmail}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                  <ChevronRight className="ml-auto size-4 text-muted-foreground/50 rotate-90" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="rounded-xl p-2 gap-1 border-outline-variant shadow-xs"
+                side="right"
+                align="end"
+                sideOffset={12}
+              >
+                {/* User Switcher Section */}
+                <div className="flex flex-col gap-1 mb-1">
+                  {/* Current User (Active) */}
+                  <div className="flex items-center gap-3 p-2 rounded-md bg-muted/50">
+                    <div className="relative">
+                      <Avatar className="h-10 w-10 rounded-lg">
+                        <AvatarImage
+                          src={displayPhoto}
+                          alt={displayName}
+                        />
+                        <AvatarFallback className="rounded-lg">
+                          {displayName[0]}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-background"></div>
+                    </div>
+                    <div className="grid flex-1 text-left text-sm leading-tight">
+                      <span className="truncate font-semibold text-foreground">
+                        {displayName}
+                      </span>
+                      <span className="truncate text-xs text-muted-foreground">
+                        {displayEmail}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-center p-1">
+                      <div className="w-4 h-4 rounded-full border-[4px] border-foreground/80"></div>
+                    </div>
+                  </div>
+
+                  {/* Other User (Inactive) */}
+                  <div className="flex items-center gap-3 p-2 rounded-md hover:bg-sidebar-accent cursor-pointer transition-colors">
+                    <div className="relative">
+                      <Avatar className="h-10 w-10 rounded-lg">
+                        <AvatarImage
+                          src={mockOtherUser.photo_url}
+                          alt={mockOtherUser.user_name}
+                        />
+                        <AvatarFallback className="rounded-lg">L</AvatarFallback>
+                      </Avatar>
+                      <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-background"></div>
+                    </div>
+                    <div className="grid flex-1 text-left text-sm leading-tight">
+                      <span className="truncate font-medium text-foreground">
+                        {mockOtherUser.user_name}
+                      </span>
+                      <span className="truncate text-xs text-muted-foreground">
+                        {mockOtherUser.email}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-center p-1">
+                      <div className="w-4 h-4 rounded-full border border-muted-foreground/40"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <DropdownMenuSeparator className="my-1" />
+
+                <DropdownMenuGroup>
+                  <DropdownMenuItem className="p-2 cursor-pointer">
+                    <User className="mr-2 h-4 w-4 text-muted-foreground" />
+                    My profile @{displayName?.split(" ")[0].toLowerCase() || "user"}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="p-2 cursor-pointer">
+                    <Settings className="mr-2 h-4 w-4 text-muted-foreground" />
+                    Account settings
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="p-2 cursor-pointer">
+                    <Monitor className="mr-2 h-4 w-4 text-muted-foreground" />
+                    Device management
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+
+                <DropdownMenuGroup>
+                  <DropdownMenuItem
+                    className="p-2 cursor-pointer"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="mr-2 h-4 w-4 text-muted-foreground" />
+                    Sign out
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+
+                <div className="mt-2 pt-2 border-t border-outline-variant flex items-center px-2 pb-1">
+                  <img src="/mark-magic-wand.png" alt="Logo" className="w-10 h-10 object-contain" />
+                  <span className="font-semibold text-sm">Mark</span>
+                  <span className="text-muted-foreground text-xs ml-auto">v1.0</span>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarFooter>
     </SidebarComponent>
   );

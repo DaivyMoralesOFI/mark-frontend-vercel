@@ -10,8 +10,8 @@ import {
     TableHeader,
     TableRow,
 } from "@/shared/components/ui/Table";
-import { Badge } from "@/shared/components/ui/badge";
-import { Checkbox } from "@/shared/components/ui/checkbox";
+
+
 import { Heart, MessageCircle, Share2, Eye } from "lucide-react";
 
 interface PostsTableProps {
@@ -39,31 +39,24 @@ export const PostsTable = ({ posts }: PostsTableProps) => {
 
     return (
         <div className="flex flex-col h-full bg-surface dark:bg-transparent">
-            {/* Header Tabs with Title */}
-            <div className="flex items-center justify-between border-b border-outline-variant mb-2 min-h-[44px]">
-                <div className="flex items-center gap-8">
-                    <h2 className="text-lg font-medium text-on-surface whitespace-nowrap">Content Library</h2>
-                    <div className="flex items-center gap-6">
-                        {tabs.map((tab) => (
-                            <button
-                                key={tab}
-                                onClick={() => setActiveTab(tab)}
-                                className={cn(
-                                    "pb-3 text-sm transition-all relative mt-3",
-                                    activeTab === tab
-                                        ? "text-primary font-semibold"
-                                        : "text-on-surface-variant font-normal hover:text-on-surface"
-                                )}
-                            >
-                                {tab}
-                                {activeTab === tab && (
-                                    <div className="absolute bottom-[-1px] left-0 right-0 h-0.5 bg-primary rounded-full transition-all" />
-                                )}
-                            </button>
-                        ))}
-                    </div>
-                </div>
+            {/* Chrome-style Tabs */}
+            <div className="flex items-end gap-0.5 px-1 pt-1">
+                {tabs.map((tab) => (
+                    <button
+                        key={tab}
+                        onClick={() => setActiveTab(tab)}
+                        className={cn(
+                            "px-4 py-2 text-sm transition-all relative rounded-t-lg",
+                            activeTab === tab
+                                ? "bg-surface-container-high dark:bg-[#2a2720] text-on-surface font-medium"
+                                : "text-on-surface-variant/60 font-normal hover:bg-on-surface/[0.04] hover:text-on-surface-variant"
+                        )}
+                    >
+                        {tab}
+                    </button>
+                ))}
             </div>
+            <div className="h-px bg-outline-variant" />
 
             {/* Table Container with Localized Scrolling */}
             <div className="flex flex-col overflow-hidden">
@@ -71,9 +64,7 @@ export const PostsTable = ({ posts }: PostsTableProps) => {
                     <Table className="w-full">
                         <TableHeader className="sticky top-0 bg-surface dark:bg-[#1c1a14] z-20">
                             <TableRow className="hover:bg-transparent border-b border-outline-variant">
-                                <TableHead className="w-[40px] pl-2">
-                                    <Checkbox className="rounded-[4px] border-outline" />
-                                </TableHead>
+
                                 <TableHead className="text-[11px] font-medium uppercase tracking-wider text-on-surface-variant py-2">
                                     Content
                                 </TableHead>
@@ -115,40 +106,51 @@ export const PostsTable = ({ posts }: PostsTableProps) => {
                                     key={post.id}
                                     className="hover:bg-on-surface/[0.02] border-b border-outline-variant/50 transition-colors h-14"
                                 >
-                                    <TableCell className="pl-2">
-                                        <Checkbox className="rounded-[4px] border-outline" />
-                                    </TableCell>
+
                                     <TableCell>
-                                        <div className="flex flex-col">
-                                            <span className="text-sm font-medium text-on-surface line-clamp-1">
-                                                {post.caption}
-                                            </span>
-                                            <span className="text-[11px] text-on-surface-variant">
-                                                {post.date}
-                                            </span>
+                                        <div className="flex items-start gap-3">
+                                            {post.thumbnail && (
+                                                <img
+                                                    src={post.thumbnail}
+                                                    alt="Post thumbnail"
+                                                    className="w-10 h-10 object-cover rounded-md border border-outline-variant flex-shrink-0"
+                                                />
+                                            )}
+                                            <div className="flex flex-col min-w-0">
+                                                {post.permalink ? (
+                                                    <a
+                                                        href={post.permalink}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-sm font-medium text-on-surface line-clamp-2 break-words hover:text-primary transition-colors hover:underline"
+                                                        title={post.caption}
+                                                    >
+                                                        {post.caption}
+                                                    </a>
+                                                ) : (
+                                                    <span className="text-sm font-medium text-on-surface line-clamp-2 break-words" title={post.caption}>
+                                                        {post.caption}
+                                                    </span>
+                                                )}
+                                                <span className="text-[11px] text-on-surface-variant">
+                                                    {post.date}
+                                                </span>
+                                            </div>
                                         </div>
                                     </TableCell>
-                                    <TableCell>
-                                        <Badge
-                                            variant="secondary"
-                                            className={cn(
-                                                "rounded-full px-2 py-0 text-[10px] font-medium border-none shadow-none uppercase tracking-tight",
-                                                post.typeColor
-                                            )}
-                                        >
-                                            {post.type}
-                                        </Badge>
+                                    <TableCell className="text-xs font-normal text-on-surface">
+                                        {post.type}
                                     </TableCell>
-                                    <TableCell className="text-sm font-medium text-on-surface">
+                                    <TableCell className="text-xs font-normal text-on-surface">
                                         {post.likes}
                                     </TableCell>
-                                    <TableCell className="text-sm font-medium text-on-surface">
+                                    <TableCell className="text-xs font-normal text-on-surface">
                                         {post.comments}
                                     </TableCell>
-                                    <TableCell className="text-sm font-medium text-on-surface">
+                                    <TableCell className="text-xs font-normal text-on-surface">
                                         {post.shares}
                                     </TableCell>
-                                    <TableCell className="text-sm font-medium text-on-surface">
+                                    <TableCell className="text-xs font-normal text-on-surface">
                                         {post.reach}
                                     </TableCell>
                                     <TableCell className="text-sm font-semibold text-on-surface text-right pr-4">

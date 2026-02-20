@@ -29,7 +29,7 @@ export const PlatformHeader = ({ profile }: PlatformHeaderProps) => {
 
                 {/* Platform Info */}
                 <div className="flex flex-col gap-1">
-                    <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
+                    <h1 className="!text-4xl font-normal text-gray-900 tracking-tight">
                         {profile.name}
                     </h1>
                     <div className="flex items-center gap-3">

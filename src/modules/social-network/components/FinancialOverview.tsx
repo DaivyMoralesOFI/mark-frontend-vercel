@@ -30,22 +30,22 @@ import {
 } from "@/shared/components/ui/chart"
 
 const radialChartConfig = {
-    visitors: {
-        label: "Visitors",
+    views: {
+        label: "Views",
     },
-    safari: {
-        label: "Safari",
+    profile: {
+        label: "Profile",
         color: "#d946ef",
     },
 } satisfies ChartConfig
 
 const barChartConfig = {
-    desktop: {
-        label: "Desktop",
+    likes: {
+        label: "Likes",
         color: "#d946ef",
     },
-    mobile: {
-        label: "Mobile",
+    comments: {
+        label: "Comments",
         color: "var(--secondary)",
     },
 } satisfies ChartConfig
@@ -72,7 +72,7 @@ export function ChartRadialText({ data, trend, timePeriod }: { data: VisitorStat
     return (
         <Card className="flex flex-col border-none shadow-none bg-transparent gap-0">
             <CardHeader className="items-start pb-0 px-0">
-                <CardTitle className="text-xl font-medium tracking-tight">Visitor Stats</CardTitle>
+                <CardTitle className="text-xl font-medium tracking-tight">Profile Views</CardTitle>
                 <CardDescription className="text-xs text-on-surface-variant/70 font-medium">{periodLabel}</CardDescription>
             </CardHeader>
             <CardContent className="flex-1 pb-0 px-0">
@@ -94,7 +94,7 @@ export function ChartRadialText({ data, trend, timePeriod }: { data: VisitorStat
                             className="first:fill-surface-container-high last:fill-surface"
                             polarRadius={[86, 74]}
                         />
-                        <RadialBar dataKey="visitors" background cornerRadius={10} />
+                        <RadialBar dataKey="views" background cornerRadius={10} />
                         <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
                             <Label
                                 content={({ viewBox }) => {
@@ -111,14 +111,14 @@ export function ChartRadialText({ data, trend, timePeriod }: { data: VisitorStat
                                                     y={viewBox.cy}
                                                     className="fill-on-surface text-3xl font-normal"
                                                 >
-                                                    {data[0].visitors.toLocaleString()}
+                                                    {data[0].views.toLocaleString()}
                                                 </tspan>
                                                 <tspan
                                                     x={viewBox.cx}
                                                     y={(viewBox.cy || 0) + 24}
                                                     className="fill-on-surface-variant text-sm font-normal"
                                                 >
-                                                    Visitors
+                                                    Views
                                                 </tspan>
                                             </text>
                                         )
@@ -152,7 +152,7 @@ export function ChartBarStacked({ data, trend, timePeriod }: { data: TrafficData
     return (
         <Card className="border-none shadow-none bg-transparent gap-0">
             <CardHeader className="px-0">
-                <CardTitle className="text-xl font-medium tracking-tight">Traffic Sources</CardTitle>
+                <CardTitle className="text-xl font-medium tracking-tight">Engagement Breakdown</CardTitle>
                 <CardDescription className="text-xs text-on-surface-variant/70 font-medium">{periodLabel}</CardDescription>
             </CardHeader>
             <CardContent className="px-0 h-[180px]">
@@ -170,14 +170,14 @@ export function ChartBarStacked({ data, trend, timePeriod }: { data: TrafficData
                         <ChartTooltip content={<ChartTooltipContent hideLabel />} />
                         <ChartLegend content={<ChartLegendContent />} />
                         <Bar
-                            dataKey="desktop"
+                            dataKey="likes"
                             stackId="a"
                             fill="#d946ef"
                             radius={[0, 0, 4, 4]}
                             barSize={32}
                         />
                         <Bar
-                            dataKey="mobile"
+                            dataKey="comments"
                             stackId="a"
                             fill="var(--secondary)"
                             radius={[4, 4, 0, 0]}

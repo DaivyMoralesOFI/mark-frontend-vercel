@@ -41,18 +41,20 @@ export interface Post {
     shares: string;
     reach: string;
     impressions: string;
+    thumbnail?: string;
+    permalink?: string;
 }
 
 export interface VisitorStat {
-    browser: string;
-    visitors: number;
+    source: string;
+    views: number;
     fill: string;
 }
 
 export interface TrafficData {
     month: string;
-    desktop: number;
-    mobile: number;
+    likes: number;
+    comments: number;
 }
 
 export interface PlatformData {
@@ -236,16 +238,16 @@ export const getPlatformData = (platform: string, period: TimePeriod = "30days")
                 period === "30days" ? 12 : 20
         ),
         visitorStats: [
-            { browser: "safari", visitors: Math.round(1200 * m), fill: "#d946ef" }
+            { source: "profile", views: Math.round(1200 * m), fill: "#d946ef" }
         ],
         visitorTrend: 5.2 + (Math.random() * 2),
         trafficSources: [
-            { month: "Jan", desktop: Math.round(150 * m), mobile: Math.round(80 * m) },
-            { month: "Feb", desktop: Math.round(200 * m), mobile: Math.round(150 * m) },
-            { month: "Mar", desktop: Math.round(180 * m), mobile: Math.round(100 * m) },
-            { month: "Apr", desktop: Math.round(250 * m), mobile: Math.round(190 * m) },
-            { month: "May", desktop: Math.round(210 * m), mobile: Math.round(130 * m) },
-            { month: "Jun", desktop: Math.round(230 * m), mobile: Math.round(140 * m) },
+            { month: "Jan", likes: Math.round(150 * m), comments: Math.round(80 * m) },
+            { month: "Feb", likes: Math.round(200 * m), comments: Math.round(150 * m) },
+            { month: "Mar", likes: Math.round(180 * m), comments: Math.round(100 * m) },
+            { month: "Apr", likes: Math.round(250 * m), comments: Math.round(190 * m) },
+            { month: "May", likes: Math.round(210 * m), comments: Math.round(130 * m) },
+            { month: "Jun", likes: Math.round(230 * m), comments: Math.round(140 * m) },
         ].slice(period === "7days" ? -2 : (period === "30days" ? -4 : -6)),
         trafficTrend: 3.8 + (Math.random() * 3),
     };
