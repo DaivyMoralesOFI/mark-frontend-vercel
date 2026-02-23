@@ -1,6 +1,5 @@
 import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar";
 import { Sidebar } from "@/shared/components/sidebar/Sidebar";
-import AppHeader from "@/shared/components/header/app-header";
 import { Outlet } from "react-router-dom";
 import { useState } from "react";
 
@@ -8,17 +7,16 @@ const CreationStudioLayout = () => {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <div className="min-w-screen min-h-screen max-w-screen max-h-screen h-screen w-screen relative p-0 m-0 overflow-hidden bg-surface">
+    <div className="dashboard-layout text-on-surface w-full min-h-screen relative">
       <SidebarProvider
         open={isOpen}
         onOpenChange={setIsOpen}
-        className="relative"
+        className="relative bg-transparent"
       >
         <Sidebar />
-        <div className="w-screen h-full px-3 flex flex-col">
-          <AppHeader />
-          <SidebarInset className="flex-1 overflow-hidden">
-            <div className="relative h-full w-full overflow-hidden border border-outline-variant bg-surface-container rounded-lg">
+        <div className="flex-1 h-screen flex flex-col p-1 pr-1 md:py-2 md:pr-2 overflow-hidden">
+          <SidebarInset className="flex-1 overflow-hidden rounded-2xl border border-sidebar-border bg-surface dark:bg-[#1c1a14] relative">
+            <div className="relative h-full w-full overflow-hidden rounded-2xl bg-surface-container">
               <div
                 className="absolute inset-0 z-0"
                 style={{

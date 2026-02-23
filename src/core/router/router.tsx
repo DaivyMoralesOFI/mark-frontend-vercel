@@ -2,7 +2,6 @@
 export { default as TooltipHover } from "@/shared/components/tooltip/tooltip-hover";
 export { default as ToggleTheme } from "@/shared/components/dropdown/toggle-theme";
 export { default as AvatarDropdown } from "@/shared/components/dropdown/avatar-drop-down";
-export { default as AppHeader } from "@/shared/components/header/app-header";
 export { default as SiteHeader } from "@/shared/components/header/site-header";
 export { default as KPICard } from "@/shared/components/cards/KPICard";
 export { DynamicTableColumnHeader } from "@/shared/components/table/table-column-header";

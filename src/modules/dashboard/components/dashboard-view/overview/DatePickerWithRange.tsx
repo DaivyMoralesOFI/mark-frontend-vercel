@@ -48,31 +48,27 @@ export function DatePickerWithRange({
                         <Button
                             variant="outline"
                             id="date-picker-range"
-                            className={cn(
-                                "justify-start px-4 font-normal text-left transition-all duration-300",
-                                "bg-surface-container-low border-outline-variant/60 hover:bg-surface-container hover:border-outline-variant",
-                                "h-11 min-w-[280px] rounded-2xl shadow-sm hover:shadow-md",
-                                !date && "text-on-surface-variant"
-                            )}
+                            className="justify-start px-3 font-normal bg-white dark:bg-surface-container-low border-outline-variant h-10 min-w-[260px] rounded-xl hover:bg-gray-50 dark:hover:bg-surface-container transition-colors"
                         >
-                            <CalendarIcon className="mr-3 h-4 w-4 text-on-surface-variant" />
+                            <CalendarIcon className="mr-2 h-4 w-4 text-on-surface-variant" />
                             {date?.from ? (
                                 date.to ? (
-                                    <span className="text-on-surface font-medium">
-                                        {format(date.from, "MMM dd, yyyy")} <span className="text-on-surface-variant mx-1">—</span> {format(date.to, "MMM dd, yyyy")}
+                                    <span className="text-on-surface">
+                                        {format(date.from, "LLL dd, y")} -{" "}
+                                        {format(date.to, "LLL dd, y")}
                                     </span>
                                 ) : (
-                                    <span className="text-on-surface font-medium">
-                                        {format(date.from, "MMM dd, yyyy")}
+                                    <span className="text-on-surface">
+                                        {format(date.from, "LLL dd, y")}
                                     </span>
                                 )
                             ) : (
-                                <span>Pick a date range...</span>
+                                <span className="text-on-surface-variant">Pick a date</span>
                             )}
                         </Button>
                     )}
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 border-outline-variant/60 rounded-3xl shadow-2xl bg-surface/80 backdrop-blur-xl" align="end">
+                <PopoverContent className="w-auto p-0 border-outline-variant" align="end">
                     <Calendar
                         initialFocus
                         mode="range"

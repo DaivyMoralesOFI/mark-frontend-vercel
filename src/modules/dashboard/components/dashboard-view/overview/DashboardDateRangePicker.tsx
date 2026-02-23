@@ -52,10 +52,9 @@ export const DashboardDateRangePicker = ({
             <DialogContent className="max-w-[850px] p-0 overflow-hidden bg-white dark:bg-surface-container-low border-outline-variant rounded-2xl">
                 <DialogTitle className="sr-only">Date Range Picker</DialogTitle>
 
-                <div className="flex min-h-[440px]">
+                <div className="flex min-h-[400px]">
                     {/* Sidebar Presets */}
-                    <div className="w-[190px] border-r border-outline-variant py-6 px-2 flex flex-col gap-1.5 bg-surface-container-lowest/30">
-
+                    <div className="w-[180px] border-r border-gray-100 dark:border-outline-variant py-4 flex flex-col gap-1">
                         {presets.map((preset) => (
                             <button
                                 key={preset.label}
@@ -63,8 +62,8 @@ export const DashboardDateRangePicker = ({
                                 className={cn(
                                     "px-6 py-2 text-left text-sm transition-colors mx-2 rounded-lg",
                                     activePreset === preset.label
-                                        ? "bg-surface-container text-on-surface font-semibold"
-                                        : "text-on-surface-variant hover:bg-surface-container/50 font-medium"
+                                        ? "bg-gray-100 dark:bg-surface-bright text-on-surface font-medium"
+                                        : "text-on-surface-variant hover:bg-gray-50 dark:hover:bg-surface-container/50 font-normal"
                                 )}
                             >
                                 {preset.label}
@@ -87,26 +86,26 @@ export const DashboardDateRangePicker = ({
                                 classNames={{
                                     months: "flex flex-row gap-8",
                                     month: "space-y-4",
-                                    caption: "flex justify-center pt-2 pb-4 relative items-center",
-                                    caption_label: "text-base font-bold text-on-surface tracking-tight",
+                                    caption: "flex justify-center pt-1 relative items-center",
+                                    caption_label: "text-sm font-medium text-gray-900 dark:text-on-surface",
                                     nav: "space-x-1 flex items-center",
                                     table: "w-full border-collapse space-y-1",
-                                    head_row: "flex mb-2",
-                                    head_cell: "text-on-surface-variant rounded-md w-[2.6rem] font-bold text-[0.70rem] h-9 flex items-center justify-center uppercase tracking-wider",
-                                    row: "flex w-full mt-2 gap-1",
+                                    head_row: "flex",
+                                    head_cell: "text-gray-400 rounded-md w-9 font-normal text-[0.75rem] h-9 flex items-center justify-center dark:text-on-surface-variant uppercase",
+                                    row: "flex w-full mt-2",
                                     cell: cn(
                                         "relative p-0 text-center text-sm focus-within:relative focus-within:z-20",
-                                        "[&:has([data-range-middle=true])]:!bg-primary/10",
+                                        "[&:has([data-range-middle=true])]:!bg-blue-50 dark:[&:has([data-range-middle=true])]:!bg-blue-900/30",
                                         "[&:has([data-range-start=true])]:!bg-transparent",
                                         "[&:has([data-range-end=true])]:!bg-transparent"
                                     ),
-                                    day: "h-[2.6rem] w-[2.6rem] p-0 font-medium aria-selected:opacity-100 text-on-surface hover:!bg-surface-container rounded-xl transition-all duration-200 cursor-pointer",
-                                    range_start: "!bg-primary !text-on-primary !font-bold !rounded-2xl !shadow-md shadow-primary/30",
-                                    range_end: "!bg-primary !text-on-primary !font-bold !rounded-2xl !shadow-md shadow-primary/30",
-                                    range_middle: "!bg-transparent !text-primary !font-semibold !rounded-none",
-                                    today: "!bg-surface-container-high !text-primary !font-bold !rounded-2xl",
-                                    outside: "text-on-surface-variant/30 opacity-50",
-                                    disabled: "text-on-surface-variant/30 opacity-50",
+                                    day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 dark:text-on-surface hover:!bg-gray-100 dark:hover:!bg-surface-container rounded-md transition-colors",
+                                    range_start: "!bg-blue-600 !text-white !rounded-lg",
+                                    range_end: "!bg-blue-600 !text-white !rounded-lg",
+                                    range_middle: "!bg-transparent !text-blue-600 dark:!text-blue-400 !font-semibold",
+                                    today: "!bg-transparent !text-blue-600 !font-bold",
+                                    outside: "text-gray-300 dark:text-gray-600 opacity-50",
+                                    disabled: "text-gray-300 dark:text-gray-600 opacity-50",
                                     hidden: "invisible",
                                 }}
                             />
@@ -115,27 +114,27 @@ export const DashboardDateRangePicker = ({
                 </div>
 
                 {/* Footer */}
-                <div className="p-5 border-t border-outline-variant flex items-center justify-between bg-surface-container-lowest/50 backdrop-blur-md rounded-b-2xl">
-                    <div className="flex items-center gap-3">
-                        <div className="px-5 py-2.5 border border-outline-variant rounded-xl text-sm font-semibold min-w-[130px] text-center bg-surface text-on-surface shadow-sm">
-                            {range?.from ? format(range.from, "MMM dd, yyyy") : "Start date"}
+                <div className="p-4 border-t border-gray-100 dark:border-outline-variant flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <div className="px-4 py-2 border border-gray-200 dark:border-outline-variant rounded-xl text-sm font-medium w-[120px] text-center bg-white dark:bg-surface">
+                            {range?.from ? format(range.from, "d MMM") : "Start date"}
                         </div>
-                        <span className="text-on-surface-variant/50 font-bold">—</span>
-                        <div className="px-5 py-2.5 border border-outline-variant rounded-xl text-sm font-semibold min-w-[130px] text-center bg-surface text-on-surface shadow-sm">
-                            {range?.to ? format(range.to, "MMM dd, yyyy") : "End date"}
+                        <span className="text-gray-400">—</span>
+                        <div className="px-4 py-2 border border-gray-200 dark:border-outline-variant rounded-xl text-sm font-medium w-[120px] text-center bg-white dark:bg-surface">
+                            {range?.to ? format(range.to, "d MMM") : "End date"}
                         </div>
                     </div>
                     <div className="flex gap-3">
                         <Button
                             variant="outline"
                             onClick={onClose}
-                            className="rounded-xl px-8 border-outline-variant hover:bg-surface-container hover:text-on-surface text-on-surface-variant font-medium"
+                            className="rounded-xl px-8 border-gray-200 dark:border-outline-variant hover:bg-gray-50 dark:hover:bg-surface-container"
                         >
                             Cancel
                         </Button>
                         <Button
                             onClick={handleApply}
-                            className="bg-primary hover:bg-primary/90 text-on-primary rounded-xl px-10 transition-colors shadow-lg shadow-primary/20 font-bold"
+                            className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-10 transition-colors shadow-sm"
                         >
                             Apply
                         </Button>

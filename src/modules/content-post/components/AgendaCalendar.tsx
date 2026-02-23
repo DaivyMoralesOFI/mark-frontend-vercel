@@ -76,24 +76,24 @@ export const AgendaCalendar = ({ view: externalView, initialDate, initialPostId 
     const goToToday = () => setCurrentDate(new Date());
 
     return (
-        <div className="flex flex-col w-full h-full bg-surface/60 backdrop-blur-md text-on-surface p-6 rounded-2xl shadow-lg border border-outline-variant transition-colors duration-300">
+        <div className="flex flex-col w-full h-full bg-white text-gray-800 p-6 rounded-xl shadow-sm border border-gray-100">
             {/* Navigation and Filters (Now simplified since Month/Week is outside) */}
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-4">
-                        <button onClick={prev} className="p-2 hover:bg-surface-container rounded-full transition-colors group">
-                            <ChevronLeft className="w-5 h-5 text-on-surface-variant group-hover:text-primary transition-colors" />
+                        <button onClick={prev} className="p-1 hover:bg-gray-100 rounded-full transition-colors">
+                            <ChevronLeft className="w-5 h-5 text-gray-600" />
                         </button>
-                        <span className="text-xl font-bold min-w-[200px] text-center text-on-surface tracking-tight">
+                        <span className="text-xl font-bold min-w-[200px] text-center">
                             {effectiveView === 'month'
                                 ? `${MONTHS[currentDate.getMonth()]} ${currentDate.getFullYear()}`
                                 : `Week of ${MONTHS[currentDate.getMonth()]} ${currentDate.getDate()}`
                             }
                         </span>
-                        <button onClick={next} className="p-2 hover:bg-surface-container rounded-full transition-colors group">
-                            <ChevronRight className="w-5 h-5 text-on-surface-variant group-hover:text-primary transition-colors" />
+                        <button onClick={next} className="p-1 hover:bg-gray-100 rounded-full transition-colors">
+                            <ChevronRight className="w-5 h-5 text-gray-600" />
                         </button>
-                        <Button variant="ghost" size="sm" onClick={goToToday} className="text-on-surface-variant hover:text-primary hover:bg-primary/10 ml-2 rounded-xl">
+                        <Button variant="ghost" size="sm" onClick={goToToday} className="text-gray-500 hover:text-gray-900 ml-2">
                             Today
                         </Button>
                     </div>
@@ -102,12 +102,12 @@ export const AgendaCalendar = ({ view: externalView, initialDate, initialPostId 
 
             {/* Content View */}
             <div className={cn(
-                "grid grid-cols-7 border-t border-l border-outline-variant/60 rounded-tl-xl overflow-hidden",
+                "grid grid-cols-7 border-t border-l border-gray-200",
                 effectiveView === 'month' ? "flex-1" : ""
             )}>
                 {/* Weekdays Labels */}
                 {WEEKDAYS.map((day) => (
-                    <div key={day} className="py-3 text-center text-xs font-semibold text-on-surface-variant border-r border-b border-outline-variant/60 uppercase tracking-wider bg-surface-container/30">
+                    <div key={day} className="py-2 text-center text-sm font-semibold text-gray-500 border-r border-b border-gray-200">
                         {day}
                     </div>
                 ))}
@@ -126,22 +126,20 @@ export const AgendaCalendar = ({ view: externalView, initialDate, initialPostId 
                         <div
                             key={idx}
                             className={cn(
-                                "p-2 border-r border-b border-outline-variant/60 flex flex-col gap-1 transition-all group/day cursor-pointer hover:bg-surface-container/40",
-                                !day.isCurrentMonth && effectiveView === 'month' && "bg-transparent opacity-40 grayscale",
-                                isToday && "bg-primary/5",
+                                "p-2 border-r border-b border-gray-200 flex flex-col gap-1 transition-all",
+                                !day.isCurrentMonth && effectiveView === 'month' && "bg-gray-50/50 text-gray-400",
+                                isToday && "bg-blue-50/30",
                                 "min-h-[140px]"
                             )}
                         >
-                            <div className="flex items-center justify-between mb-1">
+                            <div className="flex items-center justify-between">
                                 <span className={cn(
-                                    "text-sm font-medium w-7 h-7 flex items-center justify-center rounded-xl transition-all",
-                                    isToday
-                                        ? "bg-primary text-on-primary font-bold shadow-md shadow-primary/30"
-                                        : "group-hover/day:bg-surface-container-high group-hover/day:text-on-surface"
+                                    "text-sm font-medium",
+                                    isToday && "bg-[#0095ff] text-white w-6 h-6 flex items-center justify-center rounded-full"
                                 )}>
                                     {day.date.getDate()}
                                 </span>
-                                {effectiveView === 'week' && <span className="text-[10px] text-on-surface-variant/70 font-medium uppercase tracking-wider">{MONTHS[day.date.getMonth()]}</span>}
+                                {effectiveView === 'week' && <span className="text-[10px] text-gray-400">{MONTHS[day.date.getMonth()]}</span>}
                             </div>
 
                             <div className="flex flex-col gap-1.5 mt-1 pb-2">
@@ -150,37 +148,37 @@ export const AgendaCalendar = ({ view: externalView, initialDate, initialPostId 
                                         <div
                                             key={post.id}
                                             onClick={() => handlePostClick(post)}
-                                            className="flex items-center justify-between bg-surface-container-low border border-outline-variant/50 rounded-xl px-3 py-2 shadow-xs hover:shadow-md hover:border-primary/50 transition-all cursor-pointer group/post"
+                                            className="flex items-center justify-between bg-white border border-gray-100 rounded-full px-3 py-1.5 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
                                         >
                                             <div className="flex items-center gap-2">
-                                                <CalendarIcon className="w-3.5 h-3.5 text-on-surface-variant group-hover/post:text-primary transition-colors" />
-                                                <span className="text-[11px] font-semibold text-on-surface">{post.time}</span>
+                                                <CalendarIcon className="w-3.5 h-3.5 text-gray-400" />
+                                                <span className="text-[11px] font-medium text-gray-700">{post.time}</span>
                                             </div>
                                             <div className="flex items-center gap-1">
-                                                <PlatformIcon className="text-on-surface-variant group-hover/post:text-primary transition-colors" />
+                                                <PlatformIcon />
                                             </div>
                                         </div>
                                     ) : (
                                         <div
                                             key={post.id}
                                             onClick={() => handlePostClick(post)}
-                                            className="bg-surface-container-low border border-outline-variant rounded-2xl p-3 shadow-sm hover:shadow-xl hover:border-primary/50 transition-all hover:-translate-y-1 cursor-pointer flex flex-col gap-2 w-full group/post"
+                                            className="bg-white border border-gray-200 rounded-xl p-3 shadow-md hover:shadow-lg transition-transform hover:-translate-y-0.5 cursor-pointer flex flex-col gap-2 w-full"
                                         >
                                             <div className="flex items-center gap-2">
-                                                <Clock className="w-4 h-4 text-on-surface-variant group-hover/post:text-primary transition-colors" />
-                                                <span className="text-sm font-bold text-on-surface">{post.time}</span>
+                                                <Clock className="w-4 h-4 text-gray-600" />
+                                                <span className="text-sm font-bold text-gray-800">{post.time}</span>
                                             </div>
-                                            <h3 className="text-sm font-medium leading-tight text-on-surface group-hover/post:text-primary transition-colors line-clamp-2">
+                                            <h3 className="text-sm font-medium leading-tight text-gray-900 line-clamp-2">
                                                 {post.title}
                                             </h3>
                                             {post.imageUrl && (
-                                                <div className="w-full aspect-video rounded-xl overflow-hidden border border-outline-variant/50">
+                                                <div className="w-full aspect-video rounded-lg overflow-hidden border border-gray-100">
                                                     <img src={post.imageUrl} alt={post.title} className="w-full h-full object-cover" />
                                                 </div>
                                             )}
                                             <div className="flex items-center gap-2 mt-1">
-                                                <div className="w-7 h-7 flex items-center justify-center bg-surface-container rounded-xl border border-outline-variant/50 group-hover/post:bg-primary/10 transition-colors">
-                                                    <PlatformIcon className="w-4 h-4 text-on-surface-variant group-hover/post:text-primary transition-colors" />
+                                                <div className="w-6 h-6 flex items-center justify-center bg-gray-50 rounded-lg border border-gray-100">
+                                                    <PlatformIcon className="w-4 h-4" />
                                                 </div>
                                             </div>
                                         </div>
