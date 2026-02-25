@@ -120,7 +120,7 @@ export function createLiveSubscription<T>(
     // @ts-ignore
     const q = query(
       collection(firestore, pathParts[0], ...pathParts.slice(1)),
-      ...(queryConstraints as any),
+      ...(queryConstraints as any[]),
     );
 
     console.log(

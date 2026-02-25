@@ -21,8 +21,6 @@ export const setCreateImage = async (
 ): Promise<CreateImageResponse> => {
   try {
     const endpoint = API_CONFIG.ENDPOINTS.CREATION_STUDIO.createImage;
-    console.log(endpoint);
-
     const response = await API_CLIENT.post(endpoint, image_schema);
     const validationResult = validateSchemaSoft(
       createImageResponseSchema,

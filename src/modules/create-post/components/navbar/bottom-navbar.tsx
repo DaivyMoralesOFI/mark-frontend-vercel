@@ -14,10 +14,8 @@ import {
   createImageSchema,
 } from "@/modules/create-post/schemas/create-image";
 
-
 import {
   useCreateImage,
-
 } from "../../hooks/use-create-image";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -131,14 +129,14 @@ const BottomNavbar = () => {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 w-full px-4 pb-6 flex flex-col items-center z-[1000] pointer-events-none">
-      <div className="w-full max-w-3xl flex flex-col gap-4 pointer-events-auto">
+    <div className="fixed bottom-0 left-0 w-full px-4 pb-6 flex flex-col items-center z-1000 pointer-events-none">
+      <div className="w-full max-w-3xl flex flex-col gap-4 pointer-events-auto  border border-primary backdrop-blur-xl rounded-xl">
         <form
           onSubmit={_form.handleSubmit(onSubmit)}
           id="create-image-form"
-          className="w-full bg-surface-container-lowest/95 backdrop-blur-xl border border-outline-variant/40 rounded-3xl shadow-lg overflow-hidden"
+          className="w-full overflow-hidden"
         >
-          <div className="flex items-center justify-start py-3 border-b border-outline-variant/30">
+          <div className="flex items-center justify-start py-3 ">
             <div className="flex flex-wrap items-center justify-center gap-2 px-4">
               <Button
                 type="button"

@@ -8,8 +8,8 @@ import { CreateImage } from "@/modules/create-post/schemas/create-image";
 import {
   SubscriptionCallback,
   useFirebaseSubscription,
-} from "@/shared/hooks/use-firebase-query";
-import { queryKeys } from "@/shared/utils/query-keys";
+} from "@/core/hooks/use-firebase-query";
+import { queryKeys } from "@/core/config/query-keys";
 import { CreationStore } from "@/modules/create-post/schemas/create-image";
 import { FirebaseSubscriptionError } from "@/modules/create-post/services/firebase-services";
 import { useState } from "react";
@@ -20,7 +20,7 @@ import { useState } from "react";
  */
 export const useCreateImage = () => {
   const mutation = useMutation({
-    mutationKey: queryKeys.creationStudio.createImage(),
+    mutationKey: queryKeys.creation_studio.create_image(),
     mutationFn: (imageSchema: CreateImage) => setCreateImage(imageSchema),
   });
 
@@ -35,7 +35,7 @@ export const useGetCreatedImage = (
   options?: { enabled?: boolean },
 ) => {
   return useQuery({
-    queryKey: queryKeys.creationStudio.getImageCreated(uuid),
+    queryKey: queryKeys.creation_studio.get_image(uuid),
     queryFn: () => getImageCreated(uuid),
     staleTime: 1000 * 60 * 5,
     ...options,
@@ -47,7 +47,7 @@ export function useCreationStatus(uuid: string) {
     useState<FirebaseSubscriptionError | null>(null);
 
   const query = useFirebaseSubscription<CreationStore[]>({
-    queryKey: queryKeys.creationStudio.creations(uuid),
+    queryKey: queryKeys.creation_studio.creations(uuid),
     subscribe: (onNext: SubscriptionCallback<CreationStore[]>) => {
       return getCreationsStatus(uuid, (data, error) => {
         if (error) {

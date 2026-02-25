@@ -1,8 +1,11 @@
 import { firestore } from "../config/firebase-database";
-import { brand_response_schema, BrandResponse } from "../schemas/brand-schema";
+import {
+  BrandResponseSchema,
+  BrandsResponse,
+} from "../../modules/creation-studio/schemas/brand-schema";
 import { getDocs, query, collection } from "firebase/firestore";
 
-export async function getAllBrands(): Promise<BrandResponse | null> {
+export async function getAllBrands(): Promise<BrandsResponse | null> {
   try {
     console.log("📋 [getAllBrands] Starting brands fetch...");
 
@@ -21,7 +24,7 @@ export async function getAllBrands(): Promise<BrandResponse | null> {
       uuid: doc.id,
     }));
 
-    const result = brand_response_schema.safeParse(rawData);
+    const result = BrandResponseSchema.safeParse(rawData);
     if (!result.success) {
       console.error(
         "❌ [getAllBrands] Validation error details:",
@@ -29,7 +32,7 @@ export async function getAllBrands(): Promise<BrandResponse | null> {
       );
       throw new Error(
         `Schema validation failed for brands: ${result.error.issues
-          .map((i) => `${i.path.join(".")}: ${i.message}`)
+          .map((i: any) => `${i.path.join(".")}: ${i.message}`)
           .join(", ")}`,
       );
     }

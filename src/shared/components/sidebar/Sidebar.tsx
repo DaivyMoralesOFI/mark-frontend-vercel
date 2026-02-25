@@ -8,6 +8,8 @@ import {
   LogOut,
   Plus,
   MoreVertical,
+  Dna,
+  User,
 } from "lucide-react";
 import { useState } from "react";
 import {
@@ -61,36 +63,38 @@ const navigationGroups = [
         title: "Dashboard",
         icon: LayoutDashboard,
         isActive: false,
-        to: "/dashboard",
+        to: "/app/dashboard",
         items: [
           {
             title: "Overview",
-            url: "/dashboard",
+            url: "/app/dashboard",
           },
           {
             title: "LinkedIn",
-            url: "/dashboard?platform=linkedin",
+            url: "/app/dashboard?platform=linkedin",
             icon: LinkedInIcon,
           },
           {
             title: "Instagram",
-            url: "/dashboard?platform=instagram",
+            url: "/app/dashboard?platform=instagram",
             icon: InstagramIcon,
           },
           {
             title: "TikTok",
-            url: "/dashboard?platform=tiktok",
+            url: "/app/dashboard?platform=tiktok",
             icon: TikTokIcon,
           },
           {
             title: "Facebook",
-            url: "/dashboard?platform=facebook",
+            url: "/app/dashboard?platform=facebook",
             icon: FacebookIcon,
           },
         ],
       },
-      { title: "Calendar", icon: Calendar, isActive: false, to: "/calendar" },
-      { title: "Campaigns", icon: TrendingUp, isActive: false, to: "/campaigns" },
+      { title: "Calendar", icon: Calendar, isActive: false, to: "/app/calendar" },
+      { title: "Campaigns", icon: TrendingUp, isActive: false, to: "/app/campaigns" },
+      { title: "Brand DNA", icon: Dna, isActive: false, to: "/app/brand-dna" },
+      { title: "Style Profile", icon: User, isActive: false, to: "/app/style-profile" },
     ],
   },
   {
@@ -106,7 +110,7 @@ const navigationGroups = [
         title: "Chat with Mark",
         icon: Bot,
         isActive: false,
-        to: "/chat",
+        to: "/app/chat",
       },
     ],
   },
@@ -172,7 +176,6 @@ export function Sidebar() {
           </div>
         )}
       </SidebarHeader>
-
       {/* 2. Sidebar Content: Navigation Groups */}
       <SidebarContent className={`transition-all ${isExpanded ? "px-3" : "px-0"}`}>
         <SidebarGroup className="py-0">
@@ -231,8 +234,8 @@ export function Sidebar() {
                                   <SidebarMenuSubButton
                                     asChild
                                     isActive={
-                                      (subItem.url === "/dashboard" &&
-                                        location.pathname === "/dashboard" &&
+                                      (subItem.url === "/app/dashboard" &&
+                                        location.pathname === "/app/dashboard" &&
                                         !location.search) ||
                                       (location.pathname + location.search ===
                                         subItem.url)
@@ -277,7 +280,7 @@ export function Sidebar() {
       </SidebarContent >
 
       {/* 3. Sidebar Footer: User Profile */}
-      <SidebarFooter className={`transition-all ${isExpanded ? "p-4" : "p-1 pb-2 items-center"}`}>
+      < SidebarFooter className={`transition-all ${isExpanded ? "p-4" : "p-1 pb-2 items-center"}`}>
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>

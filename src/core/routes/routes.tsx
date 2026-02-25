@@ -1,4 +1,3 @@
-import CreationStudioLayout from "@/modules/create-post/layout/creation-studio-layout";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { CreationStudioRoutes } from "./creation-studio.app";
 import DashboardLayout from "@/shared/layout/dashboard-layout";
@@ -21,8 +20,9 @@ const AppRoutes = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public route: authentication page */}
-        <Route path="/auth" element={<AuthPage />} />
+        <Route path="/" element={<Navigate to="/app/dashboard" replace />} />
+        <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
+        <Route path="auth" element={<AuthPage />} />
 
         {/* Experimental Brand DNA routes */}
         <Route
@@ -34,38 +34,28 @@ const AppRoutes = () => {
           }
         />
 
-        {/* Protected routes: require authentication */}
-        <Route
-          element={
-            <RequireAuth>
-              <DashboardLayout />
-            </RequireAuth>
-          }
-        >
-          {/* Redirect root to dashboard */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          {/* Main dashboard and feature pages */}
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/chat" element={<MarketingCoachChat />} />
-          <Route path="/calendar" element={<ContentFeedbackPage />} />
-          <Route path="/campaigns" element={<CampaingnPage />} />
-          <Route path="/brand-dna" element={<BrandDashboard />} />
-          <Route path="/style-profile" element={<StyleProfilePage />} />
-        </Route>
+        <Route path="/app">
+          {/* Dashboard Routes requiring auth and DashboardLayout */}
+          <Route
+            element={
+              <RequireAuth>
+                <DashboardLayout />
+              </RequireAuth>
+            }
+          >
+            <Route path="dashboard" element={<DashboardPage />} />
+            <Route path="chat" element={<MarketingCoachChat />} />
+            <Route path="calendar" element={<ContentFeedbackPage />} />
+            <Route path="campaigns" element={<CampaingnPage />} />
+            <Route path="brand-dna" element={<BrandDashboard />} />
+            <Route path="style-profile" element={<StyleProfilePage />} />
+          </Route>
 
-        {/* Creation Studio Routes */}
-        <Route
-          path="app"
-          element={
-            <RequireAuth>
-              <CreationStudioLayout />
-            </RequireAuth>
-          }
-        >
+          {/* Creation Studio Routes */}
           {CreationStudioRoutes()}
         </Route>
       </Routes>
-    </BrowserRouter>
+    </BrowserRouter >
   );
 };
 

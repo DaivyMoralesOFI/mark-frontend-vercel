@@ -115,7 +115,6 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
     scheduledDate, // Date selected for scheduling
     scheduledTime, // Time selected for scheduling
     trends, // Trending hashtags/topics
-    // loadingSuggestion, // Loading state for AI suggestion
     loadingImage, // Loading state for image generation/upload
     loadingSubmit, // Loading state for post submission
     loadingSchedule, // Loading state for scheduling
@@ -125,9 +124,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
     fileInputRef, // Ref for file input element
     // Actions
     handlePostTypeChange, // Change post type
-    // handleDescriptionChange, // Change description
     handleAddHashtag, // Add hashtag from trends
-    // handleSuggestion, // Trigger AI suggestion
     handleImageGeneration, // Generate image with AI
     handleFileUpload, // Upload image file
     handleRemoveImage, // Remove image

@@ -12,12 +12,16 @@ import BottomNavbar from "@/modules/create-post/components/navbar/bottom-navbar"
 import WaitingCard from "@/modules/create-post/components/card/waiting-card";
 import { StartingAlert } from "@/modules/create-post/components/alerts/starting-alert";
 import { useFlowStore } from "@/modules/create-post/store/flow-store";
+import BrandDNA from "../components/sidebar/brand-dna";
 
 // Página inicial: Estado "Vacio" o "List para crear"
 const WaitingNode = () => {
   return (
     <div className="relative p-0 flex justify-center items-center">
-      <WaitingCard />
+      <WaitingCard
+        title="Heello again"
+        description="What would you like to create today?"
+      />
       <Handle type="source" position={Position.Right} className="opacity-0" />
     </div>
   );
@@ -76,6 +80,11 @@ const CreateNewContentPage = () => {
           <Background variant={undefined} />
           <Controls />
         </ReactFlow>
+      </div>
+      <div className="absolute top-1/2 right-10 -translate-y-1/2 w-full max-w-sm z-10 pointer-events-none">
+        <div className="pointer-events-auto">
+          <BrandDNA />
+        </div>
       </div>
       <div className="absolute bottom-0 left-0 w-full z-10 pointer-events-none">
         <div className="pointer-events-auto">

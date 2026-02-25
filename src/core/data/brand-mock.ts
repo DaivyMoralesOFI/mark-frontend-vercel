@@ -1,6 +1,6 @@
-import { Brand } from "@/core/schemas/brand-schema";
 
-export const brandMock: Brand = {
+
+export const brandMock = {
   uuid: "mock-brand-001",
   create_at: {
     seconds: 1707600000,

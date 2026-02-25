@@ -126,7 +126,12 @@ const WorkflowContentPage = () => {
     () => ({
       result: ResultNode,
       skeleton: SkeletonNode,
-      waiting: WaitingCard,
+      waiting: ({ data }: NodeProps) => (
+        <WaitingCard
+          title={data?.title}
+          description={data?.description}
+        />
+      ),
     }),
     [],
   );

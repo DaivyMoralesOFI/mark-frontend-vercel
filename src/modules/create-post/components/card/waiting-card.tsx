@@ -1,6 +1,16 @@
 import { Card } from "@/shared/components/ui/card";
 
-const WaitingCard = () => {
+interface WaitingCardProps {
+
+  title?: string;
+  description?: string;
+}
+
+const WaitingCard = ({
+
+  title,
+  description,
+}: WaitingCardProps) => {
   return (
     <div className="flex flex-col justify-center gap-4">
       <div className="loader mx-auto w-[100px]">
@@ -20,8 +30,8 @@ const WaitingCard = () => {
         <div className="box"></div>
       </div>
       <Card className="p-4 gap-1">
-        <h2 className="text-center text-lg font-bold">Hi, again!</h2>
-        <p className="text-center text-sm">What do you have in mind?</p>
+        <h2 className="text-center text-lg font-bold">{title}</h2>
+        <p className="text-center text-sm">{description}</p>
       </Card>
     </div>
   );
