@@ -7,7 +7,7 @@
 // The component leverages custom hooks and modular subcomponents for a clean, maintainable structure.
 
 import { useState, useEffect } from "react";
-import { Loader, Hash, PackageOpen, Pencil } from "lucide-react";
+import { Loader } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -29,16 +29,16 @@ import { ScrollArea } from "@/shared/components/ui/scroll-area";
 import { usePost } from "../hooks/usePost";
 import { POST_TYPES, PostType } from "../types/createPostTypes";
 import { PlatformSelector } from "./PlatformSelector";
-import { DescriptionInput } from "./DescriptionInput";
+
 import { TrendsSection } from "./TrendsSection";
 import { ImageUpload } from "./ImageUpload";
 import { AISuggestion } from "./AISuggestion";
 import { ScheduleModal } from "@/shared/components/ScheduleModal";
 import { SuccessNotification } from "./SuccessNotification";
-import { Badge } from "@/shared/components/ui/badge";
+
 import { cn } from "@/shared/utils/utils";
 import { useAppSelector, RootState } from "@/core/store/store";
-import { CreateImageAISheet } from "@/domains/creation-studio/components/create-image-sheet/create-sheet-post";
+
 
 /**
  * Props for CreatePostModal
@@ -115,7 +115,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
     scheduledDate, // Date selected for scheduling
     scheduledTime, // Time selected for scheduling
     trends, // Trending hashtags/topics
-    loadingSuggestion, // Loading state for AI suggestion
+
     loadingImage, // Loading state for image generation/upload
     loadingSubmit, // Loading state for post submission
     loadingSchedule, // Loading state for scheduling
@@ -125,9 +125,9 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
     fileInputRef, // Ref for file input element
     // Actions
     handlePostTypeChange, // Change post type
-    handleDescriptionChange, // Change description
+
     handleAddHashtag, // Add hashtag from trends
-    handleSuggestion, // Trigger AI suggestion
+
     handleImageGeneration, // Generate image with AI
     handleFileUpload, // Upload image file
     handleRemoveImage, // Remove image

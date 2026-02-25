@@ -163,7 +163,6 @@ const BrandExtractorPage = () => {
         {!brandData || isLoading ? (
           <div className="w-full h-full flex items-center justify-center p-4">
             <WaitingCard
-              isLoading={isLoading}
               title="Discover your brand DNA"
               description="Extract your brand DNA from your website"
             />

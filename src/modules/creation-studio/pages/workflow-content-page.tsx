@@ -16,7 +16,7 @@ import { CreatedImageCard } from "@/modules/creation-studio/components/card/crea
 import sampleImage from "@/assets/img/sample_mark_respond.png";
 import AnimatedEdge from "@/modules/creation-studio/components/flow/animated-edge";
 import { useFlowStore } from "@/modules/creation-studio/store/flow-store";
-import { useBrands } from "@/shared/hooks/useBrands";
+
 
 const SkeletonNode = () => (
   <div className="w-[400px] h-[500px] bg-slate-100 dark:bg-slate-900 animate-pulse rounded-xl border border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center">
@@ -126,7 +126,12 @@ const WorkflowContentPage = () => {
     () => ({
       result: ResultNode,
       skeleton: SkeletonNode,
-      waiting: WaitingCard,
+      waiting: ({ data }: NodeProps) => (
+        <WaitingCard
+          title={data?.title}
+          description={data?.description}
+        />
+      ),
     }),
     [],
   );

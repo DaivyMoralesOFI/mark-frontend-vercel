@@ -9,7 +9,7 @@ import { Button } from "@/shared/components/ui/button";
 import { ScrollArea } from "@/shared/components/ui/scroll-area";
 import { useGoogleFonts } from "@/shared/hooks/use-google-fonts";
 import { cn } from "@/shared/utils/utils";
-import { ArrowRight, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 
 const BrandDNA = () => {
   const { data: activeBrand, isLoading } = useActiveBrand();

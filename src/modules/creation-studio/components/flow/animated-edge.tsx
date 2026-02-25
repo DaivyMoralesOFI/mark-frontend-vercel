@@ -1,13 +1,11 @@
 import {
   BaseEdge,
   EdgeProps,
-  getSmoothStepPath,
   getBezierPath,
 } from "reactflow";
 import { motion } from "framer-motion";
 
 export default function AnimatedEdge({
-  id,
   sourceX,
   sourceY,
   targetX,

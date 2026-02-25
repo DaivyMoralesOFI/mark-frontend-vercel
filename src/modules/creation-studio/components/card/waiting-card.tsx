@@ -1,13 +1,13 @@
 import { Card } from "@/shared/components/ui/card";
 
 interface WaitingCardProps {
-  isLoading?: boolean;
+
   title?: string;
   description?: string;
 }
 
 const WaitingCard = ({
-  isLoading = false,
+
   title,
   description,
 }: WaitingCardProps) => {

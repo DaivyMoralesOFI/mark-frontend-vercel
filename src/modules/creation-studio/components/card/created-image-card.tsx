@@ -22,7 +22,7 @@ export function CreatedImageCard({ image }: { image: File | string }) {
             referrerPolicy="no-referrer" // 👈 CRITICO: evita bloqueos de seguridad de Google
             className="w-full h-auto block" // simplificado para asegurar visibilidad
             onLoad={() => console.log("✅ Imagen cargada")}
-            onError={(e) =>
+            onError={() =>
               console.error("❌ Error cargando imagen:", imageUrl)
             }
           />

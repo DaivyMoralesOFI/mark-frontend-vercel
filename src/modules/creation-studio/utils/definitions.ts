@@ -5,7 +5,7 @@ import {
   Film,
   ImageIcon,
   LayoutGrid,
-  LucideIcon,
+
   Megaphone,
   Paperclip,
   TicketCheck,
