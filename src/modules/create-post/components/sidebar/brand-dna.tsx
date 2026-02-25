@@ -1,4 +1,4 @@
-import { useActiveBrand } from "@/modules/creation-studio/hooks/use-brands";
+import { useActiveBrand } from "@/modules/create-post/hooks/use-brands";
 import {
   Accordion,
   AccordionContent,

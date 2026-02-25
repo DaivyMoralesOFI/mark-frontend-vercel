@@ -8,13 +8,10 @@ import CampaingnPage from "@/modules/campaigns/CampaingnPage";
 import { BrandDashboard } from "@/modules/brand-dna/page/Brand-DNA-Page";
 import AuthPage from "@/modules/auth/page/authPage";
 import RequireAuth from "@/modules/auth/components/RequireAuth";
-import { lazy } from "react";
+
 import { StyleProfilePage } from "@/modules/brand-dna/style-profile/StyleProfilePage";
 
-const ExtractorDNAPage = lazy(
-  () =>
-    import("@/modules/brand-dna/brand-dna-extractor/pages/brand-extractor"),
-);
+
 
 const AppRoutes = () => {
   return (
@@ -24,15 +21,6 @@ const AppRoutes = () => {
         <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
         <Route path="auth" element={<AuthPage />} />
 
-        {/* Experimental Brand DNA routes */}
-        <Route
-          path="/brand-dna-extractor"
-          element={
-            <RequireAuth>
-              <ExtractorDNAPage />
-            </RequireAuth>
-          }
-        />
 
         <Route path="/app">
           {/* Dashboard Routes requiring auth and DashboardLayout */}

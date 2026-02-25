@@ -10,8 +10,14 @@ const WorkflowContentPage = lazy(
   () => import("@/modules/create-post/pages/workflow-content-page"),
 );
 
+const ExtractorDNAPage = lazy(
+  () =>
+    import("@/modules/brand-dna/brand-dna-extractor/pages/brand-extractor"),
+);
+
 export const CreationStudioRoutes = () => (
   <Route path="creation-studio" element={<CreationStudioLayout />}>
+    <Route path="extractor" element={<ExtractorDNAPage />} />
     <Route path="new">
       <Route path="content">
         <Route index element={<CreateNewContentPage />} />

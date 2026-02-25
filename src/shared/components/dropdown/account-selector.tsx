@@ -38,7 +38,7 @@ const AccountSelector = () => {
   }, []);
 
   const handleAddNewBrand = () => {
-    navigate("/brand-dna-extractor");
+    navigate("/app/creation-studio/extractor");
   };
 
   return (

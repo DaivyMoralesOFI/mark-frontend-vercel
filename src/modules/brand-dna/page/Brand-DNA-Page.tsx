@@ -35,7 +35,7 @@ export function BrandDashboard() {
     {
       children: "Extractor",
       icon: Sparkles,
-      onClick: () => navigate("/brand-dna-extractor"),
+      onClick: () => navigate("/app/creation-studio/extractor"),
       variant: "default",
       type: "button",
     },

@@ -6,7 +6,7 @@ import {
   BrandExtractor,
   BrandExtractorSchema,
 } from "@/modules/create-post/schemas/brand-schema";
-import { validateSchemaSoft } from "@/core/utils/schema-validator";
+import { validateSchemaSoft } from "@/core/lib/schema-validator";
 import {
   addDoc,
   collection,
@@ -19,7 +19,7 @@ import {
 } from "firebase/firestore";
 import { firestore } from "@/core/config/firebase-database";
 import { API_CLIENT, API_CONFIG } from "@/core/api/api-config";
-import { isApiError } from "@/core/utils/api-error-handler";
+import { isApiError } from "@/core/lib/api-error-handler";
 
 export const getAllBrands = async (): Promise<BrandsResponse> => {
   try {
