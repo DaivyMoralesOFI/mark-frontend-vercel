@@ -1,17 +1,13 @@
 import { Route } from "react-router-dom";
 import { lazy } from "react";
-import CreationStudioLayout from "@/modules/creation-studio/layout/creation-studio-layout";
+import CreationStudioLayout from "@/modules/create-post/layout/creation-studio-layout";
 
 const CreateNewContentPage = lazy(
-  () => import("@/modules/creation-studio/pages/create-new-content-page"),
+  () => import("@/modules/create-post/pages/create-new-content-page"),
 );
 
 const WorkflowContentPage = lazy(
-  () => import("@/modules/creation-studio/pages/workflow-content-page"),
-);
-
-const BrandExtractorPage = lazy(
-  () => import("@/modules/creation-studio/pages/brand-dna-extractor"),
+  () => import("@/modules/create-post/pages/workflow-content-page"),
 );
 
 export const CreationStudioRoutes = () => (
@@ -22,6 +18,5 @@ export const CreationStudioRoutes = () => (
         <Route path=":uuid" element={<WorkflowContentPage />} />
       </Route>
     </Route>
-    <Route path="brand-dna-extractor" element={<BrandExtractorPage />} />
   </Route>
 );

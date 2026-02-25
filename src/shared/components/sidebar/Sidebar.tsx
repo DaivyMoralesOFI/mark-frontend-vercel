@@ -2,14 +2,16 @@ import {
   Settings,
   TrendingUp,
   Bot,
-  Dna,
-  User,
-
   Calendar,
   LayoutDashboard,
   ChevronRight,
-  Sparkles,
+  LogOut,
+  Plus,
+  MoreVertical,
+  Dna,
+  User,
 } from "lucide-react";
+import { useState } from "react";
 import {
   Sidebar as SidebarComponent,
   SidebarContent,
@@ -25,7 +27,14 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
+  SidebarTrigger,
 } from "@/shared/components/ui/sidebar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/shared/components/ui/dropdown-menu";
 import {
   Collapsible,
   CollapsibleContent,
@@ -36,280 +45,336 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/shared/components/ui/avatar";
-import { Link, useLocation } from "react-router-dom";
-import { useState } from "react";
-import { CreatePostModal } from "@/domains/creation-studio/post-creator/components/CreatePostModal";
-import MarkLogo from "@/assets/logos/mark-colored.svg";
-import { cn } from "@/shared/utils/utils";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+
 import { useUser } from "@/shared/hooks/useUser";
+import { useAuth } from "@/modules/auth/hooks/useAuth";
 import { LinkedInIcon } from "@/shared/components/icons/LinkedInIcon";
 import { InstagramIcon } from "@/shared/components/icons/InstagramIcon";
 import { TikTokIcon } from "@/shared/components/icons/TikTokIcon";
 import { FacebookIcon } from "@/shared/components/icons/FacebookIcon";
 
-// Navigation items for the main sidebar menu
-const navigationItems = [
+// Navigation Groups
+const navigationGroups = [
   {
-    title: "Dashboard",
-    icon: LayoutDashboard,
-    isActive: false,
-    to: "/app/dashboard",
+    label: "Navigation",
     items: [
       {
-        title: "Overview",
-        url: "/app/dashboard",
+        title: "Dashboard",
+        icon: LayoutDashboard,
+        isActive: false,
+        to: "/app/dashboard",
+        items: [
+          {
+            title: "Overview",
+            url: "/app/dashboard",
+          },
+          {
+            title: "LinkedIn",
+            url: "/app/dashboard?platform=linkedin",
+            icon: LinkedInIcon,
+          },
+          {
+            title: "Instagram",
+            url: "/app/dashboard?platform=instagram",
+            icon: InstagramIcon,
+          },
+          {
+            title: "TikTok",
+            url: "/app/dashboard?platform=tiktok",
+            icon: TikTokIcon,
+          },
+          {
+            title: "Facebook",
+            url: "/app/dashboard?platform=facebook",
+            icon: FacebookIcon,
+          },
+        ],
+      },
+      { title: "Calendar", icon: Calendar, isActive: false, to: "/app/calendar" },
+      { title: "Campaigns", icon: TrendingUp, isActive: false, to: "/app/campaigns" },
+      { title: "Brand DNA", icon: Dna, isActive: false, to: "/app/brand-dna" },
+      { title: "Style Profile", icon: User, isActive: false, to: "/app/style-profile" },
+    ],
+  },
+  {
+    label: "Account",
+    items: [
+      {
+        title: "Settings",
+        icon: Settings,
+        isActive: false,
+        to: "/settings",
       },
       {
-        title: "LinkedIn",
-        url: "/app/dashboard?platform=linkedin",
-        icon: LinkedInIcon,
-      },
-      {
-        title: "Instagram",
-        url: "/app/dashboard?platform=instagram",
-        icon: InstagramIcon,
-      },
-      {
-        title: "TikTok",
-        url: "/app/dashboard?platform=tiktok",
-        icon: TikTokIcon,
-      },
-      {
-        title: "Facebook",
-        url: "/app/dashboard?platform=facebook",
-        icon: FacebookIcon,
+        title: "Chat with Mark",
+        icon: Bot,
+        isActive: false,
+        to: "/app/chat",
       },
     ],
   },
-  { title: "Calendar", icon: Calendar, isActive: false, to: "/app/calendar" },
-  {
-    title: "Campaigns",
-    icon: TrendingUp,
-    isActive: false,
-    to: "/app/campaigns",
-  },
-  { title: "Brand DNA", icon: Dna, isActive: false, to: "/app/brand-dna" },
-  {
-    title: "Style Profile",
-    icon: User,
-    isActive: false,
-    to: "/app/style-profile",
-  },
 ];
 
-/**
- * Sidebar
- *
- * Renders the main navigation sidebar for the application, including:
- * - Navigation links (Dashboard, Analytics, Content, Campaigns, Brand DNA, Style Profile)
- * - AI Assistant section (Chat with Mark)
- * - Settings and user/company profile card
- * - Responsive and styled for a modern UI
- */
 export function Sidebar() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const { state } = useSidebar();
+  const { state, setOpen } = useSidebar();
   const isExpanded = state === "expanded";
-  const { user, loading } = useUser("KGLTadXoTWGvqb2Tn475"); // Using the ID from the screenshot
+  const { user: profileUser } = useUser("KGLTadXoTWGvqb2Tn475");
   const location = useLocation();
+  const navigate = useNavigate();
+  const { logout, user: firebaseUser } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/auth");
+  };
+
+  const displayName = firebaseUser?.displayName || profileUser?.user_name || "Sienna Hewitt";
+
+  const mockBrands = [
+    { id: "1", name: "Ofi Services", url: "@ofiservices" },
+    { id: "2", name: "EAOS", url: "@eaos" },
+    { id: "3", name: "Anthorpic", url: "@anthorpic" },
+  ];
+
+  const [activeBrand, setActiveBrand] = useState(mockBrands[0]);
 
   return (
-    <SidebarComponent variant="sidebar" collapsible="icon">
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild size="lg">
-              <Link to={"/"}>
-                <div
-                  className={cn(
-                    "flex aspect-square items-center justify-center transition-all duration-300",
-                    isExpanded ? "size-10" : "size-8",
-                  )}
-                >
-                  <picture className="site-front-logo">
-                    <source src={MarkLogo} />
-                    <img
-                      src={MarkLogo}
-                      alt="Site front logo"
-                      className="w-full h-full"
-                    />
-                  </picture>
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-bold text-2xl text-secondary">
-                    MARK
-                  </span>
-                  <span className="truncate">Marketing Agent</span>
-                </div>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+    <SidebarComponent
+      variant="sidebar"
+      collapsible="icon"
+      className={`bg-transparent dark:bg-white/10 border-outline-variant transition-all ${!isExpanded ? "cursor-pointer" : ""}`}
+      onClick={() => {
+        if (!isExpanded) {
+          setOpen(true);
+        }
+      }}
+    >
+      {/* 1. Sidebar Header: Logo */}
+      <SidebarHeader className={`transition-all ${isExpanded ? "p-4" : "p-2"}`}>
+        {isExpanded ? (
+          <div className="flex items-center justify-between gap-2 px-1">
+            <div className="flex items-center gap-2">
+              <div className="flex aspect-square items-center justify-center size-10">
+                <img src="/mark-apple-icon.png" alt="Logo" className="w-full h-full object-contain" />
+              </div>
+              <div className="flex flex-col leading-none">
+                <span className="font-semibold text-sm">Mark</span>
+                <span className="text-muted-foreground text-[10px]">v1.0</span>
+              </div>
+            </div>
+            <SidebarTrigger className="text-muted-foreground/50 hover:text-foreground" />
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2 items-center justify-center relative group/trigger">
+            <div className="flex aspect-square items-center justify-center size-10 mx-auto">
+              <img src="/mark-apple-icon.png" alt="Logo" className="w-full h-full object-contain" />
+            </div>
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/trigger:opacity-100 transition-opacity">
+              <SidebarTrigger className="size-12 text-muted-foreground bg-surface border border-outline-variant rounded-full hover:text-foreground shadow-sm" />
+            </div>
+          </div>
+        )}
       </SidebarHeader>
-      <SidebarContent>
-        {/* Main navigation group */}
-        <SidebarGroup>
-          <SidebarGroupContent className="flex flex-col gap-2 my-auto">
-            <SidebarMenu>
-              <SidebarMenuItem className="flex items-center gap-2">
-                <SidebarMenuButton
-                  tooltip="Quick Create"
-                  className="w-full h-fit"
-                >
-                  <Link
-                    to="/app/creation-studio/new/content"
-                    className="flex items-center gap-2 py-2 px-3 rounded-xl w-full cursor-pointer text-on-secondary bg-secondary min-w-8 duration-300 ease-linear font-medium hover:bg-on-secondary hover:text-secondary hover:border-secondary border"
-                  >
-                    <Sparkles size={16} />
-                    <span>Creation studio</span>
-                  </Link>
-                </SidebarMenuButton>
-                <CreatePostModal
-                  isOpen={isModalOpen}
-                  onClose={() => setIsModalOpen(false)}
-                />
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {navigationItems.map((item) => (
-                <Collapsible
-                  key={item.title}
-                  asChild
-                  defaultOpen={item.isActive}
-                  className="group/collapsible"
-                >
-                  <SidebarMenuItem>
-                    <CollapsibleTrigger asChild>
-                      {item.items ? (
-                        <SidebarMenuButton
-                          tooltip={item.title}
-                          isActive={location.pathname === item.to}
-                        >
-                          <item.icon className="w-4 h-4" />
-                          <span>{item.title}</span>
-                          <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                        </SidebarMenuButton>
-                      ) : (
+      {/* 2. Sidebar Content: Navigation Groups */}
+      <SidebarContent className={`transition-all ${isExpanded ? "px-3" : "px-0"}`}>
+        <SidebarGroup className="py-0">
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                className="group-data-[collapsible=icon]:!p-2 text-foreground hover:bg-muted/50 h-9"
+              >
+                <Link to="/app/creation-studio/new/content">
+                  <Plus className="w-[18px] h-[18px] text-muted-foreground group-data-[active=true]/menu-button:text-foreground" />
+                  <span className="font-medium text-[13px]">Create post</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup>
+        {
+          navigationGroups.map((group) => (
+            <SidebarGroup key={group.label}>
+              <SidebarGroupLabel className="uppercase text-muted-foreground/70 text-[11px] font-medium tracking-wider px-2 mt-2 mb-1">
+                {group.label}
+              </SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {group.items.map((item) =>
+                    item.items ? (
+                      // Collapsible Item (Dashboard)
+                      <Collapsible
+                        key={item.title}
+                        asChild
+                        defaultOpen={item.isActive}
+                        className="group/collapsible"
+                      >
+                        <SidebarMenuItem>
+                          <CollapsibleTrigger asChild>
+                            <SidebarMenuButton
+                              tooltip={item.title}
+                              isActive={
+                                location.pathname === item.to ||
+                                item.items.some(
+                                  (sub) => location.pathname === sub.url
+                                )
+                              }
+                              className="font-medium text-muted-foreground/80 hover:text-foreground h-9 hover:bg-muted/50 data-[active=true]:bg-muted/80 data-[active=true]:text-foreground"
+                            >
+                              <item.icon className="w-[18px] h-[18px] text-muted-foreground group-data-[active=true]/menu-button:text-foreground" />
+                              <span className="text-[13px]">{item.title}</span>
+                              <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 text-muted-foreground/50" />
+                            </SidebarMenuButton>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <SidebarMenuSub>
+                              {item.items.map((subItem) => (
+                                <SidebarMenuSubItem key={subItem.title}>
+                                  <SidebarMenuSubButton
+                                    asChild
+                                    isActive={
+                                      (subItem.url === "/app/dashboard" &&
+                                        location.pathname === "/app/dashboard" &&
+                                        !location.search) ||
+                                      (location.pathname + location.search ===
+                                        subItem.url)
+                                    }
+                                    className="font-medium text-muted-foreground/80 hover:text-foreground h-8 hover:bg-muted/50 data-[active=true]:bg-muted/80 data-[active=true]:text-foreground"
+                                  >
+                                    <Link to={subItem.url}>
+                                      {subItem.icon && (
+                                        <subItem.icon className="w-[18px] h-[18px] mr-2 text-muted-foreground group-data-[active=true]/menu-button:text-foreground" />
+                                      )}
+                                      <span className="text-[13px]">{subItem.title}</span>
+                                    </Link>
+                                  </SidebarMenuSubButton>
+                                </SidebarMenuSubItem>
+                              ))}
+                            </SidebarMenuSub>
+                          </CollapsibleContent>
+                        </SidebarMenuItem>
+                      </Collapsible>
+                    ) : (
+                      // Standard Item
+                      <SidebarMenuItem key={item.title}>
                         <SidebarMenuButton
                           asChild
                           isActive={location.pathname === item.to}
                           tooltip={item.title}
+                          className="font-medium text-muted-foreground/80 hover:text-foreground h-9 hover:bg-muted/50 data-[active=true]:bg-muted/80 data-[active=true]:text-foreground"
                         >
                           <Link to={item.to}>
-                            <item.icon className="w-4 h-4" />
-                            <span>{item.title}</span>
+                            <item.icon className="w-[18px] h-[18px] text-muted-foreground group-data-[active=true]/menu-button:text-foreground" />
+                            <span className="text-[13px]">{item.title}</span>
                           </Link>
                         </SidebarMenuButton>
-                      )}
-                    </CollapsibleTrigger>
-                    {item.items && (
-                      <CollapsibleContent>
-                        <SidebarMenuSub>
-                          {item.items.map((subItem) => (
-                            <SidebarMenuSubItem key={subItem.title}>
-                              <SidebarMenuSubButton
-                                asChild
-                                isActive={
-                                  (subItem.url === "/app/dashboard" &&
-                                    location.pathname === "/app/dashboard" &&
-                                    !location.search) ||
-                                  location.pathname + location.search ===
-                                  subItem.url
-                                }
-                              >
-                                <Link to={subItem.url}>
-                                  {subItem.icon && (
-                                    <subItem.icon className="w-4 h-4 mr-2" />
-                                  )}
-                                  <span>{subItem.title}</span>
-                                </Link>
-                              </SidebarMenuSubButton>
-                            </SidebarMenuSubItem>
-                          ))}
-                        </SidebarMenuSub>
-                      </CollapsibleContent>
-                    )}
-                  </SidebarMenuItem>
-                </Collapsible>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+                      </SidebarMenuItem>
+                    )
+                  )}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          ))
+        }
+      </SidebarContent >
 
-        {/* AI Assistant group */}
-        <SidebarGroup>
-          <SidebarGroupLabel>AI Assistant</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link to="/chat">
-                    <Bot className="w-4 h-4 text-blue-600" />
-                    <span>Chat with Mark</span>
-                    <div className="ml-auto w-2 h-2 bg-green-500 rounded-full"></div>
-                  </Link>
+      {/* 3. Sidebar Footer: User Profile */}
+      < SidebarFooter className={`transition-all ${isExpanded ? "p-4" : "p-1 pb-2 items-center"}`}>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton
+                  size="lg"
+                  className={`hover:bg-neutral-50 dark:hover:bg-white/5 data-[state=open]:bg-neutral-50 dark:data-[state=open]:bg-white/5 transition-all outline-none ${isExpanded ? "border border-neutral-300 dark:border-neutral-800 shadow-[0_1px_2px_rgba(0,0,0,0.05)] rounded-[10px] h-auto py-2 px-2.5 dark:bg-transparent" : "justify-center hover:bg-muted/50"}`}
+                >
+                  <div className="relative">
+                    <Avatar className={`${isExpanded ? "h-9 w-9" : "h-8 w-8"} rounded-[8px]`}>
+                      <AvatarImage src={`https://ui-avatars.com/api/?name=${displayName}&background=random`} />
+                      <AvatarFallback className="rounded-[8px] font-normal text-foreground border border-outline-variant text-xs">
+                        {displayName.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
+                  {isExpanded && (
+                    <>
+                      <div className="grid flex-1 text-left leading-tight ml-2.5">
+                        <span className="truncate font-medium text-neutral-900 dark:text-neutral-100 text-[13px]">
+                          {displayName}
+                        </span>
+                        <span className="truncate text-[12px] text-neutral-500 dark:text-neutral-400 font-normal mt-0.5">
+                          {firebaseUser?.email || "hi@ameliedesign.co"}
+                        </span>
+                      </div>
+                      <MoreVertical className="ml-1 size-[18px] text-neutral-400" strokeWidth={2} />
+                    </>
+                  )}
                 </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="w-[15.5rem] rounded-[12px] shadow-xs p-1.5 gap-0 border-[1px] border-neutral-300 bg-white dark:bg-neutral-900 dark:border-neutral-800"
+                side={isExpanded ? "top" : "right"}
+                align="center"
+                sideOffset={isExpanded ? 12 : 10}
+              >
+                {/* User/Brand Switcher Section */}
+                <div className="flex flex-col gap-1 mb-1">
+                  {mockBrands.map((brand) => (
+                    <DropdownMenuItem
+                      key={brand.id}
+                      onClick={(e) => {
+                        e.preventDefault(); // Keep menu open when selecting brand
+                        setActiveBrand(brand);
+                      }}
+                      className={`flex items-center gap-2.5 p-2 rounded-[6px] cursor-pointer outline-none transition-colors ${activeBrand.id === brand.id ? "bg-neutral-50 dark:bg-white/5" : "hover:bg-neutral-50 dark:hover:bg-white/5"}`}
+                    >
 
-      <SidebarFooter>
-        {/* Settings button */}
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton>
-              <Settings className="w-4 h-4" />
-              <span>Settings</span>
-            </SidebarMenuButton>
+                      <div className="grid flex-1 text-left leading-tight">
+                        <span className="truncate font-medium text-neutral-900 dark:text-neutral-100 text-[13px]">
+                          {brand.name}
+                        </span>
+                        <span className="truncate text-neutral-500 dark:text-neutral-400 text-[12px] font-normal">
+                          {brand.url}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-center pl-2">
+                        {activeBrand.id === brand.id ? (
+                          <div className="w-4 h-4 rounded-full border-[5px] border-neutral-900 dark:border-neutral-100" />
+                        ) : (
+                          <div className="w-4 h-4 rounded-full border-[1.5px] border-neutral-300 dark:border-neutral-600" />
+                        )}
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+                </div>
+
+                <div className="h-[1px] bg-neutral-200 dark:bg-neutral-800 my-2 mx-1" />
+
+                {/* Actions Section */}
+                <div className="flex flex-col gap-0.5 mt-1 mb-1">
+                  <DropdownMenuItem className="gap-2.5 p-2 cursor-pointer rounded-[6px] hover:bg-neutral-50 dark:hover:bg-white/5 text-neutral-900 dark:text-neutral-100 outline-none">
+                    <span className="font-medium text-[13px]">Account settings</span>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem className="gap-2.5 p-2 cursor-pointer rounded-[6px] hover:bg-neutral-50 dark:hover:bg-white/5 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 outline-none transition-colors">
+                    <span className="font-medium text-[13px]">Device management</span>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    className="flex justify-between items-center gap-2.5 p-2 cursor-pointer rounded-[6px] hover:bg-neutral-50 dark:hover:bg-white/5 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 outline-none group transition-colors"
+                    onClick={handleLogout}
+                  >
+                    <span className="font-medium text-[13px]">Sign out</span>
+                    <LogOut className="h-[16px] w-[16px] text-neutral-400 dark:text-neutral-500 group-hover:text-neutral-600 dark:group-hover:text-neutral-300 transition-colors" strokeWidth={2} />
+                  </DropdownMenuItem>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </SidebarMenuItem>
         </SidebarMenu>
-
-        {/* User/company profile card */}
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-            >
-              <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage
-                  src={user?.photo_url || "https://i.pravatar.cc/150?img=8"}
-                  alt={user?.user_name || "User"}
-                />
-                <AvatarFallback className="rounded-lg">
-                  {user?.user_name
-                    ?.split("_")
-                    .map((n: string) => n[0])
-                    .join("")
-                    .toUpperCase() || "OS"}
-                </AvatarFallback>
-              </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                {loading ? (
-                  <>
-                    <div className="h-4 w-24 bg-gray-200 animate-pulse rounded" />
-                    <div className="mt-1 h-3 w-32 bg-gray-100 animate-pulse rounded" />
-                  </>
-                ) : (
-                  <>
-                    <span className="truncate font-semibold text-gray-900">
-                      {user?.user_name}
-                    </span>
-                    <span className="truncate text-xs text-on-surface-variant">
-                      {user?.job_title}
-                    </span>
-                  </>
-                )}
-              </div>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
-    </SidebarComponent>
+      </SidebarFooter >
+    </SidebarComponent >
   );
 }

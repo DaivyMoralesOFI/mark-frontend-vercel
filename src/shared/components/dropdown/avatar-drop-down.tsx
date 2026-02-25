@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { BadgeCheck, Bell, ChevronDown, LogOut, Sparkles } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/shared/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
-import { useAuth } from "@/domains/auth/hooks/useAuth";
+import { useAuth } from "@/modules/auth/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
 interface AvatarDropdownProps {
@@ -50,7 +50,7 @@ const AvatarDropdown: React.FC<AvatarDropdownProps> = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="cursor-pointer group">
-        <div className="avatar-content flex flex-row justify-center items-center gap-0 group-hover:shadow-lg group-hover:bg-purple-100 transition-all duration-200 rounded-md">
+        <div className="avatar-content flex flex-row justify-center items-center gap-0 group-hover:shadow-lg group-hover:bg-muted transition-all duration-200 rounded-md">
           <Avatar className="h-7 w-7 rounded-md">
             <AvatarImage src={avatarSrc} alt={userName} />
             <AvatarFallback className="rounded-lg">CN</AvatarFallback>
@@ -72,7 +72,7 @@ const AvatarDropdown: React.FC<AvatarDropdownProps> = ({
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-semibold">{userName}</span>
-              <span className="truncate text-xs">{userEmail}</span>
+              <span className="truncate text-xs text-on-surface-variant">{userEmail}</span>
             </div>
           </div>
         </DropdownMenuLabel>

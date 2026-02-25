@@ -83,10 +83,10 @@ const PageOutletLayout = <T extends string | undefined = undefined>({
       return null;
     }
     return (
-      <div className={cn("h-full w-full max-w-full flex flex-col bg-surface-container text-on-surface px-0 overflow-hidden", outerClassName)}>
+      <div className={cn("h-full w-full max-w-full flex flex-col bg-surface text-on-surface px-0 overflow-hidden", outerClassName)}>
         <Tabs defaultValue={defaultTrigger} className="w-full p-0">
           {actions && <SiteHeader title={title || ""} actions={actions} />}
-          <TabsList className="h-12 w-full flex justify-between items-center bg-surface border-b-1 border-outline-variant pr-4">
+          <TabsList className="h-12 w-full flex justify-between items-center bg-surface pr-4">
             <div className="w-full max-w-1/2 flex items-start h-full">
               {triggers.map((trigger, index) => (
                 <TabsTrigger
@@ -127,18 +127,15 @@ const PageOutletLayout = <T extends string | undefined = undefined>({
   }
 
   return (
-    <div className={cn("h-full w-full flex flex-col bg-surface-container text-on-surface px-0", outerClassName)}>
+    <div className={cn("h-full w-full flex flex-col bg-surface text-on-surface px-0", outerClassName)}>
       <SiteHeader title={title || ""} actions={actions} />
-      <div className="relative w-full">
+      <div className="relative w-full h-full flex flex-col flex-1 overflow-hidden">
         <ScrollArea
-          className={cn(
-            title ? "h-[calc(100svh-10em)] " : "h-[calc(100svh-8em)] ",
-            "w-full ",
-          )}
+          className="h-full w-full"
         >
           <div
             className={cn(
-              "wrapper-layout gap-2 min-h-[calc(100svh-10em-0.1em)]",
+              "wrapper-layout gap-2 h-full min-h-full",
               layout === "flex" ? "flex flex-col" : "grid grid-cols-12",
               className,
             )}

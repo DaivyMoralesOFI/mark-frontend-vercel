@@ -41,4 +41,39 @@ export class UserService {
             throw error;
         }
     }
+    /**
+     * Creates a new user profile in Firestore.
+     * @param userId The ID of the user document (from Firebase Auth)
+     * @param email The user's email address
+     * @param displayName The user's display name (optional)
+     * @param photoURL The user's profile photo URL (optional)
+     */
+    static async createUserProfile(userId: string, email: string, displayName?: string, photoURL?: string): Promise<void> {
+        try {
+            const userDocRef = doc(firestore, "users", userId);
+            const now = new Date();
+
+            const newUser: UserProfile = {
+                id: userId,
+                email: email,
+                user_name: displayName || email.split('@')[0], // Default username from email if not provided
+                photo_url: photoURL || "",
+                is_active: true,
+                created_at: now,
+                updated_at: now,
+                last_login: now,
+                job_title: "Mark User", // Default job title
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            };
+
+            // Using setDoc to create or overwrite. Since it is a new registration, it should be fine.
+            const { setDoc } = await import("firebase/firestore");
+            await setDoc(userDocRef, newUser);
+
+            console.log(`User profile created for ID: ${userId}`);
+        } catch (error) {
+            console.error("Error creating user profile:", error);
+            throw error;
+        }
+    }
 }

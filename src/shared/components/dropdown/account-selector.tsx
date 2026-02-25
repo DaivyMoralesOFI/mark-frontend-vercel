@@ -44,7 +44,7 @@ const AccountSelector = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="cursor-pointer group">
-        <div className="avatar-content flex flex-row justify-center items-center gap-3 group-hover:shadow-lg group-hover:bg-purple-100 transition-all duration-200 rounded-md">
+        <div className="avatar-content flex flex-row justify-center items-center gap-3 group-hover:shadow-lg group-hover:bg-muted transition-all duration-200 rounded-md">
           {selectedBrand && (
             <>
               <Avatar className="h-7 w-7 rounded-md">
