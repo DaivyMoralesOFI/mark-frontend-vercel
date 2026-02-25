@@ -13,22 +13,14 @@ import {
   CreateImage,
   createImageSchema,
 } from "@/modules/creation-studio/schemas/create-image";
-import { UseMutationResult } from "@tanstack/react-query";
-import { CreateImageResponse } from "@/modules/creation-studio/schemas/create-image";
+
 import {
   useCreateImage,
-  useGetCreatedImage,
 } from "../../hooks/use-create-image";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
-interface BottomNavbarProps {
-  createImageMutation: UseMutationResult<
-    CreateImageResponse,
-    Error,
-    CreateImage
-  >;
-}
+
 
 // Schema parcial: solo los campos que el usuario controla directamente
 const bottomNavbarSchema = z.object({
@@ -79,7 +71,7 @@ function buildCreateImagePayload(formData: BottomNavbarForm): CreateImage {
 const BottomNavbar = () => {
   const [start_workflow, setStartWorkflow] = useState(false);
   const navigate = useNavigate();
-  const { mutate: startCreation, isPending: isProcessing } = useCreateImage();
+  const { mutate: startCreation } = useCreateImage();
   const _form = useForm<BottomNavbarForm>({
     resolver: zodResolver(bottomNavbarSchema),
     defaultValues: {

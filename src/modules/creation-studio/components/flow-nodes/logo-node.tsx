@@ -1,11 +1,11 @@
-import { Handle, Position } from "reactflow";
+
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
-import { motion } from "framer-motion";
+
 
 interface LogoNodeProps {
   data: {

@@ -4,7 +4,7 @@ import {
   Bot,
   Dna,
   User,
-  CirclePlus,
+
   Calendar,
   LayoutDashboard,
   ChevronRight,
@@ -217,7 +217,7 @@ export function Sidebar() {
                                     location.pathname === "/app/dashboard" &&
                                     !location.search) ||
                                   location.pathname + location.search ===
-                                    subItem.url
+                                  subItem.url
                                 }
                               >
                                 <Link to={subItem.url}>

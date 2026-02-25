@@ -18,10 +18,10 @@ export interface SubscriptionResult<T> {
 
 export type FirebaseSubscriptionError = {
   type:
-    | "NOT_FOUND"
-    | "VALIDATION_ERROR"
-    | "FIREBASE_ERROR"
-    | "PERMISSION_DENIED";
+  | "NOT_FOUND"
+  | "VALIDATION_ERROR"
+  | "FIREBASE_ERROR"
+  | "PERMISSION_DENIED";
   message: string;
   details?: any;
 };
@@ -119,8 +119,8 @@ export function createLiveSubscription<T>(
 
     // @ts-ignore
     const q = query(
-      collection(firestore, ...pathParts),
-      ...(queryConstraints as any),
+      collection(firestore, collectionPath),
+      ...(queryConstraints as any[]),
     );
 
     console.log(
@@ -157,6 +157,6 @@ export function createLiveSubscription<T>(
       err,
     );
     callback(null);
-    return () => {};
+    return () => { };
   }
 }

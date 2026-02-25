@@ -1,7 +1,7 @@
 import RequireAuth from "@/domains/auth/components/RequireAuth";
 import { lazy } from "react";
 import { DashboardLayout } from "../router/router";
-import { Navigate, Route } from "react-router-dom";
+import { Route } from "react-router-dom";
 
 const DashboardPage = lazy(
   () => import("@/domains/dashboard/page/DashboardPage"),
