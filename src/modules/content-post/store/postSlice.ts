@@ -4,9 +4,9 @@
 // It handles loading, error, and post data for the content post module.
 
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Post } from "../types/postTypes";
+import { Post } from "../types/PostTypes";
 import { PostService } from "../services/postService";
-import { VideoPost, VideoPostsResponse } from "../schemas/video-posts.schemas";
+import { VideoPost, VideoPostsResponse } from "../schemas/VideoPosts.schemas";
 
 /**
  * PostState

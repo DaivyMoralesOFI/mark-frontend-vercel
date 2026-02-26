@@ -4,7 +4,7 @@
 // It uses Axios for HTTP requests and is used by the Redux slice and hooks to interact with the AI assistant.
 
 import axios from 'axios';
-import { SendMessageRequest, SendMessageResponse } from '../types/chatTypes';
+import { SendMessageRequest, SendMessageResponse } from '../types/ChatTypes';
 
 // Webhook URL for the Mark AI backend
 const N8N_WEBHOOK_URL = 'https://n8n.sofiatechnology.ai/webhook/marketing-coach';

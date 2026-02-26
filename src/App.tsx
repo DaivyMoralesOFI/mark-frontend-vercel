@@ -1,9 +1,9 @@
 import { ThemeProvider } from "@/core/router/router";
-import FirebaseProvider from "./core/context/firebase-context";
+import FirebaseProvider from "./core/context/FirebaseContext";
 import AppRoutes from "./core/routes/routes";
-import { QueryProvider } from "./core/providers/query-providers";
-import { AuthProvider } from "@/modules/auth/store/authProvider";
-import { Toaster } from "@/shared/components/ui/sonner";
+import { QueryProvider } from "./core/providers/QueryProviders";
+import { AuthProvider } from "@/modules/auth/store/AuthProvider";
+import { Toaster } from "@/shared/components/ui/Sonner";
 
 export default function App() {
   return (

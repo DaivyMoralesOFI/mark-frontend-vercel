@@ -4,9 +4,9 @@ import {
   CardHeader,
   CardTitle,
   CardContent,
-} from "@/shared/components/ui/card";
-import PageOutletLayout from "@/shared/layout/page-outlet-layout";
-import { Actions } from "@/shared/types/types";
+} from "@/shared/components/ui/Card";
+import PageOutletLayout from "@/shared/layout/PageOutletLayout";
+import { Actions } from "@/shared/types/Types";
 import { Bot, Plus } from "lucide-react";
 import {
   AreaChart,
@@ -33,7 +33,7 @@ import {
   TableBody,
   TableCell,
 } from "@/shared/components/ui/Table";
-import { Badge as SharedBadge } from "@/shared/components/ui/badge";
+import { Badge as SharedBadge } from "@/shared/components/ui/Badge";
 
 interface CampaignData {
   date: string;

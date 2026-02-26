@@ -7,22 +7,22 @@ import {
     TableRow,
 } from "@/shared/components/ui/Table";
 
-import { Checkbox } from "@/shared/components/ui/checkbox";
+import { Checkbox } from "@/shared/components/ui/Checkbox";
 import { MoreHorizontal, ChevronDown, ChevronRight, Image as ImageIcon } from "lucide-react";
-import { Button } from "@/shared/components/ui/button";
+import { Button } from "@/shared/components/ui/Button";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from "@/shared/components/ui/dropdown-menu";
+} from "@/shared/components/ui/DropdownMenu";
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/shared/components/ui/select";
+} from "@/shared/components/ui/Select";
 import { cn } from "@/shared/utils/utils";
 import { InstagramIcon } from "@/shared/components/icons/InstagramIcon";
 import { TikTokIcon } from "@/shared/components/icons/TikTokIcon";

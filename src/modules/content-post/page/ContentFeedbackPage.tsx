@@ -5,19 +5,19 @@
 // The page handles loading and error states, and displays a grid of posts with options to create new posts or ask for AI feedback.
 
 import { Plus, LayoutGrid, Calendar as CalendarIcon, Clock, ChevronRight } from "lucide-react";
-import PageOutletLayout from "@/shared/layout/page-outlet-layout";
-import { Actions } from "@/shared/types/types";
+import PageOutletLayout from "@/shared/layout/PageOutletLayout";
+import { Actions } from "@/shared/types/Types";
 import { useContentFeedback } from "../hooks/useContentFeedback";
 import { useModals } from "@/shared/hooks/useModals";
 import { LoadingState } from "@/shared/components/loading-state/LoadingState";
 import { ErrorState } from "@/shared/components/error-state/ErrorState";
 import { PostGrid } from "../components/PostGrid";
 import { CreatePostModal } from "@/modules/create-post/components/CreatePostModal";
-import { VideoPostCarrousel } from "../components/carousels/video-post-carousel";
+import { VideoPostCarrousel } from "../components/carousels/VideoPostCarousel";
 import { AgendaCalendar } from "../components/AgendaCalendar";
 import { useState } from "react";
 import { InstagramIcon } from "@/shared/components/icons/InstagramIcon";
-import { Button } from "@/shared/components/ui/button";
+import { Button } from "@/shared/components/ui/Button";
 import { useSearchParams } from "react-router-dom";
 
 /**

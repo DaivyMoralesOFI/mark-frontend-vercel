@@ -1,5 +1,5 @@
-import { Card } from "@/shared/components/ui/card";
-import { Button } from "@/shared/components/ui/button";
+import { Card } from "@/shared/components/ui/Card";
+import { Button } from "@/shared/components/ui/Button";
 import { Upload, Loader2 } from "lucide-react";
 import { useBrandDna } from "../hooks/useBrandDna";
 

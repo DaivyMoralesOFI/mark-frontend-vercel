@@ -3,9 +3,9 @@
 // This file defines the ChatModalMessage component, which displays a single chat message in the chat modal with Mark AI.
 // It supports user and AI messages, avatars, and timestamp formatting. The component is styled for clear distinction between user and AI messages.
 
-import { Avatar, AvatarFallback } from "@/shared/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/shared/components/ui/Avatar";
 import { Bot, User } from "lucide-react";
-import { MessageChatModal } from "../types/chatModalTypes";
+import { MessageChatModal } from "../types/ChatModalTypes";
 
 /**
  * Props for ChatModalMessage

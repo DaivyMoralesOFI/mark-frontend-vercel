@@ -1,1 +1,1 @@
-export { default as Extractor } from "./pages/brand-extractor"
+export { default as Extractor } from "./pages/BrandExtractor"

@@ -4,8 +4,8 @@
 // It is used by the Redux slice and hooks to load post data for the content post module.
 
 import axios from "axios";
-import { Post, PostsResponse, FirebasePost } from "../types/postTypes";
-import { VideoPostsResponse } from "../schemas/video-posts.schemas";
+import { Post, PostsResponse, FirebasePost } from "../types/PostTypes";
+import { VideoPostsResponse } from "../schemas/VideoPosts.schemas";
 import { collection, getDocs } from "firebase/firestore";
 import { firestore } from "@/core/config/firebase-database";
 

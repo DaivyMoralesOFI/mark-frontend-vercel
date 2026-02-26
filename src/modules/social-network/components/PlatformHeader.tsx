@@ -1,5 +1,5 @@
 import { PlatformProfile } from "../data/mockData";
-import { Badge } from "@/shared/components/ui/badge";
+import { Badge } from "@/shared/components/ui/Badge";
 import { InstagramIcon } from "@/shared/components/icons/InstagramIcon";
 import { TikTokIcon } from "@/shared/components/icons/TikTokIcon";
 import { FacebookIcon } from "@/shared/components/icons/FacebookIcon";

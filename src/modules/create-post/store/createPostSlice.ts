@@ -11,7 +11,7 @@ import {
   PostState,
   PostSuggestionRequest,
   PostType,
-} from "../types/createPostTypes";
+} from "../types/CreatePostTypes";
 import { createPostService } from "../services/createPostService";
 
 // Initial state for the post creation slice

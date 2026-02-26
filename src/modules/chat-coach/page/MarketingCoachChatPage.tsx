@@ -5,9 +5,9 @@
 
 import { useState } from "react";
 import { useChat } from "../hooks/useChat";
-import { Actions } from "@/shared/types/types";
+import { Actions } from "@/shared/types/Types";
 import { Plus } from "lucide-react";
-import PageOutletLayout from "@/shared/layout/page-outlet-layout";
+import PageOutletLayout from "@/shared/layout/PageOutletLayout";
 import { ChatMessagesList } from "../components/ChatMessagesList";
 import { QuickQuestions } from "../components/QuickQuestions";
 import { ChatInput } from "../components/ChatInput";

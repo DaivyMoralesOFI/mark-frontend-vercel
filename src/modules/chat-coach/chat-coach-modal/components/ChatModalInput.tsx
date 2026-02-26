@@ -3,7 +3,7 @@
 // This file defines the ChatModalInput component, which provides a text input and send button for the chat modal with Mark AI.
 // It supports sending messages, handling input changes, and disabling input while typing.
 
-import { Button } from "@/shared/components/ui/button";
+import { Button } from "@/shared/components/ui/Button";
 import { Input } from "@/shared/components/ui/Input";
 import { Send } from "lucide-react";
 

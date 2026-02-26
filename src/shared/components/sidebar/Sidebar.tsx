@@ -28,23 +28,23 @@ import {
   SidebarMenuSubItem,
   SidebarMenuSubButton,
   SidebarTrigger,
-} from "@/shared/components/ui/sidebar";
+} from "@/shared/components/ui/Sidebar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/shared/components/ui/dropdown-menu";
+} from "@/shared/components/ui/DropdownMenu";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/shared/components/ui/collapsible";
+} from "@/shared/components/ui/Collapsible";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/shared/components/ui/avatar";
+} from "@/shared/components/ui/Avatar";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { useUser } from "@/shared/hooks/useUser";

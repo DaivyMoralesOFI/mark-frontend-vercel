@@ -4,7 +4,7 @@
 // It throws an error if used outside of an AuthProvider.
 
 import { useContext } from "react";
-import { AuthContext } from "../store/authProvider";
+import { AuthContext } from "../store/AuthProvider";
 
 /**
  * useAuth

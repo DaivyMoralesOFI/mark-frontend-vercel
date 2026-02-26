@@ -5,13 +5,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/shared/components/ui/dialog";
-import { Button } from "@/shared/components/ui/button";
+} from "@/shared/components/ui/Dialog";
+import { Button } from "@/shared/components/ui/Button";
 import { Input } from "@/shared/components/ui/Input";
 import { Search, Building2, CheckCircle2, Loader2 } from "lucide-react";
 import { cn } from "@/shared/utils/utils";
 import { useBrands } from "@/shared/hooks/useBrands";
-import { CompanyBrand } from "@/modules/brand-dna/types/brandDnaTypes";
+import { CompanyBrand } from "@/modules/brand-dna/types/BrandDnaTypes";
 import { BrandLogo } from "@/shared/components/brand/BrandLogo";
 
 interface CompanySelectorModalProps {

@@ -19,7 +19,7 @@ import {
     CardFooter,
     CardHeader,
     CardTitle,
-} from "@/shared/components/ui/card"
+} from "@/shared/components/ui/Card"
 import {
     ChartContainer,
     ChartTooltip,
@@ -27,7 +27,7 @@ import {
     ChartLegend,
     ChartLegendContent,
     type ChartConfig,
-} from "@/shared/components/ui/chart"
+} from "@/shared/components/ui/Chart"
 
 const radialChartConfig = {
     views: {

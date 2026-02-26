@@ -1,11 +1,11 @@
-import { Button } from "@/shared/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/components/ui/dialog"
+import { Button } from "@/shared/components/ui/Button"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/components/ui/Dialog"
 import { Input } from "@/shared/components/ui/Input"
-import { Label } from "@/shared/components/ui/label"
-import { Textarea } from "@/shared/components/ui/textarea"
+import { Label } from "@/shared/components/ui/Label"
+import { Textarea } from "@/shared/components/ui/Textarea"
 import { Mail, Send, Loader } from "lucide-react"
 import { useState } from "react"
-import { ScrollArea } from "@/shared/components/ui/scroll-area"
+import { ScrollArea } from "@/shared/components/ui/ScrollArea"
 import { ScheduleModal } from "@/shared/components/ScheduleModal"
 
 interface SendEmailModalProps {

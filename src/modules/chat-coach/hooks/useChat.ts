@@ -6,7 +6,7 @@
 import { RootState } from '@/core/store/rootReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { addUserMessage, clearError, resetChat, sendMessageAsync } from '../store/chatSlice';
-import { ChatHistoryItem } from '../types/chatTypes';
+import { ChatHistoryItem } from '../types/ChatTypes';
 
 /**
  * useChat

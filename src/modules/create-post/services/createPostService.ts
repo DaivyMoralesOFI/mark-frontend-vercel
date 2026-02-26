@@ -11,7 +11,7 @@ import {
   PostSuggestionRequest,
   PostSuggestionResponse,
   TrendItem,
-} from "../types/createPostTypes";
+} from "../types/CreatePostTypes";
 
 // Base URL for the API endpoints
 const API_BASE_URL = "https://n8n.sofiatechnology.ai/webhook";

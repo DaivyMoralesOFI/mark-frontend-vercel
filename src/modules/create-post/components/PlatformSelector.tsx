@@ -5,8 +5,8 @@
 // The component is styled with Tailwind CSS and uses the global Redux state for platform selection.
 
 import React from "react";
-import { Button } from "@/shared/components/ui/button";
-import { PLATFORMS } from "../types/createPostTypes";
+import { Button } from "@/shared/components/ui/Button";
+import { PLATFORMS } from "../types/CreatePostTypes";
 import { useAppDispatch, useAppSelector } from "@/core/store/store";
 import { togglePlatform } from "../store/createPostSlice";
 

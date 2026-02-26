@@ -3,7 +3,7 @@
 // This file defines the TypingIndicatorModal component, which displays an animated typing indicator when the AI assistant is generating a response in the chat modal.
 // The indicator uses animated dots and a bot avatar for visual feedback, styled with Tailwind CSS.
 
-import { Avatar, AvatarFallback } from "@/shared/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/shared/components/ui/Avatar";
 import { Bot } from "lucide-react";
 
 /**

@@ -5,14 +5,14 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/shared/components/ui/select";
+} from "@/shared/components/ui/Select";
 import { Area, AreaChart } from "recharts";
 import {
     ChartConfig,
     ChartContainer,
     ChartTooltip,
     ChartTooltipContent,
-} from "@/shared/components/ui/chart";
+} from "@/shared/components/ui/Chart";
 import { InstagramIcon } from "@/shared/components/icons/InstagramIcon";
 import { TikTokIcon } from "@/shared/components/icons/TikTokIcon";
 import { FacebookIcon } from "@/shared/components/icons/FacebookIcon";

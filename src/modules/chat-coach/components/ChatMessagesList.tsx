@@ -5,10 +5,10 @@
 // The component is styled with Tailwind CSS and uses a ScrollArea for smooth scrolling.
 
 import React from 'react';
-import { ScrollArea } from '@/shared/components/ui/scroll-area';
+import { ScrollArea } from '@/shared/components/ui/ScrollArea';
 import { ChatMessage } from './ChatMessage';
 import { TypingIndicator } from './TypingIndicator';
-import { Message } from '../types/chatTypes';
+import { Message } from '../types/ChatTypes';
 import { useAutoScroll } from '../hooks/useAutoScroll';
 
 /**

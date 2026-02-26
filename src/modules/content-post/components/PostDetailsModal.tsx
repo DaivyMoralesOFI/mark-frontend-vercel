@@ -16,11 +16,11 @@ import {
     DialogContent,
     DialogOverlay,
     DialogPortal,
-} from '@/shared/components/ui/dialog';
-import { Button } from '@/shared/components/ui/button';
-import { Avatar, AvatarImage, AvatarFallback } from '@/shared/components/ui/avatar';
+} from '@/shared/components/ui/Dialog';
+import { Button } from '@/shared/components/ui/Button';
+import { Avatar, AvatarImage, AvatarFallback } from '@/shared/components/ui/Avatar';
 import { cn } from '@/shared/utils/utils';
-import { Post } from '../types/postTypes';
+import { Post } from '../types/PostTypes';
 
 interface PostDetailsModalProps {
     isOpen: boolean;

@@ -12,9 +12,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/shared/components/ui/dialog";
-import { Button } from "@/shared/components/ui/button";
-import { Calendar } from "@/shared/components/ui/calendar";
+} from "@/shared/components/ui/Dialog";
+import { Button } from "@/shared/components/ui/Button";
+import { Calendar } from "@/shared/components/ui/Calendar";
 
 /**
  * Props for ScheduleModal

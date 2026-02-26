@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock } from 'lucide-react';
 import { InstagramIcon } from '@/shared/components/icons/InstagramIcon';
-import { Button } from '@/shared/components/ui/button';
-import { MONTHS, WEEKDAYS, getDaysInMonth, getDaysInWeek } from '../utils/agenda-utils';
+import { Button } from '@/shared/components/ui/Button';
+import { MONTHS, WEEKDAYS, getDaysInMonth, getDaysInWeek } from '../utils/agendaUtils';
 import { cn } from '@/shared/utils/utils';
 import { PostDetailsModal } from './PostDetailsModal';
 
 import { useFirebasePosts } from '../hooks/useFirebasePosts';
-import { Post } from '../types/postTypes';
+import { Post } from '../types/PostTypes';
 
 const PlatformIcon = ({ className }: { className?: string }) => {
     return <InstagramIcon className={cn("w-3 h-3", className)} />;

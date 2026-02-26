@@ -1,9 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { Button } from "@/shared/components/ui/button";
-import { Calendar } from "@/shared/components/ui/calendar";
-import { Field } from "@/shared/components/ui/field";
+import { Button } from "@/shared/components/ui/Button";
+import { Calendar } from "@/shared/components/ui/Calendar";
+import { Field } from "@/shared/components/ui/Field";
 import {
     Popover,
     PopoverContent,

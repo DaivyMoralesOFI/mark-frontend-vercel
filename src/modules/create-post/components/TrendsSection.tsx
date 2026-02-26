@@ -4,8 +4,8 @@
 // Users can add suggested hashtags to their post by clicking on them. The component handles loading state and empty state.
 // It is styled with Tailwind CSS and designed for use in post creation flows.
 
-import { Button } from "@/shared/components/ui/button";
-import { Label } from "@/shared/components/ui/label";
+import { Button } from "@/shared/components/ui/Button";
+import { Label } from "@/shared/components/ui/Label";
 
 /**
  * Props for TrendsSection

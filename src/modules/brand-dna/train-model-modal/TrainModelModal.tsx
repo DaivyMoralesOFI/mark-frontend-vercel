@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { motion, useMotionValue, useTransform, type PanInfo } from "framer-motion"
 import { X, SkipForward, Sparkles, Send } from "lucide-react"
-import { Button } from "@/shared/components/ui/button"
-import { Card } from "@/shared/components/ui/card"
+import { Button } from "@/shared/components/ui/Button"
+import { Card } from "@/shared/components/ui/Card"
 import { Input } from "@/shared/components/ui/Input"
 
 interface TrainModelModalProps {

@@ -6,8 +6,8 @@
 
 import React, { useEffect, useState } from "react";
 import { Upload } from "lucide-react";
-import { Label } from "@/shared/components/ui/label";
-import { Button } from "@/shared/components/ui/button";
+import { Label } from "@/shared/components/ui/Label";
+import { Button } from "@/shared/components/ui/Button";
 
 /**
  * Props for ImageUpload

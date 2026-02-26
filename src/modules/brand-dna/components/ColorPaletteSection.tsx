@@ -1,4 +1,4 @@
-import { Card } from "@/shared/components/ui/card";
+import { Card } from "@/shared/components/ui/Card";
 import { Check, Loader2 } from "lucide-react";
 import { useBrandDna } from "../hooks/useBrandDna";
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Post } from '../types/postTypes';
+import { Post } from '../types/PostTypes';
 import { PostService } from '../services/postService';
 
 /**

@@ -4,7 +4,7 @@
 // It handles sending messages to Mark AI, managing chat history, loading and error states, and user/assistant message logic.
 
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ChatHistoryItem, Message } from "../types/chatTypes";
+import { ChatHistoryItem, Message } from "../types/ChatTypes";
 import { ChatService } from "@/modules/chat-coach/services/chatService";
 
 /**
