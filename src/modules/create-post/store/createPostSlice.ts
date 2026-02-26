@@ -19,6 +19,7 @@ const initialState: PostState = {
   postType: "",
   selectedPlatforms: [],
   useBrandDna: false,
+  selectedBrandId: null,
   description: "",
   hasImage: false,
   generatedImage: null,
@@ -137,6 +138,10 @@ const createPostSlice = createSlice({
     toggleUseBrandDna: (state) => {
       state.useBrandDna = !state.useBrandDna;
     },
+    /** Set the selected brand ID */
+    setSelectedBrandId: (state, action: PayloadAction<string | null>) => {
+      state.selectedBrandId = action.payload;
+    },
     /** Set the post description */
     setDescription: (state, action: PayloadAction<string>) => {
       state.description = action.payload;
@@ -207,6 +212,7 @@ const createPostSlice = createSlice({
       state.postType = "";
       state.selectedPlatforms = [];
       state.useBrandDna = false;
+      state.selectedBrandId = null;
       state.description = "";
       state.hasImage = false;
       state.generatedImage = null;
@@ -292,6 +298,7 @@ export const {
   setPostType,
   togglePlatform,
   toggleUseBrandDna,
+  setSelectedBrandId,
   setDescription,
   addHashtagToDescription,
   setHasImage,

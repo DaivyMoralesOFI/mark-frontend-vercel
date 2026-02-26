@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, memo, useCallback, useRef } from "react";
 import ReactFlow, {
   Background,
   Controls,
@@ -9,6 +9,8 @@ import ReactFlow, {
   BaseEdge,
   EdgeProps,
   getBezierPath,
+  ReactFlowProvider,
+  useReactFlow,
 } from "reactflow";
 import "reactflow/dist/style.css";
 
@@ -29,7 +31,7 @@ import BrandVoiceNode from "@/modules/create-post/components/flow/brand-voice-no
 import { cn } from "@/shared/utils/utils";
 
 // Dashed edge for connecting Brand Logo to child nodes
-function DashedEdge({
+const DashedEdge = memo(function DashedEdge({
   sourceX,
   sourceY,
   targetX,
@@ -60,10 +62,10 @@ function DashedEdge({
       }}
     />
   );
-}
+});
 
 // Waiting node (initial page state)
-const WaitingNode = ({ data }: any) => {
+const WaitingNode = memo(({ data }: any) => {
   return (
     <div className="relative p-0 flex justify-center items-center">
       <WaitingCard
@@ -73,79 +75,116 @@ const WaitingNode = ({ data }: any) => {
       <Handle type="source" position={Position.Right} className="opacity-0" />
     </div>
   );
-};
+});
+
+// Memoized sidebar to prevent re-renders from propagating to ReactFlow
+const MemoizedBrandDNA = memo(BrandDNA);
 
 export type CreationMode = "post" | "dna";
 
-const CreateNewContentPage = () => {
-  const {
-    nodes,
-    edges,
-    onNodesChange,
-    onEdgesChange,
-    setNodes,
-    setEdges,
-    onConnect,
-    brandData,
-    isLoading,
-  } = useFlowStore();
+/**
+ * Inner component that uses useReactFlow (must be inside ReactFlowProvider).
+ * Uses a ResizeObserver on the canvas container to re-center nodes when
+ * the sidebar opens/closes (the container resizes as the sidebar gap animates).
+ */
+const FlowCanvas = ({
+  creationMode,
+  containerRef,
+}: {
+  creationMode: CreationMode;
+  containerRef: React.RefObject<HTMLDivElement | null>;
+}) => {
+  const nodes = useFlowStore((s) => s.nodes);
+  const edges = useFlowStore((s) => s.edges);
+  const onNodesChange = useFlowStore((s) => s.onNodesChange);
+  const onEdgesChange = useFlowStore((s) => s.onEdgesChange);
+  const onConnect = useFlowStore((s) => s.onConnect);
+  const setNodes = useFlowStore((s) => s.setNodes);
+  const setEdges = useFlowStore((s) => s.setEdges);
+  const brandData = useFlowStore((s) => s.brandData);
+  const isLoading = useFlowStore((s) => s.isLoading);
 
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const [creationMode, setCreationMode] = useState<CreationMode>("post");
+  const { fitView } = useReactFlow();
 
+  // Track the last known width so we can detect real resizes
+  const lastWidthRef = useRef<number>(0);
+
+  // ResizeObserver: re-center canvas whenever the container width changes
+  // This handles sidebar open/close, window resize, etc.
   useEffect(() => {
-    setIsAlertOpen(true);
-  }, []);
+    const container = containerRef.current;
+    if (!container) return;
 
+    lastWidthRef.current = container.offsetWidth;
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const newWidth = entry.contentRect.width;
+        // Only fitView if width actually changed (avoid height-only changes)
+        if (Math.abs(newWidth - lastWidthRef.current) > 5) {
+          lastWidthRef.current = newWidth;
+          // Debounce slightly so we catch the end of the CSS transition
+          setTimeout(() => {
+            fitView({ padding: 0.3, maxZoom: 1, duration: 300 });
+          }, 50);
+        }
+      }
+    });
+
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [containerRef, fitView]);
+
+  // Get actual container width for accurate node positioning
+  const getContainerWidth = useCallback(() => {
+    return containerRef.current?.offsetWidth ?? window.innerWidth;
+  }, [containerRef]);
+
+  // Set nodes based on creation mode and data
   useEffect(() => {
+    const w = getContainerWidth();
+
     if (creationMode === "dna") {
       if (isLoading) {
         setNodes([
           {
             id: "extracting",
             type: "extracting",
-            position: { x: window.innerWidth / 2 - 150, y: 150 },
+            position: { x: w / 2 - 150, y: 150 },
             data: {},
           },
         ]);
         setEdges([]);
       } else if (brandData) {
-        // Radial layout: Brand Logo at top-center, 4 nodes around it
-        const centerX = window.innerWidth / 2 - 120;
+        const centerX = w / 2 - 120;
         const topY = 60;
-
         const brandSharedData = { brand: brandData };
 
         setNodes([
-          // Brand Logo — top center
           {
             id: "brand-logo",
             type: "brandLogo",
             position: { x: centerX, y: topY },
             data: brandSharedData,
           },
-          // Identity — left
           {
             id: "brand-identity",
             type: "brandIdentity",
             position: { x: centerX - 380, y: topY + 200 },
             data: brandSharedData,
           },
-          // Typography — bottom-left center
           {
             id: "brand-typography",
             type: "brandTypography",
             position: { x: centerX - 180, y: topY + 330 },
             data: brandSharedData,
           },
-          // Color System — bottom-right center
           {
             id: "brand-color-system",
             type: "brandColorSystem",
             position: { x: centerX + 100, y: topY + 330 },
             data: brandSharedData,
           },
-          // Brand Voice — right
           {
             id: "brand-voice",
             type: "brandVoice",
@@ -189,7 +228,7 @@ const CreateNewContentPage = () => {
           {
             id: "start",
             type: "waiting",
-            position: { x: window.innerWidth / 2 - 150, y: 150 },
+            position: { x: w / 2 - 150, y: 150 },
             data: {
               label: "Start",
               isLoading: true,
@@ -205,7 +244,7 @@ const CreateNewContentPage = () => {
         {
           id: "start",
           type: "waiting",
-          position: { x: window.innerWidth / 2 - 150, y: 150 },
+          position: { x: w / 2 - 150, y: 150 },
           data: {
             label: "Start",
             isLoading: true,
@@ -216,7 +255,17 @@ const CreateNewContentPage = () => {
       ]);
       setEdges([]);
     }
-  }, [creationMode, isLoading, brandData, setNodes, setEdges]);
+  }, [creationMode, isLoading, brandData, setNodes, setEdges, getContainerWidth]);
+
+  // Re-center after nodes are set (e.g. mode switch)
+  useEffect(() => {
+    if (nodes.length > 0) {
+      const timer = setTimeout(() => {
+        fitView({ padding: 0.3, maxZoom: 1, duration: 300 });
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [nodes.length, creationMode, fitView]);
 
   const nodeTypes: NodeTypes = useMemo(
     () => ({
@@ -239,7 +288,39 @@ const CreateNewContentPage = () => {
   );
 
   return (
-    <div className="w-full h-full relative">
+    <ReactFlow
+      nodes={nodes}
+      edges={edges}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
+      onConnect={onConnect}
+      nodeTypes={nodeTypes}
+      edgeTypes={edgeTypes}
+      fitView
+      fitViewOptions={{ padding: 0.3, maxZoom: 1 }}
+      minZoom={0.3}
+      maxZoom={1.5}
+    >
+      <Background variant={undefined} />
+      <Controls />
+    </ReactFlow>
+  );
+};
+
+const CreateNewContentPage = () => {
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [creationMode, setCreationMode] = useState<CreationMode>("post");
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setIsAlertOpen(true);
+  }, []);
+
+  const handleSetCreationPost = useCallback(() => setCreationMode("post"), []);
+  const handleSetCreationDna = useCallback(() => setCreationMode("dna"), []);
+
+  return (
+    <div className="w-full h-full relative" ref={containerRef}>
       <StartingAlert open={isAlertOpen} onOpenChange={setIsAlertOpen} />
 
       {/* Top Center Mode Toggle */}
@@ -251,7 +332,7 @@ const CreateNewContentPage = () => {
               ? "bg-primary text-on-primary"
               : "text-on-surface hover:bg-surface-container hover:text-on-surface"
           )}
-          onClick={() => setCreationMode("post")}
+          onClick={handleSetCreationPost}
         >
           Create Post
         </button>
@@ -262,35 +343,25 @@ const CreateNewContentPage = () => {
               ? "bg-primary text-on-primary"
               : "text-on-surface hover:bg-surface-container hover:text-on-surface"
           )}
-          onClick={() => setCreationMode("dna")}
+          onClick={handleSetCreationDna}
         >
           Brand DNA Extractor
         </button>
       </div>
 
       <div className="absolute inset-0 z-0">
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          nodeTypes={nodeTypes}
-          edgeTypes={edgeTypes}
-          fitView
-          fitViewOptions={{ padding: 0.3, maxZoom: 1 }}
-          minZoom={0.3}
-          maxZoom={1.5}
-        >
-          <Background variant={undefined} />
-          <Controls />
-        </ReactFlow>
+        <ReactFlowProvider>
+          <FlowCanvas
+            creationMode={creationMode}
+            containerRef={containerRef}
+          />
+        </ReactFlowProvider>
       </div>
 
       {creationMode === "post" && (
         <div className="absolute top-1/2 right-10 -translate-y-1/2 w-full max-w-sm z-10 pointer-events-none">
           <div className="pointer-events-auto">
-            <BrandDNA />
+            <MemoizedBrandDNA />
           </div>
         </div>
       )}

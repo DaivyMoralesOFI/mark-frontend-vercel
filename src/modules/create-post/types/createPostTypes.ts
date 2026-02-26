@@ -104,6 +104,7 @@ export interface PostFormData {
   postType: PostType | "";
   selectedPlatforms: string[];
   useBrandDna: boolean;
+  selectedBrandId: string | null;
   description: string;
   hasImage: boolean;
   generatedImage: Blob | null;
