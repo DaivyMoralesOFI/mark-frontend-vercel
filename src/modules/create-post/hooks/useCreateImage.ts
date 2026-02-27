@@ -1,16 +1,18 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   getCreationsStatus,
+  getGenerationsStatus,
   getImageCreated,
   setCreateImage,
+  setEditImage,
 } from "@/modules/create-post/services/createImageService";
-import { CreateImage } from "@/modules/create-post/schemas/CreateImage";
+import { CreateImage, EditImage } from "@/modules/create-post/schemas/CreateImage";
 import {
   SubscriptionCallback,
   useFirebaseSubscription,
 } from "@/core/hooks/useFirebaseQuery";
 import { queryKeys } from "@/core/config/query-keys";
-import { CreationStore } from "@/modules/create-post/schemas/CreateImage";
+import { CreationStore, GenerationStore } from "@/modules/create-post/schemas/CreateImage";
 import { FirebaseSubscriptionError } from "@/modules/create-post/services/firebaseServices";
 import { useState } from "react";
 
@@ -30,6 +32,21 @@ export const useCreateImage = () => {
   };
 };
 
+/**
+ * Hook for editing images — calls POST /edit-image
+ */
+export const useEditImage = () => {
+  const mutation = useMutation({
+    mutationKey: ["edit_image"],
+    mutationFn: (editPayload: EditImage) => setEditImage(editPayload),
+  });
+
+  return {
+    ...mutation,
+    imgUrl: mutation.data?.img_url,
+  };
+};
+
 export const useGetCreatedImage = (
   uuid: string,
   options?: { enabled?: boolean },
@@ -42,6 +59,10 @@ export const useGetCreatedImage = (
   });
 };
 
+/**
+ * Hook to listen to the creation document status in Firebase.
+ * n8n writes status: "pending" → "active" to creations/{uuid}
+ */
 export function useCreationStatus(uuid: string) {
   const [subscriptionError, setSubscriptionError] =
     useState<FirebaseSubscriptionError | null>(null);
@@ -65,18 +86,52 @@ export function useCreationStatus(uuid: string) {
     enabled: !!uuid,
   });
 
+  const currentStatus = query.data?.[0]?.status?.toLowerCase();
+
   return {
     ...query,
     mapData: query.data ?? null,
     hasData: !!query.data && query.data.length > 0,
     isProcessing:
-      query.data?.[0]?.status?.toLowerCase() !== "done" || !query.data,
-    isDone: query.data?.[0]?.status?.toLowerCase() === "done",
+      currentStatus !== "done" && currentStatus !== "active",
+    isDone: currentStatus === "done" || currentStatus === "active",
     status: query.data?.[0] ?? null,
-    // New error states
+    // Error states
     subscriptionError,
     hasSubscriptionError: !!subscriptionError,
     isNotFound: subscriptionError?.type === "NOT_FOUND",
     isValidationError: subscriptionError?.type === "VALIDATION_ERROR",
+  };
+}
+
+/**
+ * Hook to listen to the generations subcollection in Firebase.
+ * n8n writes img_url to creations/{uuid}/generations/{gen_uuid}
+ */
+export function useGenerationStatus(creationUuid: string) {
+  const query = useFirebaseSubscription<GenerationStore[]>({
+    queryKey: [...queryKeys.creation_studio.creations(creationUuid), "generations"],
+    subscribe: (onNext: SubscriptionCallback<GenerationStore[]>) => {
+      return getGenerationsStatus(creationUuid, (data, error) => {
+        if (error) {
+          console.error("❌ Generation subscription error:", error);
+        }
+        if (data) {
+          onNext(data);
+        }
+      });
+    },
+    enabled: !!creationUuid,
+  });
+
+  // Find the latest generation with an img_url (not null, not undefined)
+  const latestGeneration = query.data?.find((g) => !!g.img_url) ?? null;
+
+  return {
+    ...query,
+    generations: query.data ?? [],
+    latestGeneration,
+    imgUrl: latestGeneration?.img_url ?? null,
+    hasImage: !!latestGeneration?.img_url,
   };
 }

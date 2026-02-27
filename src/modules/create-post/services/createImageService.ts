@@ -5,6 +5,11 @@ import {
   createImageResponseSchema,
   CreationStore,
   creationStoreSchema,
+  EditImage,
+  EditImageResponse,
+  editImageResponseSchema,
+  GenerationStore,
+  generationStoreSchema,
   GetCreatedImage,
   getCreatedImageSchema,
 } from "../schemas/CreateImage";
@@ -52,6 +57,45 @@ export const setCreateImage = async (
     });
 
     throw new Error(`Failed to create image ${image_schema}: ${errorMessage}`);
+  }
+};
+
+export const setEditImage = async (
+  editPayload: EditImage,
+): Promise<EditImageResponse> => {
+  try {
+    const endpoint = API_CONFIG.ENDPOINTS.CREATION_STUDIO.editImage;
+    const response = await API_CLIENT.post(endpoint, editPayload);
+    const validationResult = validateSchemaSoft(
+      editImageResponseSchema,
+      response.data,
+      {
+        operation: "editImage",
+        endpoint: endpoint,
+      },
+    ) as EditImageResponse;
+    return validationResult;
+  } catch (error) {
+    if (isApiError(error)) {
+      console.error("❌ API Error editing image:", {
+        editPayload,
+        type: error.type,
+        message: error.userMessage,
+        statusCode: error.statusCode,
+        details: error.details,
+      });
+      throw new Error(error.userMessage);
+    }
+
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error occurred";
+    console.error("❌ Failed to edit image:", {
+      operation: "editImage",
+      editPayload,
+      error: errorMessage,
+    });
+
+    throw new Error(`Failed to edit image: ${errorMessage}`);
   }
 };
 
@@ -157,4 +201,27 @@ export function getCreationsStatus(
 
   // Use retry version instead of direct subscription
   return getCreationsStatusWithRetry(uuid, callback);
+}
+
+/**
+ * Subscribe to the generations subcollection: creations/{uuid}/generations
+ * This is where n8n writes the img_url after image generation
+ */
+export function getGenerationsStatus(
+  creationUuid: string,
+  callback: (
+    data: GenerationStore[] | null,
+    error?: FirebaseSubscriptionError,
+  ) => void,
+): UnsubscribeFn {
+  console.log("Subscribing to generations subcollection:", creationUuid);
+
+  return createLiveSubscription(
+    `creations/${creationUuid}/generations`,
+    generationStoreSchema,
+    [],
+    (data, error) => {
+      callback(data, error);
+    },
+  );
 }

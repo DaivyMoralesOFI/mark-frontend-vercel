@@ -14,12 +14,20 @@ import {
 } from "reactflow";
 import { BrandExtractor } from "../schemas/BrandSchema";
 
+export type SelectedGeneration = {
+  uuid: string;
+  parent_uuid: string;
+  img_url: string;
+  label: string;
+} | null;
+
 type FlowState = {
   nodes: Node[];
   edges: Edge[];
   brandData: BrandExtractor | null;
   isLoading: boolean;
   error: string | null;
+  selectedGeneration: SelectedGeneration;
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
@@ -28,12 +36,11 @@ type FlowState = {
   setBrandData: (data: BrandExtractor | null) => void;
   setIsLoading: (isLoading: boolean) => void;
   setError: (error: string | null) => void;
-  // Canvas interactions
+  setSelectedGeneration: (gen: SelectedGeneration) => void;
   resetFlow: () => void;
 };
 
 const initialNodes: Node[] = [];
-
 const initialEdges: Edge[] = [];
 
 export const useFlowStore = create<FlowState>((set, get) => ({
@@ -42,6 +49,7 @@ export const useFlowStore = create<FlowState>((set, get) => ({
   brandData: null,
   isLoading: false,
   error: null,
+  selectedGeneration: null,
   onNodesChange: (changes: NodeChange[]) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),
@@ -62,6 +70,7 @@ export const useFlowStore = create<FlowState>((set, get) => ({
   setBrandData: (brandData) => set({ brandData }),
   setIsLoading: (isLoading) => set({ isLoading }),
   setError: (error) => set({ error }),
+  setSelectedGeneration: (gen) => set({ selectedGeneration: gen }),
   resetFlow: () =>
     set({
       nodes: initialNodes,
@@ -69,5 +78,6 @@ export const useFlowStore = create<FlowState>((set, get) => ({
       brandData: null,
       isLoading: false,
       error: null,
+      selectedGeneration: null,
     }),
 }));

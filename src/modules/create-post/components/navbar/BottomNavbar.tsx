@@ -18,13 +18,16 @@ import {
   createImageSchema,
 } from "@/modules/create-post/schemas/CreateImage";
 
-import { useCreateImage } from "../../hooks/useCreateImage";
-import { useNavigate } from "react-router-dom";
+import { useCreateImage, useEditImage } from "../../hooks/useCreateImage";
+import { useNavigate, useParams } from "react-router-dom";
 import { useState, useRef, useCallback } from "react";
 import { BrandExtractor } from "@/modules/create-post/schemas/BrandSchema";
 import { useAppDispatch } from "@/core/store/store";
 import { setSelectedBrandId } from "../../store/createPostSlice";
 import { cn } from "@/shared/utils/utils";
+import { useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/core/config/query-keys";
+import { useFlowStore } from "../../store/flowStoreSlice";
 
 // Schema parcial: solo los campos que el usuario controla directamente
 const bottomNavbarSchema = z.object({
@@ -117,7 +120,14 @@ const BottomNavbar = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const queryClient = useQueryClient();
   const { mutate: startCreation } = useCreateImage();
+  const { mutate: editImage } = useEditImage();
+
+  // Detect if we're on the workflow page (edit mode)
+  const { uuid: creationUuid } = useParams<{ uuid: string }>();
+  const selectedGeneration = useFlowStore((s) => s.selectedGeneration);
+  const isEditMode = !!creationUuid && !!selectedGeneration?.img_url;
 
   const _form = useForm<BottomNavbarForm>({
     resolver: zodResolver(bottomNavbarSchema),
@@ -154,6 +164,44 @@ const BottomNavbar = () => {
   }, []);
 
   const onSubmit = async (data: BottomNavbarForm) => {
+    // === EDIT MODE: send to /edit-image ===
+    if (isEditMode && creationUuid && selectedGeneration) {
+      const editPayload = {
+        uuid: selectedGeneration.uuid,
+        parent_uuid: selectedGeneration.parent_uuid || selectedGeneration.uuid,
+        creation_uuid: creationUuid,
+        img_url: selectedGeneration.img_url,
+        prompt: data.prompt,
+      };
+
+      console.log(`✏️ [Edit] Editing from "${selectedGeneration.label}":`, editPayload);
+      setStartWorkflow(true);
+
+      editImage(editPayload, {
+        onSuccess: (response) => {
+          console.log("✅ [Edit] Image edited successfully:", response);
+          setStartWorkflow(false);
+          _form.setValue("prompt", "");
+
+          // Invalidate generations query so Firebase listener picks up the new doc
+          // n8n writes to Firebase AFTER responding, so we add a delay
+          const generationsKey = [...queryKeys.creation_studio.creations(creationUuid), "generations"];
+          setTimeout(() => {
+            queryClient.invalidateQueries({ queryKey: generationsKey });
+          }, 2000);
+          setTimeout(() => {
+            queryClient.invalidateQueries({ queryKey: generationsKey });
+          }, 5000);
+        },
+        onError: (error) => {
+          console.error("❌ [Edit] Error editing image:", error);
+          setStartWorkflow(false);
+        },
+      });
+      return;
+    }
+
+    // === CREATE MODE: send to /generate-image-v3 ===
     const payload = buildCreateImagePayload(data, selectedBrand);
 
     console.log("🔍 [Validation] Built payload:", payload);
@@ -275,6 +323,23 @@ const BottomNavbar = () => {
 
           {/* Main Input Area */}
           <div className="px-4 pt-3 pb-2">
+            {/* Edit mode indicator */}
+            {isEditMode && selectedGeneration && (
+              <div className="flex items-center gap-2 mb-2 pb-2 border-b border-outline-variant/15">
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-primary/10 border border-primary/20">
+                  <svg className="w-3 h-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
+                  </svg>
+                  <span className="text-[11px] font-semibold text-primary">
+                    Editing: {selectedGeneration.label}
+                  </span>
+                </div>
+                <span className="text-[11px] text-muted-foreground/60">
+                  Click another image to switch
+                </span>
+              </div>
+            )}
+
             <Controller
               name="prompt"
               control={_form.control}
@@ -285,7 +350,11 @@ const BottomNavbar = () => {
                     field.ref(e);
                     (textareaRef as any).current = e;
                   }}
-                  placeholder="Describe your post idea..."
+                  placeholder={
+                    isEditMode
+                      ? `Describe what to change in "${selectedGeneration?.label}"...`
+                      : "Describe your post idea..."
+                  }
                   rows={1}
                   onFocus={() => setIsFocused(true)}
                   onBlur={() => setIsFocused(false)}
