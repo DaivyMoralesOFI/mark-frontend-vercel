@@ -8,7 +8,7 @@ interface BrandCardProps {
 }
 
 export function BrandCard({ brand, onClick }: BrandCardProps) {
-  const { brand_identity, color_system, typography, _meta } = brand;
+  const { brand_identity, color_system, typography } = brand;
   const paletteColors = color_system.source_palette.slice(0, 6);
 
   return (
