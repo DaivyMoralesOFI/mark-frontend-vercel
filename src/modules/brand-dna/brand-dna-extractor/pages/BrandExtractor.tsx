@@ -13,15 +13,17 @@ import {
   extractorFormSchema,
 } from "../schemas/BrandExtractor.schema";
 import { Button } from "@/shared/components/ui/Button";
-import { Sparkles, ArrowRight, Globe } from "lucide-react";
+import { Sparkles, ArrowRight, Globe, Save, Check, Loader2, Dna } from "lucide-react";
 import { Card } from "@/shared/components/ui/Card";
 import { Input } from "@/shared/components/ui/Input";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/shared/utils/utils";
 import { useTheme } from "@/core/context/ThemeProvider";
 import { brandExtractorWorkFlow } from "../services/brandExtractor.apiService";
+import { setNewBrand, getAllBrands } from "@/modules/create-post/services/brandService";
+import type { BrandExtractor, BrandsResponse } from "@/modules/create-post/schemas/BrandSchema";
 import {
   calculateTimePerMessage,
   scheduleMessages,
@@ -29,6 +31,8 @@ import {
 } from "../utils/timerUtils";
 import { getRandomMessage } from "../utils/messageUtils";
 import { isSuccessfulResponse } from "../utils/responseUtils";
+import { BrandCard } from "../components/BrandCard";
+import { BrandDetailModal } from "../components/BrandDetailModal";
 
 const loadingMessages = [
   "Checking the URL...",
@@ -53,9 +57,34 @@ const Extractor = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [extractedBrand, setExtractedBrand] = useState<BrandExtractor | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
   const { theme } = useTheme();
   const systemDark = typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches;
   const isDark = theme === 'dark' || (theme === 'system' && systemDark);
+
+  // Brands list state
+  const [brands, setBrands] = useState<BrandsResponse>([]);
+  const [brandsLoading, setBrandsLoading] = useState(true);
+  const [selectedBrand, setSelectedBrand] = useState<BrandExtractor | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const fetchBrands = useCallback(async () => {
+    setBrandsLoading(true);
+    try {
+      const data = await getAllBrands();
+      setBrands(data);
+    } catch (error) {
+      console.error("Error fetching brands:", error);
+    } finally {
+      setBrandsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchBrands();
+  }, [fetchBrands]);
 
   const onSubmit = async (data: ExtractorFormData) => {
     console.log({ data });
@@ -82,6 +111,7 @@ const Extractor = () => {
       );
       await new Promise((resolve) => setTimeout(resolve, 20000));
       if (isSuccessfulResponse(response)) {
+        setExtractedBrand(response.data.output);
         setIsSuccess(true);
       }
     } catch (error) {
@@ -106,6 +136,25 @@ const Extractor = () => {
     }
   };
 
+  const handleSaveBrand = async () => {
+    if (!extractedBrand) return;
+    setIsSaving(true);
+    try {
+      await setNewBrand(extractedBrand);
+      setIsSaved(true);
+      fetchBrands();
+    } catch (error) {
+      console.error("Error saving brand:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleBrandClick = (brand: BrandExtractor) => {
+    setSelectedBrand(brand);
+    setIsModalOpen(true);
+  };
+
   const form = useForm<ExtractorFormData>({
     resolver: zodResolver(extractorFormSchema),
     defaultValues: defaultExtractorForm,
@@ -114,9 +163,9 @@ const Extractor = () => {
   const urlError = form.formState.errors.brandUrl?.message;
 
   return (
-    <div className="min-w-svw min-h-svh max-w-svw max-h-svh m-0 p-0 bg-background relative overflow-hidden">
+    <div className="min-w-svw min-h-svh m-0 p-0 bg-background relative overflow-y-auto overflow-x-hidden">
       <div
-        className="absolute inset-0 z-0"
+        className="fixed inset-0 z-0"
         style={{
           background: isDark
             ? `
@@ -135,7 +184,8 @@ const Extractor = () => {
         `,
         }}
       />
-      <div className="wrapper w-svw h-svh m-0 flex justify-center items-center relative z-[999] flex-col gap-12 p-4">
+      <div className="wrapper w-full min-h-svh m-0 flex flex-col items-center relative z-10 gap-8 p-4 py-12 md:py-16">
+        {/* Extractor Card */}
         <Card className="main-input bg-card/95 backdrop-blur-sm py-12 md:py-16 px-8 md:px-12 rounded-lg border-border w-full max-w-md md:max-w-xl">
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -246,20 +296,101 @@ const Extractor = () => {
                     {getRandomMessage(successMessages)}
                   </p>
                 </div>
-                <Button
-                  type="button"
-                  className="py-6 w-full h-12 md:h-14 text-base rounded-md"
-                  variant="agent"
-                  onClick={() => navigate("/brand-dna")}
-                >
-                  Explore your Brand DNA
-                  <ArrowRight className="w-5 h-5" />
-                </Button>
+                <div className="flex flex-col gap-3">
+                  <Button
+                    type="button"
+                    className="py-6 w-full h-12 md:h-14 text-base rounded-md"
+                    variant="agent"
+                    disabled={isSaving || isSaved}
+                    onClick={handleSaveBrand}
+                  >
+                    {isSaved ? (
+                      <>
+                        <Check className="w-5 h-5" />
+                        Brand Saved
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-5 h-5" />
+                        {isSaving ? "Saving..." : "Save Brand"}
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    type="button"
+                    className="py-6 w-full h-12 md:h-14 text-base rounded-md"
+                    variant="outline"
+                    onClick={() => navigate("/brand-dna")}
+                  >
+                    Explore your Brand DNA
+                    <ArrowRight className="w-5 h-5" />
+                  </Button>
+                </div>
               </motion.div>
             )}
           </form>
         </Card>
+
+        {/* Saved Brands List */}
+        <div className="w-full max-w-md md:max-w-xl">
+          <div className="flex items-center gap-2 mb-4 px-1">
+            <Dna className="w-4 h-4 text-muted-foreground" />
+            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+              Saved Brands
+            </h2>
+            {!brandsLoading && brands.length > 0 && (
+              <span className="text-xs text-muted-foreground/70">
+                ({brands.length})
+              </span>
+            )}
+          </div>
+
+          {brandsLoading ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              <Loader2 className="w-6 h-6 animate-spin text-muted-foreground mb-2" />
+              <p className="text-sm text-muted-foreground">Loading brands...</p>
+            </div>
+          ) : brands.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <Dna className="w-8 h-8 text-muted-foreground/40 mb-3" />
+              <p className="text-sm text-muted-foreground">
+                No brands saved yet
+              </p>
+              <p className="text-xs text-muted-foreground/70 mt-1">
+                Extract a brand DNA above and save it to see it here
+              </p>
+            </div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="flex flex-col gap-2"
+            >
+              {brands.map((brand, index) => (
+                <motion.div
+                  key={brand._meta?.uuid || index}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2, delay: index * 0.05 }}
+                >
+                  <BrandCard
+                    brand={brand}
+                    onClick={() => handleBrandClick(brand)}
+                  />
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </div>
       </div>
+
+      {/* Brand Detail Modal */}
+      <BrandDetailModal
+        brand={selectedBrand}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 };

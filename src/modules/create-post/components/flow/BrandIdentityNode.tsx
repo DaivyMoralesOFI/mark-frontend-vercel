@@ -10,41 +10,48 @@ const BrandIdentityNode = ({ data }: { data: { brand: BrandExtractor } }) => {
     const { name, brand_archetype, industry } = brand.brand_identity;
 
     return (
-        <div className="relative flex justify-center items-center">
-            <Card className="p-5 flex flex-col gap-4 border border-outline-variant/20 shadow-lg min-w-[200px] max-w-[240px] bg-surface-container-lowest rounded-2xl">
+        <div className="relative flex justify-center items-center text-foreground font-sans">
+            <Card className="p-5 flex flex-col gap-4 border border-outline-variant/30 shadow-xl min-w-[220px] max-w-[260px] bg-surface-container-lowest/95 dark:bg-[#121212]/90 backdrop-blur-xl rounded-3xl transition-all hover:border-primary/20">
                 {/* Title */}
-                <div className="flex items-center gap-2">
-                    <User className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm font-semibold text-foreground">Identity</span>
+                <div className="flex items-center gap-2 mb-1">
+                    <User className="w-4 h-4 text-primary" strokeWidth={2.5} />
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground/60 tracking-widest">Identity</span>
                 </div>
 
                 {/* Brand Name */}
-                <div className="flex flex-col gap-1">
-                    <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
+                <div className="flex flex-col gap-1 bg-white/5 dark:bg-white/[0.02] p-3 rounded-2xl border border-outline-variant/5">
+                    <span className="text-[9px] uppercase font-bold text-muted-foreground/50 tracking-wider">
                         BRAND NAME
                     </span>
-                    <span className="text-base font-bold text-foreground">{name}</span>
+                    <span className="text-base font-bold text-foreground leading-tight">{name}</span>
                 </div>
 
-                {/* Archetype */}
-                <div className="flex flex-col gap-1">
-                    <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
-                        ARCHETYPE
-                    </span>
-                    <div className="flex items-center gap-1.5">
-                        <Compass className="w-3.5 h-3.5 text-muted-foreground" />
-                        <span className="text-sm text-foreground">{brand_archetype}</span>
+                {/* Grid for details */}
+                <div className="grid grid-cols-1 gap-3 px-1">
+                    {/* Archetype */}
+                    <div className="flex flex-col gap-1">
+                        <span className="text-[9px] uppercase font-bold text-muted-foreground/50 tracking-wider">
+                            ARCHETYPE
+                        </span>
+                        <div className="flex items-center gap-2">
+                            <div className="p-1 rounded-md bg-orange-500/10">
+                                <Compass className="w-3.5 h-3.5 text-orange-500" />
+                            </div>
+                            <span className="text-sm font-semibold text-foreground/90">{brand_archetype}</span>
+                        </div>
                     </div>
-                </div>
 
-                {/* Industry */}
-                <div className="flex flex-col gap-1">
-                    <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
-                        INDUSTRY
-                    </span>
-                    <div className="flex items-center gap-1.5">
-                        <Building2 className="w-3.5 h-3.5 text-muted-foreground" />
-                        <span className="text-sm text-foreground">{industry}</span>
+                    {/* Industry */}
+                    <div className="flex flex-col gap-1">
+                        <span className="text-[9px] uppercase font-bold text-muted-foreground/50 tracking-wider">
+                            INDUSTRY
+                        </span>
+                        <div className="flex items-center gap-2">
+                            <div className="p-1 rounded-md bg-blue-500/10">
+                                <Building2 className="w-3.5 h-3.5 text-blue-500" />
+                            </div>
+                            <span className="text-sm font-semibold text-foreground/90">{industry}</span>
+                        </div>
                     </div>
                 </div>
             </Card>

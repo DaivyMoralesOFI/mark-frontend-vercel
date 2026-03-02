@@ -8,8 +8,6 @@ import {
   LogOut,
   Plus,
   MoreVertical,
-  Dna,
-  User,
   Sun,
   Moon,
   Monitor,
@@ -98,8 +96,6 @@ const navigationGroups = [
       },
       { title: "Calendar", icon: Calendar, isActive: false, to: "/app/calendar" },
       { title: "Campaigns", icon: TrendingUp, isActive: false, to: "/app/campaigns" },
-      { title: "Brand DNA", icon: Dna, isActive: false, to: "/app/brand-dna" },
-      { title: "Style Profile", icon: User, isActive: false, to: "/app/style-profile" },
     ],
   },
   {

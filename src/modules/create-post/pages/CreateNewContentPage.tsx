@@ -20,7 +20,6 @@ import WaitingCard from "@/modules/create-post/components/card/WaitingCard";
 
 import { StartingAlert } from "@/modules/create-post/components/alerts/StartingAlert";
 import { useFlowStore } from "@/modules/create-post/store/flowStoreSlice";
-import BrandDNA from "../components/sidebar/BrandDNA";
 import { useTheme } from "@/core/context/ThemeProvider";
 
 import ExtractingNode from "@/modules/create-post/components/flow/ExtractingNode";
@@ -31,14 +30,18 @@ import BrandColorSystemNode from "@/modules/create-post/components/flow/BrandCol
 import BrandVoiceNode from "@/modules/create-post/components/flow/BrandVoiceNode";
 
 import { cn } from "@/shared/utils/utils";
-import { Globe, ArrowUp, Loader } from "lucide-react";
+import { Globe, ArrowUp, Loader, Dna, ChevronRight, Loader2 } from "lucide-react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  BrandExtractor,
   ExtractorFormData,
   extractorFormSchema,
 } from "@/modules/create-post/schemas/BrandSchema";
-import { useBrandExtractor } from "../hooks/useBrands";
+import { useBrandExtractor, useBrands } from "../hooks/useBrands";
+import { Badge } from "@/shared/components/ui/Badge";
+import { BrandDetailModal } from "@/modules/brand-dna/brand-dna-extractor/components/BrandDetailModal";
+import { motion } from "framer-motion";
 
 // Dashed edge for connecting Brand Logo to child nodes
 const DashedEdge = memo(function DashedEdge({
@@ -86,9 +89,6 @@ const WaitingNode = memo(({ data }: any) => {
     </div>
   );
 });
-
-// Memoized sidebar to prevent re-renders from propagating to ReactFlow
-const MemoizedBrandDNA = memo(BrandDNA);
 
 export type CreationMode = "canvas" | "brand-dna";
 
@@ -286,10 +286,85 @@ const FlowCanvas = ({
  * Centered Brand DNA URL input in creation-post style.
  * Only shown when no brand data is loaded and not currently extracting.
  */
+/**
+ * Compact brand card for the saved brands list.
+ */
+const SavedBrandItem = memo(({
+  brand,
+  onSelect,
+  onDetail,
+}: {
+  brand: BrandExtractor;
+  onSelect: () => void;
+  onDetail: (e: React.MouseEvent) => void;
+}) => {
+  const paletteColors = brand.color_system.source_palette.slice(0, 5);
+
+  return (
+    <button
+      onClick={onSelect}
+      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-outline-variant/20 dark:border-outline/10 bg-surface-container-lowest/80 dark:bg-[#1C1C1C]/80 backdrop-blur-sm hover:border-primary/40 hover:bg-accent/20 transition-all group text-left"
+    >
+      {/* Logo */}
+      <div className="w-8 h-8 rounded-lg bg-muted/50 border border-outline-variant/10 flex items-center justify-center overflow-hidden shrink-0">
+        {brand.brand_identity.logo?.url ? (
+          <img
+            src={brand.brand_identity.logo.url}
+            alt={brand.brand_identity.name}
+            className="max-w-full max-h-full object-contain"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.style.display = "none";
+              target.parentElement!.innerHTML = `<span class="text-[10px] font-semibold text-muted-foreground">${brand.brand_identity.name.substring(0, 2).toUpperCase()}</span>`;
+            }}
+          />
+        ) : (
+          <span className="text-[10px] font-semibold text-muted-foreground">
+            {brand.brand_identity.name.substring(0, 2).toUpperCase()}
+          </span>
+        )}
+      </div>
+
+      {/* Info */}
+      <div className="flex-1 min-w-0">
+        <p className="text-[13px] font-medium text-on-surface truncate">
+          {brand.brand_identity.name}
+        </p>
+        <p className="text-[11px] text-on-surface-variant/50 truncate">
+          {brand.brand_identity.industry}
+        </p>
+      </div>
+
+      {/* Color palette preview */}
+      <div className="flex gap-0.5 shrink-0">
+        {paletteColors.map((hex, i) => (
+          <div
+            key={i}
+            className="w-3 h-3 first:rounded-l last:rounded-r"
+            style={{ backgroundColor: hex }}
+          />
+        ))}
+      </div>
+
+      {/* Detail button */}
+      <button
+        onClick={onDetail}
+        className="shrink-0 w-6 h-6 rounded-md flex items-center justify-center text-on-surface-variant/30 hover:text-primary hover:bg-primary/10 transition-colors"
+        title="View details"
+      >
+        <ChevronRight className="w-3.5 h-3.5" />
+      </button>
+    </button>
+  );
+});
+
 const BrandDnaUrlInput = () => {
   const [isFocused, setIsFocused] = useState(false);
   const { mutate: brandExtractor, isPending: isProcessing } = useBrandExtractor();
-  const { brandData, isLoading } = useFlowStore();
+  const { brandData, isLoading, setBrandData } = useFlowStore();
+  const { data: allBrands, isLoading: brandsLoading } = useBrands();
+  const [detailBrand, setDetailBrand] = useState<BrandExtractor | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   const _form = useForm<ExtractorFormData>({
     resolver: zodResolver(extractorFormSchema),
@@ -310,94 +385,169 @@ const BrandDnaUrlInput = () => {
     }
   };
 
+  const handleSelectBrand = useCallback((brand: BrandExtractor) => {
+    setBrandData(brand);
+  }, [setBrandData]);
+
+  const handleDetailClick = useCallback((e: React.MouseEvent, brand: BrandExtractor) => {
+    e.stopPropagation();
+    setDetailBrand(brand);
+    setIsDetailOpen(true);
+  }, []);
+
   // Don't show the centered input if we already have data or are loading
   if (brandData || isLoading) return null;
 
+  const brands = allBrands ?? [];
+
   return (
-    <div className="absolute inset-0 z-[5] flex flex-col items-center justify-center pointer-events-none">
-      <div className="w-full max-w-[680px] flex flex-col items-center px-4 pointer-events-auto">
-        {/* Title */}
-        <div className="text-center mb-6">
-          <h2 className="text-2xl font-semibold text-on-surface mb-1.5">
-            Extract Brand DNA
-          </h2>
-          <p className="text-sm text-on-surface-variant/60">
-            Paste a URL to decode your brand's unique identity
-          </p>
-        </div>
-
-        {/* Creation-post style input container */}
-        <form
-          onSubmit={_form.handleSubmit(onSubmit)}
-          className="w-full"
-        >
-          <div
-            className={cn(
-              "w-full flex flex-col",
-              "bg-surface-container-lowest/95 dark:bg-[#1C1C1C] backdrop-blur-2xl",
-              "border rounded-[1.25rem] shadow-xl",
-              "transition-all duration-300 ease-out",
-              isFocused || hasUrl
-                ? "border-primary/40 shadow-primary/5"
-                : "border-outline-variant/60 dark:border-outline/10 shadow-black/5"
-            )}
-          >
-            <div className="px-4 py-3 flex items-center gap-3">
-              {/* Globe icon */}
-              <div className="flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-lg text-on-surface-variant/40">
-                <Globe className="w-4 h-4" strokeWidth={1.8} />
-              </div>
-
-              <Controller
-                name="brandUrl"
-                control={_form.control}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    type="url"
-                    placeholder="https://www.example.com"
-                    onFocus={() => setIsFocused(true)}
-                    onBlur={() => setIsFocused(false)}
-                    onKeyDown={handleKeyDown}
-                    className={cn(
-                      "flex-1 bg-transparent border-none shadow-none",
-                      "text-on-surface text-[15px] leading-relaxed",
-                      "placeholder:text-on-surface-variant/40",
-                      "focus:outline-none focus:ring-0",
-                      "py-1 min-h-[28px]"
-                    )}
-                  />
-                )}
-              />
-
-              {/* Submit button */}
-              <button
-                type="submit"
-                disabled={isProcessing || !hasUrl}
-                className={cn(
-                  "h-9 w-9 rounded-full flex items-center justify-center flex-shrink-0",
-                  "transition-all duration-200 ease-out",
-                  hasUrl && !isProcessing
-                    ? "bg-[#2563eb] text-white shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 hover:scale-105 active:scale-95"
-                    : "bg-outline-variant/15 text-muted-foreground/40 cursor-not-allowed"
-                )}
-              >
-                {isProcessing ? (
-                  <Loader className="w-4 h-4 animate-spin" />
-                ) : (
-                  <ArrowUp className="w-4 h-4" strokeWidth={2.5} />
-                )}
-              </button>
-            </div>
+    <>
+      <div className="absolute inset-0 z-[5] flex flex-col items-center justify-center pointer-events-none overflow-y-auto">
+        <div className="w-full max-w-[680px] flex flex-col items-center px-4 pointer-events-auto py-16">
+          {/* Title */}
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-semibold text-on-surface mb-1.5">
+              Extract Brand DNA
+            </h2>
+            <p className="text-sm text-on-surface-variant/60">
+              Paste a URL to decode your brand's unique identity
+            </p>
           </div>
-        </form>
 
-        {/* Subtle hint text */}
-        <p className="text-[10px] text-muted-foreground/30 mt-3 select-none">
-          We'll extract colors, typography, tone, and visual identity from your website
-        </p>
+          {/* Creation-post style input container */}
+          <form
+            onSubmit={_form.handleSubmit(onSubmit)}
+            className="w-full"
+          >
+            <div
+              className={cn(
+                "w-full flex flex-col",
+                "bg-surface-container-lowest/95 dark:bg-[#1C1C1C] backdrop-blur-2xl",
+                "border rounded-[1.25rem] shadow-xl",
+                "transition-all duration-300 ease-out",
+                isFocused || hasUrl
+                  ? "border-primary/40 shadow-primary/5"
+                  : "border-outline-variant/60 dark:border-outline/10 shadow-black/5"
+              )}
+            >
+              <div className="px-4 py-3 flex items-center gap-3">
+                {/* Globe icon */}
+                <div className="flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-lg text-on-surface-variant/40">
+                  <Globe className="w-4 h-4" strokeWidth={1.8} />
+                </div>
+
+                <Controller
+                  name="brandUrl"
+                  control={_form.control}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="url"
+                      placeholder="https://www.example.com"
+                      onFocus={() => setIsFocused(true)}
+                      onBlur={() => setIsFocused(false)}
+                      onKeyDown={handleKeyDown}
+                      className={cn(
+                        "flex-1 bg-transparent border-none shadow-none",
+                        "text-on-surface text-[15px] leading-relaxed",
+                        "placeholder:text-on-surface-variant/40",
+                        "focus:outline-none focus:ring-0",
+                        "py-1 min-h-[28px]"
+                      )}
+                    />
+                  )}
+                />
+
+                {/* Submit button */}
+                <button
+                  type="submit"
+                  disabled={isProcessing || !hasUrl}
+                  className={cn(
+                    "h-9 w-9 rounded-full flex items-center justify-center flex-shrink-0",
+                    "transition-all duration-200 ease-out",
+                    hasUrl && !isProcessing
+                      ? "bg-[#2563eb] text-white shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 hover:scale-105 active:scale-95"
+                      : "bg-outline-variant/15 text-muted-foreground/40 cursor-not-allowed"
+                  )}
+                >
+                  {isProcessing ? (
+                    <Loader className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <ArrowUp className="w-4 h-4" strokeWidth={2.5} />
+                  )}
+                </button>
+              </div>
+            </div>
+          </form>
+
+          {/* Subtle hint text */}
+          <p className="text-[10px] text-muted-foreground/30 mt-3 mb-8 select-none">
+            We'll extract colors, typography, tone, and visual identity from your website
+          </p>
+
+          {/* Saved Brands List */}
+          <div className="w-full max-w-[520px]">
+            <div className="flex items-center gap-2 mb-3 px-1">
+              <Dna className="w-3.5 h-3.5 text-on-surface-variant/40" />
+              <span className="text-[11px] uppercase tracking-widest font-semibold text-on-surface-variant/40">
+                Saved Brands
+              </span>
+              {!brandsLoading && brands.length > 0 && (
+                <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4">
+                  {brands.length}
+                </Badge>
+              )}
+            </div>
+
+            {brandsLoading ? (
+              <div className="flex flex-col items-center justify-center py-10">
+                <Loader2 className="w-5 h-5 animate-spin text-on-surface-variant/30 mb-2" />
+                <p className="text-xs text-on-surface-variant/30">Loading brands...</p>
+              </div>
+            ) : brands.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-10 text-center">
+                <Dna className="w-6 h-6 text-on-surface-variant/20 mb-2" />
+                <p className="text-xs text-on-surface-variant/40">
+                  No brands saved yet
+                </p>
+                <p className="text-[10px] text-on-surface-variant/25 mt-1">
+                  Extract a brand above and save it to see it here
+                </p>
+              </div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+                className="flex flex-col gap-1.5"
+              >
+                {brands.map((brand, index) => (
+                  <motion.div
+                    key={brand._meta?.uuid || index}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2, delay: index * 0.04 }}
+                  >
+                    <SavedBrandItem
+                      brand={brand}
+                      onSelect={() => handleSelectBrand(brand)}
+                      onDetail={(e) => handleDetailClick(e, brand)}
+                    />
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
+
+      {/* Brand Detail Modal */}
+      <BrandDetailModal
+        brand={detailBrand}
+        isOpen={isDetailOpen}
+        onClose={() => setIsDetailOpen(false)}
+      />
+    </>
   );
 };
 
@@ -405,7 +555,6 @@ const CreateNewContentPage = () => {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [creationMode, setCreationMode] = useState<CreationMode>("canvas");
   const containerRef = useRef<HTMLDivElement>(null);
-  const { brandData } = useFlowStore();
 
   useEffect(() => {
     setIsAlertOpen(true);
@@ -464,15 +613,6 @@ const CreateNewContentPage = () => {
           </div>
           {/* Centered URL input — only visible when no brand data */}
           <BrandDnaUrlInput />
-
-          {/* Sidebar for brand data details */}
-          {brandData && (
-            <div className="absolute top-1/2 right-10 -translate-y-1/2 w-full max-w-sm z-10 pointer-events-none">
-              <div className="pointer-events-auto">
-                <MemoizedBrandDNA />
-              </div>
-            </div>
-          )}
         </>
       )}
 
