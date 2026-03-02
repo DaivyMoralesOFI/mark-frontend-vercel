@@ -11,7 +11,7 @@ const BrandLogoNode = ({ data }: { data: { brand: BrandExtractor } }) => {
 
     return (
         <div className="relative flex justify-center items-center">
-            <Card className="p-5 flex flex-col items-center gap-3 border border-outline-variant/20 shadow-lg min-w-[200px] max-w-[240px] bg-white rounded-2xl">
+            <Card className="p-5 flex flex-col items-center gap-3 border border-outline-variant/20 shadow-lg min-w-[200px] max-w-[240px] bg-surface-container-lowest rounded-2xl">
                 {/* Title */}
                 <div className="flex items-center gap-2 self-start">
                     <span className="w-2 h-2 rounded-full bg-red-400" />

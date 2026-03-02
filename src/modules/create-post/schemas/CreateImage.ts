@@ -40,6 +40,16 @@ export const createImageResponseSchema = z.object({
 
 export type CreateImageResponse = z.infer<typeof createImageResponseSchema>;
 
+export const editImageSchema = z.object({
+  uuid: z.string(),
+  parent_uuid: z.string(),
+  creation_uuid: z.string(),
+  img_url: z.string(),
+  prompt: z.string(),
+});
+
+export type EditImage = z.infer<typeof editImageSchema>;
+
 export const creationStoreSchema = z.object({
   uuid: z.string(),
   creation_at: z.any().optional(),

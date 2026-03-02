@@ -5,35 +5,58 @@ import {
   DropdownMenuGroup,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/DropdownMenu";
-import { Button } from "@/shared/components/ui/Button";
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { tools } from "@/modules/create-post/utils/definitions";
+import { cn } from "@/shared/utils/utils";
 
 const ToolsSelector = () => {
   const [open, setOpen] = useState(false);
   const [_tools, setTools] = useState(tools[0]);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
+        <button
+          type="button"
           onClick={() => setOpen(!open)}
-          className="group flex items-center gap-2 px-4 py-2.5 bg-surface-container-low/80 backdrop-blur-md hover:bg-surface-container border border-outline-variant/30 rounded-full"
+          className={cn(
+            "group flex items-center justify-center w-8 h-8 rounded-lg",
+            "text-on-surface-variant/60 hover:text-on-surface",
+            "hover:bg-on-surface/[0.04] active:bg-on-surface/[0.06]",
+            "transition-all duration-200",
+            "outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-1"
+          )}
         >
-          <Plus className="w-5 h-5" />
-        </Button>
+          <Plus className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" strokeWidth={1.8} />
+        </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="z-[99999] max-w-[150px]" align="start">
+      <DropdownMenuContent
+        className="z-[99999] min-w-[170px] p-1"
+        align="start"
+        sideOffset={8}
+      >
+        <div className="px-2 py-1.5 mb-0.5">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/50">
+            Attach
+          </span>
+        </div>
         <DropdownMenuGroup>
           {tools.map((tool) => (
             <DropdownMenuItem
               key={tool.label}
               onClick={() => setTools(tool)}
-              className="flex items-center gap-2 px-4 py-2.5 hover:bg-surface-container"
+              className={cn(
+                "flex items-center gap-2.5 px-2.5 py-2 cursor-pointer rounded-lg mx-0.5 my-px",
+                "text-xs font-medium text-on-surface-variant",
+                "focus:bg-on-surface/[0.04] focus:text-on-surface",
+                "transition-colors duration-150"
+              )}
             >
-              <tool.icon className="w-5 h-5" />
-              {tool.label}
+              <div className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0 bg-on-surface/[0.04]">
+                <tool.icon className="w-3.5 h-3.5" strokeWidth={1.8} />
+              </div>
+              <span className="flex-1">{tool.label}</span>
             </DropdownMenuItem>
           ))}
         </DropdownMenuGroup>

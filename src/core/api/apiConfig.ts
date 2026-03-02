@@ -6,9 +6,9 @@ export const API_CONFIG = {
   },
   ENDPOINTS: {
     CREATION_STUDIO: {
-      createImage: "/generate-image-v2",
+      createImage: "/generate-image-v3",
       getImageCreated: "/generated-image-v2",
-      editImage: "/85a5cbee-1808-4d99-9528-f91b9c6cbe31",
+      editImage: "/edit-image",
     },
     BRAND_EXTRACTOR: {
       brandExtractor: "/extract-brand-dna",

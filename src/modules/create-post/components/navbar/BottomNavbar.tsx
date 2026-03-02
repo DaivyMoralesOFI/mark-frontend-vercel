@@ -1,15 +1,17 @@
 import { Textarea } from "@/shared/components/ui/Textarea";
 import {
   Loader,
-  SendHorizonal,
-  ChevronUp,
-  X,
+  ArrowUp,
+  Paperclip,
+  Link,
+  SlidersHorizontal,
+  Maximize2,
+  Hash,
 } from "lucide-react";
 import PostTypeSelector from "@/modules/create-post/components/dropdown/PostTypeSelector";
 import SocialMediaSelector from "../dropdown/SocialMediaSelector";
 import PostToneSelector from "../dropdown/PostToneSelector";
 import BrandDnaSelector from "../dropdown/BrandDnaSelector";
-import ToolsSelector from "../dropdown/ToolsSelector";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
@@ -108,7 +110,11 @@ function buildCreateImagePayload(
   };
 }
 
-const BottomNavbar = () => {
+interface BottomNavbarProps {
+  centered?: boolean;
+}
+
+const BottomNavbar = ({ centered = false }: BottomNavbarProps) => {
   const [start_workflow, setStartWorkflow] = useState(false);
   const [selectedBrand, setSelectedBrand] =
     useState<BrandExtractor | null>(null);
@@ -199,169 +205,260 @@ const BottomNavbar = () => {
     }
   };
 
+  if (start_workflow) {
+    return (
+      <div className={cn(
+        centered
+          ? "w-full flex flex-col items-center pointer-events-auto"
+          : "fixed bottom-0 left-0 w-full px-4 pb-5 flex flex-col items-center z-1000 pointer-events-none"
+      )}>
+        <div className="w-full max-w-[540px] pointer-events-auto">
+          <div className={cn(
+            "w-full flex items-center justify-center gap-3 px-5 py-4",
+            "bg-surface-container-lowest/95 dark:bg-[#1C1C1C] backdrop-blur-2xl",
+            "border border-outline-variant/60 dark:border-outline/10",
+            "rounded-[1.25rem] shadow-xl shadow-black/5"
+          )}>
+            <Loader className="w-4 h-4 animate-spin text-on-surface-variant/50 flex-shrink-0" />
+            <span className="text-[15px] text-on-surface-variant/60 font-medium">
+              Creating your image...
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="fixed bottom-0 left-0 w-full px-4 pb-5 flex flex-col items-center z-1000 pointer-events-none">
-      <div
-        className={cn(
-          "w-full max-w-[680px] flex flex-col pointer-events-auto",
-          "bg-surface-container-lowest/95 backdrop-blur-2xl",
-          "border rounded-2xl shadow-2xl",
-          "transition-all duration-300 ease-out",
-          isFocused || hasPrompt
-            ? "border-primary/40 shadow-primary/5"
-            : "border-outline-variant/30 shadow-black/5"
-        )}
-      >
+    <div className={cn(
+      centered
+        ? "w-full flex flex-col items-center pointer-events-auto"
+        : "fixed bottom-0 left-0 w-full px-4 pb-5 flex flex-col items-center z-1000 pointer-events-none"
+    )}>
+      <div className="w-full max-w-[540px] flex flex-col items-center pointer-events-auto">
         <form
           onSubmit={_form.handleSubmit(onSubmit)}
           id="create-image-form"
-          className="w-full"
+          className="w-full flex flex-col items-center gap-4"
         >
-          {/* Expandable Settings Panel */}
+          {/* Centered Settings Toolbar */}
+          {centered && (
+            <div className="flex items-center gap-1.5 p-1.5 bg-surface-container-lowest/90 dark:bg-[#1C1C1C] backdrop-blur-xl border border-outline-variant/30 dark:border-outline/20 rounded-2xl shadow-sm z-10">
+              <Controller
+                name="post_tone"
+                control={_form.control}
+                render={({ field }) => (
+                  <PostToneSelector
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+              <Controller
+                name="platforms"
+                control={_form.control}
+                render={({ field }) => (
+                  <SocialMediaSelector
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+              <Controller
+                name="post_type"
+                control={_form.control}
+                render={({ field }) => (
+                  <PostTypeSelector
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+            </div>
+          )}
+
+          {/* Main Input Container */}
           <div
             className={cn(
-              "overflow-hidden transition-all duration-300 ease-out",
-              showSettings ? "max-h-[200px] opacity-100" : "max-h-0 opacity-0"
+              "w-full flex flex-col pointer-events-auto",
+              "bg-surface-container-lowest/95 dark:bg-[#1C1C1C] backdrop-blur-2xl",
+              "border rounded-[1.25rem] shadow-xl",
+              "transition-all duration-300 ease-out",
+              isFocused || hasPrompt
+                ? "border-primary/40 shadow-primary/5"
+                : "border-outline-variant/60 dark:border-outline/10 shadow-black/5"
             )}
           >
-            <div className="px-4 pt-3 pb-2">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">
-                  Post Settings
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setShowSettings(false)}
-                  className="p-0.5 rounded-full hover:bg-outline-variant/20 transition-colors"
-                >
-                  <X className="w-3.5 h-3.5 text-muted-foreground" />
-                </button>
+            {/* Expandable Settings Panel - Only shown in bottom navbar mode */}
+            {!centered && (
+              <div
+                className={cn(
+                  "overflow-hidden transition-all duration-300 ease-out",
+                  showSettings ? "max-h-[200px] opacity-100" : "max-h-0 opacity-0"
+                )}
+              >
+                <div className="px-4 pt-3 pb-2">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+                      Post Settings
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <Controller
+                      name="post_tone"
+                      control={_form.control}
+                      render={({ field }) => (
+                        <PostToneSelector
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
+                      )}
+                    />
+                    <Controller
+                      name="platforms"
+                      control={_form.control}
+                      render={({ field }) => (
+                        <SocialMediaSelector
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
+                      )}
+                    />
+                    <Controller
+                      name="post_type"
+                      control={_form.control}
+                      render={({ field }) => (
+                        <PostTypeSelector
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
+                      )}
+                    />
+                  </div>
+                </div>
+                <div className="mx-4 border-b border-outline-variant/15" />
               </div>
-              <div className="flex flex-wrap items-center gap-1.5">
-                <Controller
-                  name="post_tone"
-                  control={_form.control}
-                  render={({ field }) => (
-                    <PostToneSelector
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-                <Controller
-                  name="platforms"
-                  control={_form.control}
-                  render={({ field }) => (
-                    <SocialMediaSelector
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-                <Controller
-                  name="post_type"
-                  control={_form.control}
-                  render={({ field }) => (
-                    <PostTypeSelector
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-              </div>
-            </div>
-            <div className="mx-4 border-b border-outline-variant/15" />
-          </div>
+            )}
 
-          {/* Main Input Area */}
-          <div className="px-4 pt-3 pb-2">
-            <Controller
-              name="prompt"
-              control={_form.control}
-              render={({ field }) => (
-                <Textarea
-                  {...field}
-                  ref={(e) => {
-                    field.ref(e);
-                    (textareaRef as any).current = e;
-                  }}
-                  placeholder="Describe your post idea..."
-                  rows={1}
-                  onFocus={() => setIsFocused(true)}
-                  onBlur={() => setIsFocused(false)}
-                  onChange={(e) => {
-                    field.onChange(e);
-                    handleTextareaChange();
-                  }}
-                  onKeyDown={handleKeyDown}
-                  className={cn(
-                    "resize-none shadow-none border-none bg-transparent",
-                    "text-on-surface text-[15px] leading-relaxed",
-                    "placeholder:text-on-surface-variant/40",
-                    "focus-visible:ring-0 focus-visible:ring-offset-0",
-                    "px-0 py-1 min-h-[28px] max-h-[120px]"
-                  )}
-                />
-              )}
-            />
-          </div>
-
-          {/* Bottom Action Bar */}
-          <div className="flex items-center justify-between px-3 pb-3 pt-1">
-            {/* Left: Quick action chips */}
-            <div className="flex items-center gap-1">
-              <BrandDnaSelector
-                value={selectedBrandName}
-                onChange={handleBrandChange}
-              />
-
+            {/* Main Input Area */}
+            <div className="px-4 pt-3 pb-2 flex items-start gap-3">
+              {/* Attach icon */}
               <button
                 type="button"
-                onClick={() => setShowSettings(!showSettings)}
-                className={cn(
-                  "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium",
-                  "border transition-all duration-200",
-                  showSettings
-                    ? "bg-primary/10 border-primary/30 text-primary"
-                    : "bg-surface-container-low/60 border-outline-variant/20 text-on-surface-variant hover:bg-surface-container hover:border-outline-variant/40"
-                )}
+                className="mt-1.5 flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-lg text-on-surface-variant/50 hover:text-on-surface hover:bg-on-surface/5 transition-all duration-200"
+                title="Attach media"
               >
-                <ChevronUp
-                  className={cn(
-                    "w-3.5 h-3.5 transition-transform duration-200",
-                    showSettings ? "rotate-180" : ""
-                  )}
-                />
-                Settings
+                <Paperclip className="w-4 h-4" strokeWidth={1.8} />
               </button>
 
-              <ToolsSelector />
+              <Controller
+                name="prompt"
+                control={_form.control}
+                render={({ field }) => (
+                  <Textarea
+                    {...field}
+                    ref={(e) => {
+                      field.ref(e);
+                      (textareaRef as any).current = e;
+                    }}
+                    placeholder="Describe your post idea..."
+                    rows={2}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      handleTextareaChange();
+                    }}
+                    onKeyDown={handleKeyDown}
+                    className={cn(
+                      "flex-1 resize-none shadow-none border-none bg-transparent",
+                      "text-on-surface text-[15px] leading-relaxed",
+                      "placeholder:text-on-surface-variant/40",
+                      "focus-visible:ring-0 focus-visible:ring-offset-0",
+                      "px-0 py-1 min-h-[48px] max-h-[120px]"
+                    )}
+                  />
+                )}
+              />
             </div>
 
-            {/* Right: Submit */}
-            <div className="flex items-center gap-2">
-              {hasPrompt && (
-                <span className="text-[10px] text-muted-foreground/50 hidden sm:block">
-                  ⌘ Enter
-                </span>
-              )}
-              <button
-                type="submit"
-                disabled={start_workflow || !hasPrompt}
-                className={cn(
-                  "h-9 w-9 rounded-full flex items-center justify-center",
-                  "transition-all duration-200 ease-out",
-                  hasPrompt && !start_workflow
-                    ? "bg-primary text-on-primary shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:scale-105 active:scale-95"
-                    : "bg-outline-variant/15 text-muted-foreground/40 cursor-not-allowed"
+            {/* Bottom Action Bar */}
+            <div className="flex items-center justify-between px-3 pb-3 pt-1">
+              {/* Left: Quick action chips */}
+              <div className="flex items-center gap-0.5">
+                {/* Aspect Ratio */}
+                <button
+                  type="button"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-on-surface-variant/60 hover:text-on-surface hover:bg-on-surface/5 transition-all duration-200"
+                  title="Aspect ratio"
+                >
+                  <Hash className="w-3.5 h-3.5" strokeWidth={1.8} />
+                  <span>4:3</span>
+                </button>
+
+                {/* Link */}
+                <button
+                  type="button"
+                  className="flex items-center justify-center w-8 h-8 rounded-lg text-on-surface-variant/60 hover:text-on-surface hover:bg-on-surface/5 transition-all duration-200"
+                  title="Add link"
+                >
+                  <Link className="w-4 h-4" strokeWidth={1.8} />
+                </button>
+
+                {/* Brand DNA */}
+                <BrandDnaSelector
+                  value={selectedBrandName}
+                  onChange={handleBrandChange}
+                />
+
+                {/* Settings (hidden in centered mode as it's active above) */}
+                {!centered && (
+                  <button
+                    type="button"
+                    onClick={() => setShowSettings(!showSettings)}
+                    className={cn(
+                      "flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200",
+                      showSettings
+                        ? "bg-primary/10 text-primary"
+                        : "text-on-surface-variant/60 hover:text-on-surface hover:bg-on-surface/5"
+                    )}
+                    title="Settings"
+                  >
+                    <SlidersHorizontal className="w-4 h-4" strokeWidth={1.8} />
+                  </button>
                 )}
-              >
-                {start_workflow ? (
-                  <Loader className="animate-spin w-4 h-4" />
-                ) : (
-                  <SendHorizonal className="w-4 h-4" />
-                )}
-              </button>
+              </div>
+
+              {/* Right: Expand + Submit */}
+              <div className="flex items-center gap-1.5">
+                {/* Expand */}
+                <button
+                  type="button"
+                  className="flex items-center justify-center w-8 h-8 rounded-lg text-on-surface-variant/60 hover:text-on-surface hover:bg-on-surface/5 transition-all duration-200"
+                  title="Expand"
+                >
+                  <Maximize2 className="w-4 h-4" strokeWidth={1.8} />
+                </button>
+
+                {/* Submit */}
+                <button
+                  type="submit"
+                  disabled={start_workflow || !hasPrompt}
+                  className={cn(
+                    "h-9 w-9 rounded-full flex items-center justify-center",
+                    "transition-all duration-200 ease-out",
+                    hasPrompt && !start_workflow
+                      ? "bg-[#D946EF] text-white  hover:scale-105 active:scale-95"
+                      : "bg-outline-variant/15 text-muted-foreground/40 cursor-not-allowed"
+                  )}
+                >
+                  {start_workflow ? (
+                    <Loader className="animate-spin w-4 h-4" />
+                  ) : (
+                    <ArrowUp className="w-4 h-4" strokeWidth={2.5} />
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </form>

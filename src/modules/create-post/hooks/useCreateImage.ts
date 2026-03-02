@@ -3,14 +3,14 @@ import {
   getCreationsStatus,
   getImageCreated,
   setCreateImage,
+  setEditImage,
 } from "@/modules/create-post/services/createImageService";
-import { CreateImage } from "@/modules/create-post/schemas/CreateImage";
+import { CreateImage, EditImage, CreationStore } from "@/modules/create-post/schemas/CreateImage";
 import {
   SubscriptionCallback,
   useFirebaseSubscription,
 } from "@/core/hooks/useFirebaseQuery";
 import { queryKeys } from "@/core/config/query-keys";
-import { CreationStore } from "@/modules/create-post/schemas/CreateImage";
 import { FirebaseSubscriptionError } from "@/modules/create-post/services/firebaseServices";
 import { useState } from "react";
 
@@ -28,6 +28,15 @@ export const useCreateImage = () => {
     ...mutation,
     uuid: mutation.data?.uuid,
   };
+};
+
+export const useEditImage = () => {
+  const mutation = useMutation({
+    mutationKey: queryKeys.creation_studio.edit_image(),
+    mutationFn: (editParam: EditImage) => setEditImage(editParam),
+  });
+
+  return mutation;
 };
 
 export const useGetCreatedImage = (

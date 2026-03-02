@@ -11,7 +11,7 @@ const BrandTypographyNode = ({ data }: { data: { brand: BrandExtractor } }) => {
 
     return (
         <div className="relative flex justify-center items-center">
-            <Card className="p-5 flex flex-col gap-4 border border-outline-variant/20 shadow-lg min-w-[220px] max-w-[260px] bg-white rounded-2xl">
+            <Card className="p-5 flex flex-col gap-4 border border-outline-variant/20 shadow-lg min-w-[220px] max-w-[260px] bg-surface-container-lowest rounded-2xl">
                 {/* Title */}
                 <div className="flex items-center gap-2">
                     <Type className="w-4 h-4 text-muted-foreground" />
@@ -27,10 +27,10 @@ const BrandTypographyNode = ({ data }: { data: { brand: BrandExtractor } }) => {
                         {headings.font_family}
                     </span>
                     <div className="flex gap-1.5 flex-wrap">
-                        <span className="text-[9px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full uppercase font-medium">
+                        <span className="text-[9px] bg-surface-container-low text-on-surface-variant px-2 py-0.5 rounded-full uppercase font-medium">
                             {headings.classification}
                         </span>
-                        <span className="text-[9px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full lowercase font-medium">
+                        <span className="text-[9px] bg-surface-container-low text-on-surface-variant px-2 py-0.5 rounded-full lowercase font-medium">
                             {headings.personality_signal}
                         </span>
                     </div>
@@ -45,10 +45,10 @@ const BrandTypographyNode = ({ data }: { data: { brand: BrandExtractor } }) => {
                         {body.font_family}
                     </span>
                     <div className="flex gap-1.5 flex-wrap">
-                        <span className="text-[9px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full uppercase font-medium">
+                        <span className="text-[9px] bg-surface-container-low text-on-surface-variant px-2 py-0.5 rounded-full uppercase font-medium">
                             {body.classification}
                         </span>
-                        <span className="text-[9px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full lowercase font-medium">
+                        <span className="text-[9px] bg-surface-container-low text-on-surface-variant px-2 py-0.5 rounded-full lowercase font-medium">
                             {body.personality_signal}
                         </span>
                     </div>

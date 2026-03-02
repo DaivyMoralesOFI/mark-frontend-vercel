@@ -11,7 +11,7 @@ const BrandVoiceNode = ({ data }: { data: { brand: BrandExtractor } }) => {
 
     return (
         <div className="relative flex justify-center items-center">
-            <Card className="p-5 flex flex-col gap-4 border border-outline-variant/20 shadow-lg min-w-[220px] max-w-[260px] bg-white rounded-2xl">
+            <Card className="p-5 flex flex-col gap-4 border border-outline-variant/20 shadow-lg min-w-[220px] max-w-[260px] bg-surface-container-lowest rounded-2xl">
                 {/* Title */}
                 <div className="flex items-center gap-2">
                     <Megaphone className="w-4 h-4 text-muted-foreground" />
@@ -30,7 +30,7 @@ const BrandVoiceNode = ({ data }: { data: { brand: BrandExtractor } }) => {
                         {tone_of_voice.slice(0, 3).map((tone, i) => (
                             <span
                                 key={i}
-                                className="text-[9px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-medium italic"
+                                className="text-[9px] bg-surface-container-low text-on-surface-variant px-2 py-0.5 rounded-full font-medium italic"
                             >
                                 {tone}
                             </span>

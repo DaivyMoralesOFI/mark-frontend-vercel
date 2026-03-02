@@ -9,7 +9,7 @@ import {
   getCreatedImageSchema,
 } from "../schemas/CreateImage";
 import { isApiError } from "@/core/lib/apiErrorHandler";
-import { CreateImage } from "../schemas/CreateImage";
+import { CreateImage, EditImage } from "../schemas/CreateImage";
 import {
   createLiveSubscription,
   UnsubscribeFn,
@@ -52,6 +52,39 @@ export const setCreateImage = async (
     });
 
     throw new Error(`Failed to create image ${image_schema}: ${errorMessage}`);
+  }
+};
+
+export const setEditImage = async (
+  edit_param: EditImage,
+): Promise<CreateImageResponse> => {
+  try {
+    const endpoint = API_CONFIG.ENDPOINTS.CREATION_STUDIO.editImage;
+    const response = await API_CLIENT.post(endpoint, edit_param);
+    const validationResult = validateSchemaSoft(
+      createImageResponseSchema,
+      response.data,
+      {
+        operation: "editImage",
+        endpoint: endpoint,
+      },
+    ) as CreateImageResponse;
+    return validationResult;
+  } catch (error) {
+    if (isApiError(error)) {
+      console.error("❌ API Error editing image:", {
+        edit_param,
+        type: error.type,
+        message: error.userMessage,
+        statusCode: error.statusCode,
+      });
+      throw new Error(error.userMessage);
+    }
+
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error occurred";
+
+    throw new Error(`Failed to edit image: ${errorMessage}`);
   }
 };
 
@@ -115,7 +148,7 @@ export function getCreationsStatusWithRetry(
     );
 
     currentUnsubscribe = createLiveSubscription(
-      `creations/${uuid}`,
+      `creations/${uuid}/generations`,
       creationStoreSchema,
       [],
       (data, error) => {

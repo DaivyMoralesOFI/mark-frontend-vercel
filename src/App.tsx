@@ -8,7 +8,7 @@ import { Toaster } from "@/shared/components/ui/Sonner";
 export default function App() {
   return (
     <QueryProvider>
-      <ThemeProvider defaultTheme="light" storageKey="app-theme">
+      <ThemeProvider defaultTheme="dark" storageKey="app-theme">
         <FirebaseProvider>
           <AuthProvider>
             <AppRoutes />
