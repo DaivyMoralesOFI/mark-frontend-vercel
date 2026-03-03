@@ -1,6 +1,6 @@
 
-const IG_ACCESS_TOKEN = "IGAAUfB12zZCWNBZAFpkMW11WlQxUTh1cEpwT3c5NEx4aWFyaWpZAd1VsVnFnSndLVGUyV0lVT0FEd0h5dFloZAWp2NnlaeEhiLUp3WHkxakJWR2llQlZAkSDR2Ny1ZAME1TVk9ULVB3VmFvZAEVWaHFxLWNGV2RSMlVwOTVTNlJja1QzOAZDZD";
-const IG_USER_ID = "25767913522879841";
+const IG_ACCESS_TOKEN = import.meta.env.VITE_IG_ACCESS_TOKEN;
+const IG_USER_ID = import.meta.env.VITE_IG_USER_ID;
 
 async function testBasicDisplayFollowers() {
     console.log("Testing Instagram Basic Display API for 'followers_count'...");
