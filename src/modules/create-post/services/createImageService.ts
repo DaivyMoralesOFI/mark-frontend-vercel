@@ -1,6 +1,7 @@
 import { API_CLIENT, API_CONFIG } from "@/core/api/apiConfig";
 import { validateSchemaSoft } from "@/core/lib/schemaValidator";
 import {
+  CreateImage,
   CreateImageResponse,
   createImageResponseSchema,
   CreationStore,
@@ -14,7 +15,6 @@ import {
   getCreatedImageSchema,
 } from "../schemas/CreateImage";
 import { isApiError } from "@/core/lib/apiErrorHandler";
-import { CreateImage } from "../schemas/CreateImage";
 import {
   createLiveSubscription,
   UnsubscribeFn,
@@ -159,7 +159,7 @@ export function getCreationsStatusWithRetry(
     );
 
     currentUnsubscribe = createLiveSubscription(
-      `creations/${uuid}`,
+      `creations/${uuid}/generations`,
       creationStoreSchema,
       [],
       (data, error) => {

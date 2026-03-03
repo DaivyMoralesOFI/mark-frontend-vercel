@@ -6,13 +6,12 @@ import {
   setCreateImage,
   setEditImage,
 } from "@/modules/create-post/services/createImageService";
-import { CreateImage, EditImage } from "@/modules/create-post/schemas/CreateImage";
+import { CreateImage, EditImage, CreationStore, GenerationStore } from "@/modules/create-post/schemas/CreateImage";
 import {
   SubscriptionCallback,
   useFirebaseSubscription,
 } from "@/core/hooks/useFirebaseQuery";
 import { queryKeys } from "@/core/config/query-keys";
-import { CreationStore, GenerationStore } from "@/modules/create-post/schemas/CreateImage";
 import { FirebaseSubscriptionError } from "@/modules/create-post/services/firebaseServices";
 import { useState } from "react";
 
@@ -37,7 +36,7 @@ export const useCreateImage = () => {
  */
 export const useEditImage = () => {
   const mutation = useMutation({
-    mutationKey: ["edit_image"],
+    mutationKey: queryKeys.creation_studio.edit_image(),
     mutationFn: (editPayload: EditImage) => setEditImage(editPayload),
   });
 

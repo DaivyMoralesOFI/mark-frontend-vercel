@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import ReactFlow, {
-  Controls,
   EdgeTypes,
   NodeTypes,
   NodeProps,
@@ -384,9 +383,7 @@ const WorkflowContentInner = () => {
           nodesConnectable={false}
           panOnDrag={true}
           selectionOnDrag={false}
-        >
-          <Controls />
-        </ReactFlow>
+        />
       </div>
       <div className="absolute bottom-0 left-0 w-full z-10 pointer-events-none">
         <div className="pointer-events-auto">

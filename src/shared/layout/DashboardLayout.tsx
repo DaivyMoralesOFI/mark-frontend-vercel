@@ -25,7 +25,7 @@ const DashboardLayout = () => {
       <SidebarProvider
         open={isOpen}
         onOpenChange={setIsOpen}
-        className="relative bg-neutral-200/50"
+        className="relative bg-neutral-200/50 dark:bg-[#1C1C1C]"
       >
         <Sidebar />
         {/*  <Toaster /> */}

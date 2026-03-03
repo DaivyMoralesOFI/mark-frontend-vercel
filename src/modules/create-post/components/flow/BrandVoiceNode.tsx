@@ -10,19 +10,19 @@ const BrandVoiceNode = ({ data }: { data: { brand: BrandExtractor } }) => {
     const { tone_of_voice, target_audience, communication_style } = brand.brand_voice;
 
     return (
-        <div className="relative flex justify-center items-center">
-            <Card className="p-5 flex flex-col gap-4 border border-outline-variant/20 shadow-lg min-w-[220px] max-w-[260px] bg-white rounded-2xl">
+        <div className="relative flex justify-center items-center text-foreground font-sans">
+            <Card className="p-5 flex flex-col gap-4 border border-outline-variant/30 shadow-xl min-w-[240px] max-w-[280px] bg-surface-container-lowest/95 dark:bg-[#121212]/90 backdrop-blur-xl rounded-3xl transition-all hover:border-primary/20">
                 {/* Title */}
-                <div className="flex items-center gap-2">
-                    <Megaphone className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm font-semibold text-foreground">Brand Voice</span>
+                <div className="flex items-center gap-2 mb-1">
+                    <Megaphone className="w-4 h-4 text-purple-500" strokeWidth={2.5} />
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground/60 tracking-widest">Brand Voice</span>
                 </div>
 
                 {/* Tone of Voice */}
-                <div className="flex flex-col gap-1.5">
+                <div className="flex flex-col gap-2 bg-white/5 dark:bg-white/[0.02] p-3 rounded-2xl border border-outline-variant/5">
                     <div className="flex items-center gap-1.5">
-                        <MessageCircle className="w-3 h-3 text-muted-foreground" />
-                        <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
+                        <MessageCircle className="w-3 h-3 text-purple-400" />
+                        <span className="text-[9px] uppercase font-bold text-muted-foreground/50 tracking-wider">
                             TONE OF VOICE
                         </span>
                     </div>
@@ -30,7 +30,7 @@ const BrandVoiceNode = ({ data }: { data: { brand: BrandExtractor } }) => {
                         {tone_of_voice.slice(0, 3).map((tone, i) => (
                             <span
                                 key={i}
-                                className="text-[9px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-medium italic"
+                                className="text-[10px] bg-purple-500/10 text-purple-600 dark:text-purple-400 px-2 py-0.5 rounded-lg font-bold border border-purple-500/10"
                             >
                                 {tone}
                             </span>
@@ -38,25 +38,30 @@ const BrandVoiceNode = ({ data }: { data: { brand: BrandExtractor } }) => {
                     </div>
                 </div>
 
-                {/* Target Audience */}
-                <div className="flex flex-col gap-1.5">
-                    <div className="flex items-center gap-1.5">
-                        <Target className="w-3 h-3 text-muted-foreground" />
-                        <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
-                            TARGET AUDIENCE
+                {/* Grid for details */}
+                <div className="grid grid-cols-1 gap-4 px-1">
+                    {/* Communication Style */}
+                    <div className="flex flex-col gap-1">
+                        <span className="text-[9px] uppercase font-bold text-muted-foreground/50 tracking-wider">
+                            COMMUNICATION STYLE
+                        </span>
+                        <span className="text-sm font-semibold text-foreground/90 italic leading-snug">
+                            {communication_style}
                         </span>
                     </div>
-                    <p className="text-xs text-foreground leading-relaxed line-clamp-3">
-                        "{target_audience}"
-                    </p>
-                </div>
 
-                {/* Communication Style */}
-                <div className="flex flex-col gap-1">
-                    <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
-                        COMMUNICATION STYLE
-                    </span>
-                    <span className="text-sm text-foreground italic">{communication_style}</span>
+                    {/* Target Audience */}
+                    <div className="flex flex-col gap-1.5">
+                        <div className="flex items-center gap-1.5">
+                            <Target className="w-3 h-3 text-muted-foreground/50" />
+                            <span className="text-[9px] uppercase font-bold text-muted-foreground/50 tracking-wider">
+                                TARGET AUDIENCE
+                            </span>
+                        </div>
+                        <p className="text-xs text-on-surface-variant/80 leading-relaxed font-medium bg-muted/30 p-2 rounded-xl border border-outline-variant/5">
+                            "{target_audience}"
+                        </p>
+                    </div>
                 </div>
             </Card>
 

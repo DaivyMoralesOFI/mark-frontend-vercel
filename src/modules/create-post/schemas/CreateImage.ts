@@ -59,6 +59,7 @@ export const editImageResponseSchema = z.object({
 
 export type EditImageResponse = z.infer<typeof editImageResponseSchema>;
 
+
 export const creationStoreSchema = z.object({
   uuid: z.string(),
   creation_at: z.any().optional(),

@@ -13,27 +13,27 @@ const BrandColorSystemNode = ({ data }: { data: { brand: BrandExtractor } }) => 
     const keyColors = source_palette.slice(0, 3);
 
     return (
-        <div className="relative flex justify-center items-center">
-            <Card className="p-5 flex flex-col gap-4 border border-outline-variant/20 shadow-lg min-w-[240px] max-w-[280px] bg-white rounded-2xl">
+        <div className="relative flex justify-center items-center text-foreground font-sans">
+            <Card className="p-5 flex flex-col gap-4 border border-outline-variant/30 shadow-xl min-w-[260px] max-w-[300px] bg-surface-container-lowest/95 dark:bg-[#121212]/90 backdrop-blur-xl rounded-3xl transition-all hover:border-primary/20">
                 {/* Title */}
-                <div className="flex items-center gap-2">
-                    <Palette className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm font-semibold text-foreground">Color System</span>
+                <div className="flex items-center gap-2 mb-1">
+                    <Palette className="w-4 h-4 text-pink-500" strokeWidth={2.5} />
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground/60 tracking-widest">Color System</span>
                 </div>
 
                 {/* Key Palette */}
-                <div className="flex flex-col gap-2">
-                    <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
+                <div className="flex flex-col gap-3 bg-white/5 dark:bg-white/[0.02] p-4 rounded-2xl border border-outline-variant/5">
+                    <span className="text-[9px] uppercase font-bold text-muted-foreground/50 tracking-wider">
                         KEY PALETTE
                     </span>
-                    <div className="flex gap-2 items-center">
+                    <div className="flex gap-3 items-center">
                         {keyColors.map((color, i) => (
-                            <div key={i} className="flex flex-col items-center gap-1">
+                            <div key={i} className="flex flex-col items-center gap-1.5 flex-1">
                                 <div
-                                    className="w-12 h-12 rounded-lg shadow-sm"
+                                    className="w-full aspect-square rounded-xl shadow-md border border-white/10 transition-transform hover:scale-110 duration-300"
                                     style={{ backgroundColor: color }}
                                 />
-                                <span className="text-[8px] text-muted-foreground uppercase font-mono">
+                                <span className="text-[9px] text-muted-foreground/50 uppercase font-mono font-bold tracking-tighter">
                                     {color}
                                 </span>
                             </div>
@@ -41,25 +41,27 @@ const BrandColorSystemNode = ({ data }: { data: { brand: BrandExtractor } }) => 
                     </div>
                 </div>
 
-                {/* Surface & Outline */}
-                <div className="flex flex-col gap-2">
+                {/* Roles List */}
+                <div className="flex flex-col gap-3 px-1">
                     <div className="flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground">Surface</span>
-                        <div className="flex items-center gap-1">
-                            <div
-                                className="w-full h-2 rounded-full min-w-[60px]"
-                                style={{ backgroundColor: roles.surface.hex }}
-                            />
+                        <div className="flex flex-col gap-0.5">
+                            <span className="text-[9px] font-bold text-muted-foreground/50 uppercase">Surface</span>
+                            <span className="text-[10px] font-mono text-muted-foreground/30">{roles.surface.hex}</span>
                         </div>
+                        <div
+                            className="w-20 h-3 rounded-full border border-outline-variant/10 shadow-inner"
+                            style={{ backgroundColor: roles.surface.hex }}
+                        />
                     </div>
                     <div className="flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground">Outline</span>
-                        <div className="flex items-center gap-1">
-                            <div
-                                className="w-full h-2 rounded-full min-w-[60px]"
-                                style={{ backgroundColor: roles.outline.hex }}
-                            />
+                        <div className="flex flex-col gap-0.5">
+                            <span className="text-[9px] font-bold text-muted-foreground/50 uppercase">Outline</span>
+                            <span className="text-[10px] font-mono text-muted-foreground/30">{roles.outline.hex}</span>
                         </div>
+                        <div
+                            className="w-20 h-3 rounded-full border border-outline-variant/10 shadow-inner"
+                            style={{ backgroundColor: roles.outline.hex }}
+                        />
                     </div>
                 </div>
             </Card>
