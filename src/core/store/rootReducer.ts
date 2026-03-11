@@ -4,11 +4,11 @@
 // It exports the combined reducer and the RootState type for use throughout the application.
 
 import { combineReducers } from "@reduxjs/toolkit";
-import authReducer from "@/modules/auth/store/authSlice";
-import postReducer from "@/modules/content-post/store/postSlice";
-import chatReducer from "@/modules/chat-coach-modal/store/chatModalSlice";
-import chatCoachReducer from "@/modules/chat-coach/store/chatSlice";
-import createPostReducer from "@/modules/create-post/store/createPostSlice";
+import authReducer from "@/domains/auth/store/authSlice";
+import postReducer from "@/domains/dashboard/calendar/content-post/store/postSlice";
+import chatReducer from "@/domains/creation-studio/chat-coach/chat-coach-modal/store/chatModalSlice";
+import chatCoachReducer from "@/domains/creation-studio/chat-coach/store/chatSlice";
+import createPostReducer from "@/modules/creation-studio/store/createPostSlice";
 
 import brandReducer from "./brandSlice";
 

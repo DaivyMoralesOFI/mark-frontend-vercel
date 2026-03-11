@@ -1,21 +1,21 @@
-import RequireAuth from "@/modules/auth/components/RequireAuth";
+import RequireAuth from "@/domains/auth/components/RequireAuth";
 import { lazy } from "react";
 import { DashboardLayout } from "../router/router";
 import { Route } from "react-router-dom";
 
 const DashboardPage = lazy(
-  () => import("@/modules/dashboard/page/DashboardPage"),
+  () => import("@/domains/dashboard/page/DashboardPage"),
 );
 const MarketingCoachChat = lazy(
   () =>
-    import("@/modules/chat-coach/page/MarketingCoachChatPage"),
+    import("@/domains/creation-studio/chat-coach/page/MarketingCoachChatPage"),
 );
 const ContentFeedbackPage = lazy(
   () =>
-    import("@/modules/content-post/page/ContentFeedbackPage"),
+    import("@/domains/dashboard/calendar/content-post/page/ContentFeedbackPage"),
 );
 const CampaingnPage = lazy(
-  () => import("@/modules/campaigns/CampaingnPage"),
+  () => import("@/domains/dashboard/management/campaigns/CampaingnPage"),
 );
 
 export const DashboardAppRoutes = () => (

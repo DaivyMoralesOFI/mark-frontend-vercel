@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { BadgeCheck, Bell, ChevronDown, LogOut, Sparkles } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/shared/components/ui/DropdownMenu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/Avatar";
-import { useAuth } from "@/modules/auth/hooks/useAuth";
+import { useAuth } from "@/domains/auth/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
 interface AvatarDropdownProps {

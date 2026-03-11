@@ -7,7 +7,17 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      
+      "@/*": ["./src/*"],
+      "@/modules/auth/*": ["./src/domains/auth/*"],
+      "@/modules/brand-dna/*": ["./src/domains/creation-studio/brand-dna/*"],
+      "@/modules/chat-coach-modal/*": ["./src/domains/creation-studio/chat-coach/chat-coach-modal/*"],
+      "@/modules/chat-coach/*": ["./src/domains/creation-studio/chat-coach/*"],
+      "@/modules/video-creator/*": ["./src/domains/creation-studio/video-creator/*"],
+      "@/modules/content-post/*": ["./src/domains/dashboard/calendar/content-post/*"],
+      "@/modules/campaigns/*": ["./src/domains/dashboard/management/campaigns/*"],
+      "@/modules/dashboard/*": ["./src/domains/dashboard/*"],
+      "@/modules/social-network/*": ["./src/domains/social-network/*"],
+      "@/modules/create-post/*": ["./src/modules/creation-studio/*"]
     },
     "noImplicitAny": false,
     "noUnusedParameters": false,

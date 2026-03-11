@@ -1,15 +1,14 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { CreationStudioRoutes } from "./creation-studio.app";
 import DashboardLayout from "@/shared/layout/DashboardLayout";
-import MarketingCoachChat from "@/modules/chat-coach/page/MarketingCoachChatPage";
-import ContentFeedbackPage from "@/modules/content-post/page/ContentFeedbackPage";
-import DashboardPage from "@/modules/dashboard/page/DashboardPage";
-import CampaingnPage from "@/modules/campaigns/CampaingnPage";
-import { BrandDashboard } from "@/modules/brand-dna/page/BrandDNAPage";
-import AuthPage from "@/modules/auth/page/AuthPage";
-import RequireAuth from "@/modules/auth/components/RequireAuth";
-
-import { StyleProfilePage } from "@/modules/brand-dna/style-profile/StyleProfilePage";
+import MarketingCoachChat from "@/domains/creation-studio/chat-coach/page/MarketingCoachChatPage";
+import ContentFeedbackPage from "@/domains/dashboard/calendar/content-post/page/ContentFeedbackPage";
+import DashboardPage from "@/domains/dashboard/page/DashboardPage";
+import CampaingnPage from "@/domains/dashboard/management/campaigns/CampaingnPage";
+import { BrandDashboard } from "@/domains/creation-studio/brand-dna/page/BrandDNAPage";
+import AuthPage from "@/domains/auth/page/AuthPage";
+import RequireAuth from "@/domains/auth/components/RequireAuth";
+import { StyleProfilePage } from "@/domains/creation-studio/brand-dna/style-profile/StyleProfilePage";
 
 
 

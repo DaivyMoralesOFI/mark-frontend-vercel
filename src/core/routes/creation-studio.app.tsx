@@ -1,18 +1,18 @@
 import { Route } from "react-router-dom";
 import { lazy } from "react";
-import CreationStudioLayout from "@/modules/create-post/layout/CreationStudioLayout";
+import CreationStudioLayout from "@/modules/creation-studio/layout/CreationStudioLayout";
 
 const CreateNewContentPage = lazy(
-  () => import("@/modules/create-post/pages/CreateNewContentPage"),
+  () => import("@/modules/creation-studio/pages/CreateNewContentPage"),
 );
 
 const WorkflowContentPage = lazy(
-  () => import("@/modules/create-post/pages/WorkflowContentPage"),
+  () => import("@/modules/creation-studio/pages/WorkflowContentPage"),
 );
 
 const ExtractorDNAPage = lazy(
   () =>
-    import("@/modules/brand-dna/brand-dna-extractor/pages/BrandExtractor"),
+    import("@/domains/creation-studio/brand-dna/brand-dna-extractor/pages/BrandExtractor"),
 );
 
 export const CreationStudioRoutes = () => (

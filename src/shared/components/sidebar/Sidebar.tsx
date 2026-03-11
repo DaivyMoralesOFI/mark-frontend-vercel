@@ -50,7 +50,7 @@ import {
 } from "@/shared/components/ui/Avatar";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
-import { useAuth } from "@/modules/auth/hooks/useAuth";
+import { useAuth } from "@/domains/auth/hooks/useAuth";
 import { LinkedInIcon } from "@/shared/components/icons/LinkedInIcon";
 import { InstagramIcon } from "@/shared/components/icons/InstagramIcon";
 import { TikTokIcon } from "@/shared/components/icons/TikTokIcon";
