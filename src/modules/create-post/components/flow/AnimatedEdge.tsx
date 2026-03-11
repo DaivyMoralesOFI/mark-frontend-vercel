@@ -1,7 +1,6 @@
-import { EdgeProps, getSmoothStepPath } from "reactflow";
+import { EdgeProps, getBezierPath } from "reactflow";
 
 export default function AnimatedEdge({
-  id,
   sourceX,
   sourceY,
   targetX,
@@ -9,43 +8,35 @@ export default function AnimatedEdge({
   sourcePosition,
   targetPosition,
 }: EdgeProps) {
-  const [edgePath] = getSmoothStepPath({
+  const [edgePath] = getBezierPath({
     sourceX,
     sourceY,
     sourcePosition,
     targetX,
     targetY,
     targetPosition,
-    borderRadius: 0, // Sharp right-angle corners, n8n style
   });
-
-  const markerId = `arrow-${id}`;
 
   return (
     <>
-      <defs>
-        <marker
-          id={markerId}
-          markerWidth="6"
-          markerHeight="6"
-          refX="5"
-          refY="3"
-          orient="auto"
-        >
-          <path d="M0,0 L0,6 L6,3 z" fill="#3a3a3aff" />
-        </marker>
-      </defs>
-
-      {/* Sharp rectangular connector line */}
       <path
         d={edgePath}
         fill="none"
-        stroke="#484848ff"
+        stroke="var(--outline-variant)"
         strokeWidth={1.5}
-        strokeLinecap="square"
-        strokeLinejoin="miter"
-        markerEnd={`url(#${markerId})`}
+        strokeDasharray="6 4"
+        strokeLinecap="round"
+        style={{
+          animation: "edgeFlow 0.5s linear infinite",
+          opacity: 0.7,
+        }}
       />
+      <style>{`
+        @keyframes edgeFlow {
+          from { stroke-dashoffset: 10; }
+          to   { stroke-dashoffset: 0;  }
+        }
+      `}</style>
     </>
   );
 }

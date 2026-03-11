@@ -26,6 +26,7 @@ import { useState, useRef, useCallback } from "react";
 import { BrandExtractor } from "@/modules/create-post/schemas/BrandSchema";
 import { useAppDispatch } from "@/core/store/store";
 import { setSelectedBrandId } from "../../store/createPostSlice";
+import { useFlowStore } from "../../store/flowStoreSlice";
 import { cn } from "@/shared/utils/utils";
 
 // Schema parcial: solo los campos que el usuario controla directamente
@@ -39,24 +40,20 @@ const bottomNavbarSchema = z.object({
 type BottomNavbarForm = z.infer<typeof bottomNavbarSchema>;
 
 /**
- * Builds the create-image payload using the selected brand data.
+ * Builds the content generation payload using the selected brand data.
  */
 function buildCreateImagePayload(
   formData: BottomNavbarForm,
   brand: BrandExtractor | null
 ): CreateImage {
-  if (brand) {
-    const colors = brand.color_system.roles;
-    return {
-      prompt: formData.prompt,
-      platforms: formData.platforms,
-      post_type: formData.post_type,
-      post_tone: formData.post_tone,
-      brand_dna: {
+  const colorRoles = brand?.color_system.roles;
+
+  const brandDna = brand
+    ? {
         color_palette: {
-          primary: colors.primary.hex,
-          secondary: colors.secondary.hex,
-          accent: colors.tertiary.hex,
+          primary: colorRoles?.primary.hex ?? "#000000",
+          secondary: colorRoles?.secondary.hex ?? "#333333",
+          accent: colorRoles?.tertiary.hex ?? "#666666",
           complementary: brand.color_system.source_palette.slice(0, 3),
         },
         typography: {
@@ -68,45 +65,46 @@ function buildCreateImagePayload(
           keywords: brand.brand_voice.tone_of_voice,
           voice: brand.brand_voice.communication_style,
         },
-      },
-      identity: {
+      }
+    : {
+        color_palette: {
+          primary: "#000000",
+          secondary: "#333333",
+          accent: "#666666",
+          complementary: ["#000000", "#333333", "#FFFFFF"],
+        },
+        typography: {
+          body: "Inter",
+          heading: "Inter",
+        },
+        tone: {
+          description: "A modern, creative brand",
+          keywords: ["professional", "creative"],
+          voice: "Friendly and professional",
+        },
+      };
+
+  const identity = brand
+    ? {
         logo_url: brand.brand_identity.logo.url,
         name: brand.brand_identity.name,
         slug: brand.brand_identity.name.toLowerCase().replace(/\s+/g, "-"),
         site_url: brand.brand_identity.url,
-      },
-    };
-  }
+      }
+    : {
+        logo_url: "",
+        name: "Default Brand",
+        slug: "default-brand",
+        site_url: "",
+      };
 
   return {
     prompt: formData.prompt,
     platforms: formData.platforms,
     post_type: formData.post_type,
     post_tone: formData.post_tone,
-    brand_dna: {
-      color_palette: {
-        primary: "#6C5CE7",
-        secondary: "#A29BFE",
-        accent: "#FD79A8",
-        complementary: ["#00CEC9", "#FFEAA7", "#55EFC4"],
-      },
-      typography: {
-        body: "Roboto",
-        heading: "Inter",
-      },
-      tone: {
-        description: "A modern, creative brand",
-        keywords: ["creative", "modern", "professional"],
-        voice: "Friendly yet professional",
-      },
-    },
-    identity: {
-      logo_url:
-        "https://uploads.magnetme-images.com/b6ef6eec4cf95e65643013e.png",
-      name: "Default",
-      slug: "default",
-      site_url: "https://example.com",
-    },
+    brand_dna: brandDna,
+    identity,
   };
 }
 
@@ -124,6 +122,7 @@ const BottomNavbar = ({ centered = false }: BottomNavbarProps) => {
   const dispatch = useAppDispatch();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { mutate: startCreation } = useCreateImage();
+  const { setUserPrompt, setPostCopy, setLastCreationPayload, addCopyVersion } = useFlowStore();
 
   const _form = useForm<BottomNavbarForm>({
     resolver: zodResolver(bottomNavbarSchema),
@@ -182,6 +181,10 @@ const BottomNavbar = ({ centered = false }: BottomNavbarProps) => {
       onSuccess: (response) => {
         console.log("✅ [API] Creation started successfully:", response);
         if (response.uuid) {
+          setUserPrompt(data.prompt);
+          setPostCopy(response.copy);
+          setLastCreationPayload(payload);
+          addCopyVersion(response.copy);
           console.log(
             "⏳ [Navigation] Waiting 500ms before navigating..."
           );

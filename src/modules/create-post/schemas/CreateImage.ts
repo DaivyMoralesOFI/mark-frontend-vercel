@@ -1,48 +1,51 @@
 import z from "zod";
 
+export const brandDnaSchema = z.object({
+  color_palette: z.object({
+    primary: z.string(),
+    secondary: z.string(),
+    accent: z.string(),
+    complementary: z.array(z.string()),
+  }),
+  typography: z.object({
+    body: z.string(),
+    heading: z.string(),
+  }),
+  tone: z.object({
+    description: z.string(),
+    keywords: z.array(z.string()),
+    voice: z.string(),
+  }),
+});
+
+export const identitySchema = z.object({
+  logo_url: z.string(),
+  name: z.string(),
+  slug: z.string(),
+  site_url: z.string(),
+});
+
 export const createImageSchema = z.object({
   prompt: z.string().min(1, "Prompt is required"),
   platforms: z.array(z.string()).min(1, "At least one platform is required"),
   post_type: z.string().min(1, "Post type is required"),
   post_tone: z.string().min(1, "Post tone is required"),
-  reference_image: z.string().optional(),
-  brand_dna: z.object({
-    color_palette: z.object({
-      primary: z.string(),
-      secondary: z.string(),
-      accent: z.string(),
-      complementary: z.array(z.string()),
-    }),
-    typography: z.object({
-      body: z.string(),
-      heading: z.string(),
-    }),
-    tone: z.object({
-      description: z.string(),
-      keywords: z.array(z.string()),
-      voice: z.string(),
-    }),
-  }),
-  identity: z.object({
-    logo_url: z.url(),
-    name: z.string(),
-    slug: z.string(),
-    site_url: z.url(),
-  }),
+  brand_dna: brandDnaSchema,
+  identity: identitySchema,
 });
 
 export type CreateImage = z.infer<typeof createImageSchema>;
 
 export const createImageResponseSchema = z.object({
   uuid: z.string(),
-  message: z.string(),
+  copy: z.string(),
+  image_url: z.string(),
 });
 
 export type CreateImageResponse = z.infer<typeof createImageResponseSchema>;
 
 export const editImageSchema = z.object({
   uuid: z.string(),
-  parent_uuid: z.string(),
   creation_uuid: z.string(),
   img_url: z.string(),
   prompt: z.string(),
@@ -78,3 +81,24 @@ export const getCreatedImageSchema = z.object({
 });
 
 export type GetCreatedImage = z.infer<typeof getCreatedImageSchema>;
+
+export const regenerateCopySchema = z.object({
+  creation_uuid: z.string(),
+  prompt: z.string(),
+  current_copy: z.string(),
+  copy_feedback: z.string(),
+  platforms: z.array(z.string()),
+  post_type: z.string(),
+  post_tone: z.string(),
+  brand_dna: brandDnaSchema,
+  identity: identitySchema,
+});
+
+export type RegenerateCopy = z.infer<typeof regenerateCopySchema>;
+
+export const regenerateCopyResponseSchema = z.object({
+  uuid: z.string(),
+  copy: z.string(),
+});
+
+export type RegenerateCopyResponse = z.infer<typeof regenerateCopyResponseSchema>;

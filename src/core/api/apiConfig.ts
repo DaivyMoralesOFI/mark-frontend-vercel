@@ -3,12 +3,14 @@ import axios from "axios";
 export const API_CONFIG = {
   BASE_URLS: {
     WEBHOOKS: "https://n8n.sofiatechnology.ai/webhook",
+    DJANGO: "http://127.0.0.1:8000",
   },
   ENDPOINTS: {
     CREATION_STUDIO: {
-      createImage: "/generate-image-v3",
+      createImage: "/api/content/generate/",
       getImageCreated: "/generated-image-v2",
-      editImage: "/edit-image",
+      editImage: "/api/content/edit-image/",
+      regenerateCopy: "/api/content/regenerate-copy/",
     },
     BRAND_EXTRACTOR: {
       brandExtractor: "/extract-brand-dna",
@@ -21,6 +23,16 @@ export const API_CONFIG = {
     },
   },
 };
+
+export const DJANGO_CLIENT = axios.create({
+  baseURL: API_CONFIG.BASE_URLS.DJANGO,
+  timeout: 150000,
+  headers: {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  },
+  withCredentials: false,
+});
 
 export const API_CLIENT = axios.create({
   baseURL: API_CONFIG.BASE_URLS.WEBHOOKS,

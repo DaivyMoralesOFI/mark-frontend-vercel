@@ -1,5 +1,4 @@
 import { ThemeProvider } from "@/core/router/router";
-import FirebaseProvider from "./core/context/FirebaseContext";
 import AppRoutes from "./core/routes/routes";
 import { QueryProvider } from "./core/providers/QueryProviders";
 import { AuthProvider } from "@/modules/auth/store/AuthProvider";
@@ -9,12 +8,10 @@ export default function App() {
   return (
     <QueryProvider>
       <ThemeProvider defaultTheme="dark" storageKey="app-theme">
-        <FirebaseProvider>
-          <AuthProvider>
-            <AppRoutes />
-            <Toaster />
-          </AuthProvider>
-        </FirebaseProvider>
+        <AuthProvider>
+          <AppRoutes />
+          <Toaster />
+        </AuthProvider>
       </ThemeProvider>
     </QueryProvider>
   );

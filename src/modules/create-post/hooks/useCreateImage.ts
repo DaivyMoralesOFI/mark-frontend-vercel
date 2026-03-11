@@ -4,8 +4,9 @@ import {
   getImageCreated,
   setCreateImage,
   setEditImage,
+  setRegenerateCopy,
 } from "@/modules/create-post/services/createImageService";
-import { CreateImage, EditImage, CreationStore } from "@/modules/create-post/schemas/CreateImage";
+import { CreateImage, EditImage, RegenerateCopy, CreationStore } from "@/modules/create-post/schemas/CreateImage";
 import {
   SubscriptionCallback,
   useFirebaseSubscription,
@@ -34,6 +35,15 @@ export const useEditImage = () => {
   const mutation = useMutation({
     mutationKey: queryKeys.creation_studio.edit_image(),
     mutationFn: (editParam: EditImage) => setEditImage(editParam),
+  });
+
+  return mutation;
+};
+
+export const useRegenerateCopy = () => {
+  const mutation = useMutation({
+    mutationKey: queryKeys.creation_studio.regenerate_copy(),
+    mutationFn: (params: RegenerateCopy) => setRegenerateCopy(params),
   });
 
   return mutation;

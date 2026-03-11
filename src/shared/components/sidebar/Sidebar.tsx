@@ -130,14 +130,14 @@ export function Sidebar() {
   ];
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout, user: firebaseUser } = useAuth();
+  const { logout } = useAuth();
 
   const handleLogout = () => {
     logout();
     navigate("/auth");
   };
 
-  const displayName = firebaseUser?.displayName || profileUser?.user_name || "Sienna Hewitt";
+  const displayName = profileUser?.user_name || "Sienna Hewitt";
 
   const mockBrands = [
     { id: "1", name: "Ofi Services", url: "@ofiservices" },
@@ -312,7 +312,7 @@ export function Sidebar() {
                           {displayName}
                         </span>
                         <span className="truncate text-[12px] text-neutral-500 dark:text-neutral-400 font-normal mt-0.5">
-                          {firebaseUser?.email || "hi@ameliedesign.co"}
+                          {profileUser?.email || "hi@ameliedesign.co"}
                         </span>
                       </div>
                       <MoreVertical className="ml-1 size-[18px] text-neutral-400" strokeWidth={2} />

@@ -1,4 +1,4 @@
-import { API_CLIENT, API_CONFIG } from "@/core/api/apiConfig";
+import { DJANGO_CLIENT, API_CONFIG } from "@/core/api/apiConfig";
 import { validateSchemaSoft } from "@/core/lib/schemaValidator";
 import {
   CreateImageResponse,
@@ -9,7 +9,7 @@ import {
   getCreatedImageSchema,
 } from "../schemas/CreateImage";
 import { isApiError } from "@/core/lib/apiErrorHandler";
-import { CreateImage, EditImage } from "../schemas/CreateImage";
+import { CreateImage, EditImage, RegenerateCopy, RegenerateCopyResponse, regenerateCopyResponseSchema } from "../schemas/CreateImage";
 import {
   createLiveSubscription,
   UnsubscribeFn,
@@ -21,7 +21,7 @@ export const setCreateImage = async (
 ): Promise<CreateImageResponse> => {
   try {
     const endpoint = API_CONFIG.ENDPOINTS.CREATION_STUDIO.createImage;
-    const response = await API_CLIENT.post(endpoint, image_schema);
+    const response = await DJANGO_CLIENT.post(endpoint, image_schema);
     const validationResult = validateSchemaSoft(
       createImageResponseSchema,
       response.data,
@@ -60,7 +60,7 @@ export const setEditImage = async (
 ): Promise<CreateImageResponse> => {
   try {
     const endpoint = API_CONFIG.ENDPOINTS.CREATION_STUDIO.editImage;
-    const response = await API_CLIENT.post(endpoint, edit_param);
+    const response = await DJANGO_CLIENT.post(endpoint, edit_param);
     const validationResult = validateSchemaSoft(
       createImageResponseSchema,
       response.data,
@@ -178,6 +178,38 @@ export function getCreationsStatusWithRetry(
     if (currentUnsubscribe) currentUnsubscribe();
   };
 }
+
+export const setRegenerateCopy = async (
+  params: RegenerateCopy,
+): Promise<RegenerateCopyResponse> => {
+  try {
+    const endpoint = API_CONFIG.ENDPOINTS.CREATION_STUDIO.regenerateCopy;
+    const response = await DJANGO_CLIENT.post(endpoint, params);
+    const validationResult = validateSchemaSoft(
+      regenerateCopyResponseSchema,
+      response.data,
+      {
+        operation: "regenerateCopy",
+        endpoint: endpoint,
+      },
+    ) as RegenerateCopyResponse;
+    return validationResult;
+  } catch (error) {
+    if (isApiError(error)) {
+      console.error("❌ API Error regenerating copy:", {
+        type: error.type,
+        message: error.userMessage,
+        statusCode: error.statusCode,
+      });
+      throw new Error(error.userMessage);
+    }
+
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error occurred";
+
+    throw new Error(`Failed to regenerate copy: ${errorMessage}`);
+  }
+};
 
 export function getCreationsStatus(
   uuid: string,
