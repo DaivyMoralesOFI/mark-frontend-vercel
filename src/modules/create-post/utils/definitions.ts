@@ -27,7 +27,7 @@ import {
   PostType,
   Platform,
   Tools,
-} from "@/modules/create-post/types/content-type";
+} from "@/modules/create-post/types/ContentType";
 
 export const postTone: PostTone[] = [
   { value: "promotional", label: "Promotional", icon: TicketCheck },

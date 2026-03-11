@@ -9,7 +9,7 @@ import { RootState } from "@/core/store/rootReducer";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "@/core/store/store";
-import { CreatePostRequest, PostType } from "../types/createPostTypes";
+import { CreatePostRequest, PostType } from "../types/CreatePostTypes";
 import {
   addHashtagToDescription,
   createPost,

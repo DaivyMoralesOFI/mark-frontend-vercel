@@ -1,5 +1,5 @@
-import { Card } from "@/shared/components/ui/card"
-import { Progress } from "@/shared/components/ui/progress"
+import { Card } from "@/shared/components/ui/Card"
+import { Progress } from "@/shared/components/ui/Progress"
 
 const metrics = [
   { name: "Style Understanding", value: 82 },

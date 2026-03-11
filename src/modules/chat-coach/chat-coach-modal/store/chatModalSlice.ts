@@ -4,7 +4,7 @@
 // It handles sending messages to Mark AI, managing chat history, loading and error states, and user/assistant message logic in the modal.
 
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { MessageChatModal } from "../types/chatModalTypes";
+import { MessageChatModal } from "../types/ChatModalTypes";
 import { ChatModalService } from "../services/chatModalService";
 
 /**

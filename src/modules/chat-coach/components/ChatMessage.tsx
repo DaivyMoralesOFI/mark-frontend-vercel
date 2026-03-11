@@ -5,7 +5,7 @@
 // The component is styled with Tailwind CSS and visually distinguishes between user, assistant, and error messages.
 
 import { User } from "lucide-react";
-import { Message } from "../types/chatTypes";
+import { Message } from "../types/ChatTypes";
 import ReactMarkdown from "react-markdown";
 
 /**

@@ -8,9 +8,12 @@ import {
   LogOut,
   Plus,
   MoreVertical,
-  Dna,
-  User,
+  Sun,
+  Moon,
+  Monitor,
 } from "lucide-react";
+import { useTheme } from "@/core/context/ThemeProvider";
+import { cn } from "@/shared/utils/utils";
 import { useState } from "react";
 import {
   Sidebar as SidebarComponent,
@@ -28,23 +31,23 @@ import {
   SidebarMenuSubItem,
   SidebarMenuSubButton,
   SidebarTrigger,
-} from "@/shared/components/ui/sidebar";
+} from "@/shared/components/ui/Sidebar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/shared/components/ui/dropdown-menu";
+} from "@/shared/components/ui/DropdownMenu";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/shared/components/ui/collapsible";
+} from "@/shared/components/ui/Collapsible";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/shared/components/ui/avatar";
+} from "@/shared/components/ui/Avatar";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { useUser } from "@/shared/hooks/useUser";
@@ -93,8 +96,6 @@ const navigationGroups = [
       },
       { title: "Calendar", icon: Calendar, isActive: false, to: "/app/calendar" },
       { title: "Campaigns", icon: TrendingUp, isActive: false, to: "/app/campaigns" },
-      { title: "Brand DNA", icon: Dna, isActive: false, to: "/app/brand-dna" },
-      { title: "Style Profile", icon: User, isActive: false, to: "/app/style-profile" },
     ],
   },
   {
@@ -119,17 +120,24 @@ const navigationGroups = [
 export function Sidebar() {
   const { state, setOpen } = useSidebar();
   const isExpanded = state === "expanded";
+  const { theme, setTheme } = useTheme();
   const { user: profileUser } = useUser("KGLTadXoTWGvqb2Tn475");
+
+  const themeOptions = [
+    { value: "light" as const, icon: Sun, label: "Light" },
+    { value: "dark" as const, icon: Moon, label: "Dark" },
+    { value: "system" as const, icon: Monitor, label: "System" },
+  ];
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout, user: firebaseUser } = useAuth();
+  const { logout } = useAuth();
 
   const handleLogout = () => {
     logout();
     navigate("/auth");
   };
 
-  const displayName = firebaseUser?.displayName || profileUser?.user_name || "Sienna Hewitt";
+  const displayName = profileUser?.user_name || "Sienna Hewitt";
 
   const mockBrands = [
     { id: "1", name: "Ofi Services", url: "@ofiservices" },
@@ -143,7 +151,7 @@ export function Sidebar() {
     <SidebarComponent
       variant="sidebar"
       collapsible="icon"
-      className={`bg-transparent dark:bg-white/10 border-outline-variant transition-all ${!isExpanded ? "cursor-pointer" : ""}`}
+      className={`bg-transparent dark:bg-[#1C1C1C] border-outline-variant transition-all ${!isExpanded ? "cursor-pointer" : ""}`}
       onClick={() => {
         if (!isExpanded) {
           setOpen(true);
@@ -304,7 +312,7 @@ export function Sidebar() {
                           {displayName}
                         </span>
                         <span className="truncate text-[12px] text-neutral-500 dark:text-neutral-400 font-normal mt-0.5">
-                          {firebaseUser?.email || "hi@ameliedesign.co"}
+                          {profileUser?.email || "hi@ameliedesign.co"}
                         </span>
                       </div>
                       <MoreVertical className="ml-1 size-[18px] text-neutral-400" strokeWidth={2} />
@@ -348,6 +356,30 @@ export function Sidebar() {
                       </div>
                     </DropdownMenuItem>
                   ))}
+                </div>
+
+                <div className="h-[1px] bg-neutral-200 dark:bg-neutral-800 my-2 mx-1" />
+
+                {/* Appearance Section */}
+                <div className="flex items-center gap-2 px-2 py-1.5">
+                  <span className="font-medium text-[13px] text-neutral-900 dark:text-neutral-100 flex-1">Appearance</span>
+                  <div className="flex items-center gap-0.5 bg-neutral-100 dark:bg-neutral-800 rounded-md p-0.5">
+                    {themeOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => setTheme(option.value)}
+                        className={cn(
+                          "flex items-center gap-1 px-2 py-1 rounded text-[11px] font-medium transition-all",
+                          theme === option.value
+                            ? "bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 shadow-sm"
+                            : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100"
+                        )}
+                      >
+                        <option.icon className="w-3 h-3" />
+                        <span>{option.label}</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="h-[1px] bg-neutral-200 dark:bg-neutral-800 my-2 mx-1" />

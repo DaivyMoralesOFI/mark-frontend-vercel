@@ -13,9 +13,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/shared/components/ui/dialog";
-import { Button } from "@/shared/components/ui/button";
-import { Label } from "@/shared/components/ui/label";
+} from "@/shared/components/ui/Dialog";
+import { Button } from "@/shared/components/ui/Button";
+import { Label } from "@/shared/components/ui/Label";
 
 import {
   Select,
@@ -23,11 +23,11 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/shared/components/ui/select";
-import { ScrollArea } from "@/shared/components/ui/scroll-area";
+} from "@/shared/components/ui/Select";
+import { ScrollArea } from "@/shared/components/ui/ScrollArea";
 
 import { usePost } from "../hooks/usePost";
-import { POST_TYPES, PostType } from "../types/createPostTypes";
+import { POST_TYPES, PostType } from "../types/CreatePostTypes";
 import { PlatformSelector } from "./PlatformSelector";
 
 import { TrendsSection } from "./TrendsSection";

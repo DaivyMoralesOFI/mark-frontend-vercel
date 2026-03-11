@@ -36,10 +36,10 @@ body {
   --font-text: "Poppins", sans-serif;
   --font-title: "Pathway Gothic One", sans-serif;
 
-  --primary: #a65698;
-  --on-primary: #fdfdfd;
-  --primary-container: #e6c3e0;
-  --on-primary-container: #331b2f;
+  --primary: #D946EF;
+  --on-primary: #ffffff;
+  --primary-container: #F5D0FE;
+  --on-primary-container: #4A0E4E;
   --secondary: #0b3948;
   --on-secondary: #fdfdfd;
   --secondary-container: #a8d6e6;
@@ -123,20 +123,21 @@ body {
 
   --sidebar: #fcfcfb;
   --sidebar-foreground: #333231;
-  --sidebar-primary: #a65698;
-  --sidebar-primary-foreground: #fdfdfd;
+  --sidebar-primary: #D946EF;
+  --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #f4f4f5;
   --sidebar-accent-foreground: #18181b;
   --sidebar-border: #ebe6e0;
-  --sidebar-ring: #a65698;
+  --sidebar-ring: #D946EF;
+  --canvas-grid: var(--outline-variant);
 }
 
 [data-theme="dark"],
 .dark {
-  --primary: #e6b4dd;
-  --on-primary: #4c2846;
-  --primary-container: #66355e;
-  --on-primary-container: #e6c3e0;
+  --primary: #F0ABFC;
+  --on-primary: #5B1064;
+  --primary-container: #7E1E8A;
+  --on-primary-container: #F5D0FE;
   --secondary: #02182b;
   --on-secondary: #f4f0f0;
   --secondary-container: #a1c6e6;
@@ -229,12 +230,13 @@ body {
 
   --sidebar: rgb(32, 29, 22);
   --sidebar-foreground: #e6e5e2;
-  --sidebar-primary: #e6b4dd;
-  --sidebar-primary-foreground: #4c2846;
+  --sidebar-primary: #F0ABFC;
+  --sidebar-primary-foreground: #5B1064;
   --sidebar-accent: #2d2a22;
   --sidebar-accent-foreground: #fafafa;
   --sidebar-border: rgb(52 48 40);
-  --sidebar-ring: #e6b4dd;
+  --sidebar-ring: #F0ABFC;
+  --canvas-grid: transparent;
 }
 
 @theme inline {
@@ -318,6 +320,14 @@ body {
   --color-chart-7: var(--chart-7);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+}
+
+/* Hide ReactFlow canvas grid in dark mode */
+.dark .react-flow__background,
+[data-theme="dark"] .react-flow__background {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 /** wainting card loader **/

@@ -1,4 +1,4 @@
-import { Card } from "@/shared/components/ui/card"
+import { Card } from "@/shared/components/ui/Card"
 
 const feedbackImages = [
   { id: 1, url: "/image1.jpg" },

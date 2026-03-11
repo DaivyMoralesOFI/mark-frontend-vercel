@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { CreatePostModal } from '../components/CreatePostModal';
-import { Button } from "@/shared/components/ui/button";
+import { Button } from "@/shared/components/ui/Button";
 
 export const CreatePostPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

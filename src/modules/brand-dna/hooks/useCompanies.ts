@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { brandDnaService } from '../service/brandDnaService';
-import { Company, CompanyBrand } from '../types/brandDnaTypes';
+import { Company, CompanyBrand } from '../types/BrandDnaTypes';
 import { buildLogoUrl } from '../utils/companyUtils';
 
 /**

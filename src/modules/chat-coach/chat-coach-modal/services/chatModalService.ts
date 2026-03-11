@@ -4,7 +4,7 @@
 // It uses Axios for HTTP requests and is used by the Redux slice and hooks to interact with the AI assistant in the modal.
 
 import axios from "axios";
-import { ChatHistoryModal, ChatRequestModal, ChatResponseModal, MessageChatModal } from "../types/chatModalTypes";
+import { ChatHistoryModal, ChatRequestModal, ChatResponseModal, MessageChatModal } from "../types/ChatModalTypes";
 
 /**
  * ChatModalService

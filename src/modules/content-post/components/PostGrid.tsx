@@ -4,7 +4,7 @@
 // It arranges posts responsively in a multi-column layout using Tailwind CSS grid utilities.
 // Used in the content post module to show all posts in a visually appealing way.
 
-import { Post } from "../types/postTypes";
+import { Post } from "../types/PostTypes";
 import { PostCard } from "./PostCard";
 import {
   Carousel,
@@ -12,7 +12,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/shared/components/ui/carousel";
+} from "@/shared/components/ui/Carousel";
 
 /**
  * Props for PostGrid

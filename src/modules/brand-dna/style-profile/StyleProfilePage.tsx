@@ -4,8 +4,8 @@ import { FeedbackOverview } from "./FeedbackOverview"
 import { LearningProgress } from "./LearningProgress"
 import { LearningSettings } from "./LearningSettings"
 import { RecentFeedback } from "./RecentFeedback"
-import PageOutletLayout from "@/shared/layout/page-outlet-layout";
-import { Actions } from "@/shared/types/types";
+import PageOutletLayout from "@/shared/layout/PageOutletLayout";
+import { Actions } from "@/shared/types/Types";
 import { GraduationCap } from "lucide-react";
 import { TrainModelModal } from "@/modules/brand-dna/train-model-modal/TrainModelModal";
 

@@ -1,4 +1,4 @@
-import { Card } from "@/shared/components/ui/card"
+import { Card } from "@/shared/components/ui/Card"
 import { FileText, Filter, Award } from "lucide-react"
 
 const features = [

@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(npx vite:*)",
+      "WebSearch",
+      "Bash(file:*)",
+      "WebFetch(domain:www.remotion.dev)",
+      "Bash(pnpm add:*)",
+      "Bash(pkill:*)",
+      "Bash(npx remotion:*)",
+      "Bash(curl:*)"
+    ]
+  }
+}

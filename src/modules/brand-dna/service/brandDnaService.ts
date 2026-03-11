@@ -4,7 +4,7 @@
 // It uses Axios for HTTP requests and is designed to interact with the backend endpoint for Brand DNA information.
 
 import axios from "axios";
-import { BrandDnaResponse, BrandDnaApiResponse, CompaniesResponse, CompaniesApiResponse, ColorAnalysis, ColorObject } from "../types/brandDnaTypes";
+import { BrandDnaResponse, BrandDnaApiResponse, CompaniesResponse, CompaniesApiResponse, ColorAnalysis, ColorObject } from "../types/BrandDnaTypes";
 
 // Base URL for the API endpoints
 const API_BASE_URL = 'https://n8n.sofiatechnology.ai/webhook';

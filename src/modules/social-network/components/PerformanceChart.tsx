@@ -3,14 +3,14 @@ import { Area, AreaChart, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts"
 import {
     ChartConfig,
     ChartContainer,
-} from "@/shared/components/ui/chart";
+} from "@/shared/components/ui/Chart";
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/shared/components/ui/select";
+} from "@/shared/components/ui/Select";
 import { useState } from "react";
 import { cn } from "@/shared/utils/utils";
 

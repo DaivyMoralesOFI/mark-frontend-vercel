@@ -6,9 +6,9 @@
 
 import { Loader } from "lucide-react";
 
-import { Textarea } from "@/shared/components/ui/textarea";
-import { MAX_DESCRIPTION_LENGTH } from "../types/createPostTypes";
-import { Badge } from "@/shared/components/ui/badge";
+import { Textarea } from "@/shared/components/ui/Textarea";
+import { MAX_DESCRIPTION_LENGTH } from "../types/CreatePostTypes";
+import { Badge } from "@/shared/components/ui/Badge";
 
 /**
  * Props for DescriptionInput

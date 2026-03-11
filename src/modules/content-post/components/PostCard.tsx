@@ -12,8 +12,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/shared/components/ui/card";
-import { Post } from "../types/postTypes";
+} from "@/shared/components/ui/Card";
+import { Post } from "../types/PostTypes";
 import { Calendar, EllipsisVertical } from "lucide-react";
 
 

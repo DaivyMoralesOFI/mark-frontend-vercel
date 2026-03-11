@@ -143,7 +143,7 @@ import {
   signOut
 } from "firebase/auth";
 import app from "@/core/config/firebase-database";
-import { UserService } from "@/core/services/user-service";
+import { UserService } from "@/core/services/userService";
 
 const auth = getAuth(app);
 

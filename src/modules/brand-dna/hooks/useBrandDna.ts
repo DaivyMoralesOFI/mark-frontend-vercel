@@ -4,7 +4,7 @@
 // It's a wrapper around useBrands for backward compatibility with the Brand DNA module.
 
 import { useBrands } from "@/shared/hooks/useBrands";
-import { CompanyBrand } from "@/modules/brand-dna/types/brandDnaTypes";
+import { CompanyBrand } from "@/modules/brand-dna/types/BrandDnaTypes";
 
 /**
  * useBrandDna

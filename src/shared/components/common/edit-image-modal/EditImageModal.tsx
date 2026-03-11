@@ -6,10 +6,10 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/shared/components/ui/dialog"
-import { Button } from "@/shared/components/ui/button"
-import { Label } from "@/shared/components/ui/label"
-import { ScrollArea } from "@/shared/components/ui/scroll-area"
+} from "@/shared/components/ui/Dialog"
+import { Button } from "@/shared/components/ui/Button"
+import { Label } from "@/shared/components/ui/Label"
+import { ScrollArea } from "@/shared/components/ui/ScrollArea"
 
 interface EditImageModalProps {
   isOpen: boolean

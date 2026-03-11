@@ -4,9 +4,9 @@
 // It renders each message using ChatModalMessage, shows a typing indicator when the AI is responding, and auto-scrolls to the latest message.
 
 import { useEffect, useRef } from "react";
-import { MessageChatModal } from "../types/chatModalTypes";
+import { MessageChatModal } from "../types/ChatModalTypes";
 import { ChatModalMessage } from "./ChatModalMessage";
-import { ScrollArea } from "@/shared/components/ui/scroll-area";
+import { ScrollArea } from "@/shared/components/ui/ScrollArea";
 import { TypingIndicatorModal } from "./TypingIndicatorModal";
 
 /**

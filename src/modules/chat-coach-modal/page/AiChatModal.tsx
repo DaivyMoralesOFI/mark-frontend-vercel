@@ -3,7 +3,7 @@
 // This file defines the AiChatModal component, which renders a modal dialog for interacting with Mark AI in a chat interface.
 // It integrates chat state, input handling, suggested questions, error display, and message rendering for a complete chat experience.
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/components/ui/Dialog";
 import { useChatModal } from "../hooks/useChatModal";
 import { useChatInput } from "../hooks/useChatModalInput";
 import { ChatModalHeader } from "../components/ChatModalHeader";

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { UserProfile } from "@/core/schemas/user-schema";
-import { UserService } from "@/core/services/user-service";
+import { UserProfile } from "@/core/schemas/UserSchema";
+import { UserService } from "@/core/services/userService";
 
 /**
  * useUser

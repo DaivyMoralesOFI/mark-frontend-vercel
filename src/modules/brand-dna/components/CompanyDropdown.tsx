@@ -1,14 +1,14 @@
 
-import { Button } from "@/shared/components/ui/button";
+import { Button } from "@/shared/components/ui/Button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/shared/components/ui/dropdown-menu";
+} from "@/shared/components/ui/DropdownMenu";
 import { ChevronDown, CheckCircle2, Loader2, Building2 } from "lucide-react";
 import { useBrands } from "@/shared/hooks/useBrands";
-import { CompanyBrand } from "../types/brandDnaTypes";
+import { CompanyBrand } from "../types/BrandDnaTypes";
 import { BrandLogo } from "@/shared/components/brand/BrandLogo";
 
 

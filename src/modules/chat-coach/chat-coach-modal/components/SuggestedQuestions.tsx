@@ -4,7 +4,7 @@
 // Users can click a question to send it to the chat assistant. The component is styled with Tailwind CSS and includes a sparkles icon for visual context.
 
 import { Sparkles } from "lucide-react";
-import { SUGGESTED_QUESTIONS } from "../types/chatModalTypes";
+import { SUGGESTED_QUESTIONS } from "../types/ChatModalTypes";
 
 /**
  * Props for SuggestedQuestions

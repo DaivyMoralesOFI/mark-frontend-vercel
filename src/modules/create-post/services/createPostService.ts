@@ -11,7 +11,7 @@ import {
   PostSuggestionRequest,
   PostSuggestionResponse,
   TrendItem,
-} from "../types/createPostTypes";
+} from "../types/CreatePostTypes";
 
 // Base URL for the API endpoints
 const API_BASE_URL = "https://n8n.sofiatechnology.ai/webhook";
@@ -69,9 +69,7 @@ export const createPostService = {
   generateImage: async (data: ImageGenerationRequest): Promise<Blob> => {
     console.log("generating image");
     console.log(data);
-    const endpoint = data.use_brand_dna
-      ? "/create-image"
-      : "/0bfe57a1-076f-4a49-80b5-3513c0f53524";
+    const endpoint = "/generate-image-v3";
 
     if (data.use_brand_dna) {
       // When Brand DNA is enabled, the endpoint returns JSON with a URL

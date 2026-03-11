@@ -5,7 +5,7 @@ import {
     ChartContainer,
     ChartTooltip,
     ChartTooltipContent,
-} from "@/shared/components/ui/chart";
+} from "@/shared/components/ui/Chart";
 import { ArrowUp, ArrowDown } from "lucide-react";
 import {
     Select,
@@ -13,7 +13,7 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/shared/components/ui/select";
+} from "@/shared/components/ui/Select";
 
 import {
     type TimePeriod,

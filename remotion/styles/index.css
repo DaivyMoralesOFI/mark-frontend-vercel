@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+:root {
+  --video-bg: #0A0A0F;
+  --video-surface: #121218;
+  --video-card: #1A1A22;
+  --video-glow-magenta: rgba(217, 70, 239, 0.6);
+  --video-glow-teal: rgba(11, 57, 72, 0.4);
+}
