@@ -5,7 +5,6 @@ import { useBrandDna } from "../hooks/useBrandDna";
 export function ColorPaletteSection() {
   const { data, loading } = useBrandDna();
 
-  // Build colors array from Firebase brand data
   const colors = data?.color_palette;
 
   if (!colors) return null;

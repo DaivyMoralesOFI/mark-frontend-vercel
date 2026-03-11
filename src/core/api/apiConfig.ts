@@ -16,12 +16,6 @@ export const API_CONFIG = {
       brandExtractor: "/extract-brand-dna",
     },
   },
-  FIREBASE: {
-    BRANDS: {
-      list: "brands",
-      setBrand: "brands",
-    },
-  },
 };
 
 export const DJANGO_CLIENT = axios.create({

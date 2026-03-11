@@ -31,7 +31,6 @@
 | Animaciones | Framer Motion |
 | Visualización de flujos | ReactFlow |
 | Gráficos | Recharts |
-| Backend / DB | Firebase (Firestore + Auth) |
 | HTTP Client | Axios |
 | Fechas | Luxon + date-fns |
 | Notificaciones | Sonner |
@@ -45,7 +44,7 @@
 
 - [Node.js](https://nodejs.org/) (v18 o superior)
 - [pnpm](https://pnpm.io/) (v10 o superior)
-- Archivo `.env` configurado con las variables de Firebase y API
+- Archivo `.env` configurado con las variables de API
 
 ```bash
 npm install -g pnpm
@@ -107,11 +106,11 @@ La arquitectura sigue un patrón de **separación de capas** con organización p
 
 ```
 📂 domains/
- ┣ 📂 auth/                    # Autenticación con Firebase
+ ┣ 📂 auth/                    # Autenticación
  ┃ ┣ 📂 components/            # Componentes de login/registro
- ┃ ┣ 📂 hooks/                 # useAuth, useFirebaseUser
+ ┃ ┣ 📂 hooks/                 # useAuth
  ┃ ┣ 📂 page/                  # AuthPage
- ┃ ┣ 📂 services/              # Firebase Auth service
+ ┃ ┣ 📂 services/              # Auth service
  ┃ ┣ 📂 store/                 # AuthProvider + Redux auth slice
  ┃ ┗ 📂 types/                 # Tipos de usuario
 
@@ -207,7 +206,7 @@ La arquitectura sigue un patrón de **separación de capas** con organización p
    ┃ ┣ 📜 create-new-content-page.tsx  # Selección de tipo de contenido
    ┃ ┗ 📜 workflow-content-page.tsx    # Flujo de trabajo de contenido (ReactFlow)
    ┣ 📂 schemas/                   # Schemas Zod de validación
-   ┣ 📂 service/                   # brand-service.ts (Firebase + API calls)
+   ┣ 📂 service/                   # brand-service.ts (API calls)
    ┣ 📂 store/                     # brandSlice (Redux)
    ┣ 📂 types/                     # Tipos del módulo
    ┗ 📂 utils/                     # Utilidades del flow
@@ -224,11 +223,9 @@ La arquitectura sigue un patrón de **separación de capas** con organización p
  ┃ ┣ 📜 apiClient.ts         # Interceptores de request/response + manejo de errores
  ┃ ┗ 📜 apiErrors.ts         # Tipado de errores de API
  ┣ 📂 config/
- ┃ ┣ 📜 firebase-database.ts # Inicialización de Firebase + Firestore
  ┃ ┣ 📜 query-client.ts      # Configuración global de TanStack Query
  ┃ ┗ 📜 query-keys.ts        # Keys centralizadas para caching
  ┣ 📂 context/
- ┃ ┗ 📜 firebase-context.tsx # FirebaseProvider global
  ┣ 📂 hooks/                 # Hooks de infraestructura
  ┣ 📂 providers/             # QueryProvider
  ┣ 📂 router/                # ThemeProvider y router config
@@ -288,7 +285,7 @@ La arquitectura sigue un patrón de **separación de capas** con organización p
 | Ruta | Descripción |
 |---|---|
 | `/` | Redirige a `/dashboard` |
-| `/auth` | Página de autenticación (Firebase) |
+| `/auth` | Página de autenticación |
 | `/app/dashboard` | Dashboard principal y calendario de contenido |
 | `/app/creation-studio/new/content` | Selector de tipo de contenido nuevo |
 | `/app/creation-studio/new/content/:uuid` | Flujo de trabajo de contenido (ReactFlow) |
@@ -307,12 +304,6 @@ La arquitectura sigue un patrón de **separación de capas** con organización p
 | `/generated-image-v2` | GET | Recupera una imagen generada |
 | `/85a5cbee-1808-4d99-9528-f91b9c6cbe31` | POST | Edición de imágenes con IA |
 
-### Firebase / Firestore
-
-| Colección | Operaciones | Descripción |
-|---|---|---|
-| `brands` | `getDocs`, `addDoc`, `updateDoc` | Almacenamiento de perfiles de Brand DNA |
-
 ### Configuración del cliente Axios
 
 - **Timeout**: 150 000 ms (2.5 min) — necesario para generación de imágenes con IA
@@ -327,14 +318,13 @@ La funcionalidad de **Brand DNA Extractor** es el corazón del producto:
 
 1. **Extracción**: El usuario introduce la URL de su empresa → llama al webhook `/extract-brand-dna`
 2. **Validación**: La respuesta se valida con schemas Zod (`BrandExtractorResponseSchema`)
-3. **Persistencia**: El Brand DNA se guarda en Firestore como una nueva marca
-4. **Visualización**: Se genera un **grafo interactivo con ReactFlow** con nodos personalizados:
+3. **Visualización**: Se genera un **grafo interactivo con ReactFlow** con nodos personalizados:
    - `logo-node` — Raíz del grafo con el logo de la marca
    - `identity-node` — Nombre, misión y valores
    - `color-node` — Paleta de colores con previews
    - `typography-node` — Tipografías primaria y secundaria
    - `voice-node` — Tono y voz de la marca
-5. **Selección activa**: El usuario puede tener una marca activa (`isActive: true`) que se usa como context en generación de contenido
+4. **Selección activa**: El usuario puede tener una marca activa que se usa como context en generación de contenido
 
 ---
 
@@ -345,7 +335,7 @@ La funcionalidad de **Brand DNA Extractor** es el corazón del producto:
 - [ ] **Corregir errores de build de TypeScript** — Resolver los errores de tipos en módulos de `domains/` y `modules/` para lograr un build de producción limpio
 - [ ] **Implementar flujo completo del Content Workflow** (`workflow-content-page.tsx`) — Conectar nodos del grafo con generación real de contenido via AI
 - [ ] **Completar integración del Video Creator** — El modal `createVideoModal.tsx` está implementado pero falta conectar el servicio de generación de video
-- [ ] **Autenticación real con Firebase Auth** — El `AuthProvider` está configurado pero el flujo de login/registro necesita validación end-to-end
+- [ ] **Autenticación real** — El `AuthProvider` está configurado pero el flujo de login/registro necesita validación end-to-end
 
 ### Prioridad Media
 
@@ -456,12 +446,10 @@ import { Button } from "@/shared/components/ui/button";
 Las variables de entorno se definen en `.env`:
 
 ```env
-VITE_FIREBASE_API_KEY=...
-VITE_FIREBASE_AUTH_DOMAIN=...
-VITE_FIREBASE_PROJECT_ID=...
-VITE_FIREBASE_STORAGE_BUCKET=...
-VITE_FIREBASE_MESSAGING_SENDER_ID=...
-VITE_FIREBASE_APP_ID=...
+VITE_IG_ACCESS_TOKEN=...
+VITE_IG_USER_ID=...
+VITE_FB_PAGE_ACCESS_TOKEN=...
+VITE_FB_PAGE_ID=...
 ```
 
 ---

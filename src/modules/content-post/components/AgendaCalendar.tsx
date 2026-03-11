@@ -6,7 +6,6 @@ import { MONTHS, WEEKDAYS, getDaysInMonth, getDaysInWeek } from '../utils/agenda
 import { cn } from '@/shared/utils/utils';
 import { PostDetailsModal } from './PostDetailsModal';
 
-import { useFirebasePosts } from '../hooks/useFirebasePosts';
 import { Post } from '../types/PostTypes';
 
 const PlatformIcon = ({ className }: { className?: string }) => {
@@ -21,7 +20,9 @@ interface AgendaCalendarProps {
 }
 
 export const AgendaCalendar = ({ view: externalView, initialDate, initialPostId }: AgendaCalendarProps) => {
-    const { posts, loading, error } = useFirebasePosts();
+    const posts: Post[] = [];
+    const loading = false;
+    const error = null;
     const [currentDate, setCurrentDate] = useState(initialDate || new Date());
     const [calendarView, _setCalendarView] = useState<'month' | 'week'>('month');
     const [selectedPost, setSelectedPost] = useState<any>(null);

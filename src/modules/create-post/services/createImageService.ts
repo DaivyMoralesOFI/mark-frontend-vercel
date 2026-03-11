@@ -1,27 +1,16 @@
-import { DJANGO_CLIENT, API_CONFIG } from "@/core/api/apiConfig";
+import { DJANGO_CLIENT, API_CLIENT, API_CONFIG } from "@/core/api/apiConfig";
 import { validateSchemaSoft } from "@/core/lib/schemaValidator";
 import {
   CreateImage,
   CreateImageResponse,
   createImageResponseSchema,
-  CreationStore,
-  creationStoreSchema,
   EditImage,
   EditImageResponse,
   editImageResponseSchema,
-  GenerationStore,
-  generationStoreSchema,
   GetCreatedImage,
   getCreatedImageSchema,
 } from "../schemas/CreateImage";
 import { isApiError } from "@/core/lib/apiErrorHandler";
-
-
-import {
-  createLiveSubscription,
-  UnsubscribeFn,
-  FirebaseSubscriptionError,
-} from "./firebaseServices";
 
 export const setCreateImage = async (
   image_schema: CreateImage,
@@ -142,56 +131,6 @@ export const getImageCreated = async (
   }
 };
 
-export function getCreationsStatusWithRetry(
-  uuid: string,
-  callback: (
-    data: CreationStore[] | null,
-    error?: FirebaseSubscriptionError,
-  ) => void,
-  maxRetries = 5,
-  initialDelay = 1000,
-): UnsubscribeFn {
-  let retryCount = 0;
-  let retryTimeout: NodeJS.Timeout | null = null;
-  let currentUnsubscribe: UnsubscribeFn | null = null;
-
-  const attemptSubscription = () => {
-    console.log(
-      `🔄 Subscribing to creation (attempt ${retryCount + 1}/${maxRetries + 1}): ${uuid}`,
-    );
-
-    currentUnsubscribe = createLiveSubscription(
-      `creations/${uuid}/generations`,
-      creationStoreSchema,
-      [],
-      (data, error) => {
-        // Retry if document not found and retries available
-        if (error?.type === "NOT_FOUND" && retryCount < maxRetries) {
-          retryCount++;
-          const delay = initialDelay * Math.pow(2, retryCount - 1);
-          console.log(`⏳ Document not found, retrying in ${delay}ms...`);
-
-          retryTimeout = setTimeout(() => {
-            if (currentUnsubscribe) currentUnsubscribe();
-            attemptSubscription();
-          }, delay);
-        } else {
-          // Success or final failure
-          callback(data, error);
-        }
-      },
-    );
-  };
-
-  attemptSubscription();
-
-  // Cleanup function
-  return () => {
-    if (retryTimeout) clearTimeout(retryTimeout);
-    if (currentUnsubscribe) currentUnsubscribe();
-  };
-}
-
 export const setRegenerateCopy = async (
   params: RegenerateCopy,
 ): Promise<RegenerateCopyResponse> => {
@@ -223,39 +162,3 @@ export const setRegenerateCopy = async (
     throw new Error(`Failed to regenerate copy: ${errorMessage}`);
   }
 };
-
-export function getCreationsStatus(
-  uuid: string,
-  callback: (
-    data: CreationStore[] | null,
-    error?: FirebaseSubscriptionError,
-  ) => void,
-): UnsubscribeFn {
-  console.log("Subscribing to creation document:", uuid);
-
-  // Use retry version instead of direct subscription
-  return getCreationsStatusWithRetry(uuid, callback);
-}
-
-/**
- * Subscribe to the generations subcollection: creations/{uuid}/generations
- * This is where n8n writes the img_url after image generation
- */
-export function getGenerationsStatus(
-  creationUuid: string,
-  callback: (
-    data: GenerationStore[] | null,
-    error?: FirebaseSubscriptionError,
-  ) => void,
-): UnsubscribeFn {
-  console.log("Subscribing to generations subcollection:", creationUuid);
-
-  return createLiveSubscription(
-    `creations/${creationUuid}/generations`,
-    generationStoreSchema,
-    [],
-    (data, error) => {
-      callback(data, error);
-    },
-  );
-}

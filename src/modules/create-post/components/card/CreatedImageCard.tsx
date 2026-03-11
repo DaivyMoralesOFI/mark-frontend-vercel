@@ -3,7 +3,6 @@ import { transformGoogleDriveUrl } from "@/core/lib/imageUtils";
 import { ImageIcon, ArrowUp, Loader, Trash2, Download, Copy, Check, ChevronDown, Sparkles, FileText, CheckCircle2, Circle } from "lucide-react";
 import { useEditImage, useRegenerateCopy } from "../../hooks/useCreateImage";
 import { useFlowStore } from "../../store/flowStoreSlice";
-import { useUser } from "@/shared/hooks/useUser";
 import { InstagramIcon } from "@/shared/components/icons/InstagramIcon";
 import { FacebookIcon } from "@/shared/components/icons/FacebookIcon";
 import { LinkedInIcon } from "@/shared/components/icons/LinkedInIcon";
@@ -48,8 +47,7 @@ export function CreatedImageCard({ image, creation_uuid, parent_uuid, isProcessi
   const [activePlatform, setActivePlatform] = useState<Platform | null>(null);
   const [showCopy, setShowCopy] = useState(true);
   const [localCopy, setLocalCopy] = useState(copy || postCopy);
-  const { user: profileUser } = useUser("KGLTadXoTWGvqb2Tn475");
-  const displayName = profileUser?.user_name || "U";
+  const displayName = "U";
   const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=random`;
 
   const isSubmitting = isEditingImage || isRegeneratingCopy;

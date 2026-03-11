@@ -4,23 +4,6 @@
 // It includes the shape of a Post and the response structure for fetching posts.
 
 /**
- * FirebasePost
- * Represents a post as stored in Firebase Firestore.
- */
-export interface FirebasePost {
-  brand_uuid: string;
-  copy: string;
-  created_at: any; // Firebase Timestamp
-  executed_at: any; // Firebase Timestamp
-  media_url: string;
-  platforms: string[];
-  post_type: string;
-  scheduled_date: any; // Firebase Timestamp
-  status: string;
-  updated_at: any; // Firebase Timestamp
-}
-
-/**
  * Post
  * Represents a single content post for the UI.
  */

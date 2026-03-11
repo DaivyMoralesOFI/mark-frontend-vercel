@@ -50,7 +50,6 @@ import {
 } from "@/shared/components/ui/Avatar";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
-import { useUser } from "@/shared/hooks/useUser";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
 import { LinkedInIcon } from "@/shared/components/icons/LinkedInIcon";
 import { InstagramIcon } from "@/shared/components/icons/InstagramIcon";
@@ -121,7 +120,7 @@ export function Sidebar() {
   const { state, setOpen } = useSidebar();
   const isExpanded = state === "expanded";
   const { theme, setTheme } = useTheme();
-  const { user: profileUser } = useUser("KGLTadXoTWGvqb2Tn475");
+  const profileUser: { user_name?: string; email?: string } | null = null;
 
   const themeOptions = [
     { value: "light" as const, icon: Sun, label: "Light" },
