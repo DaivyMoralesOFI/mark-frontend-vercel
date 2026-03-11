@@ -1,15 +1,22 @@
 import { DJANGO_CLIENT, API_CONFIG } from "@/core/api/apiConfig";
 import { validateSchemaSoft } from "@/core/lib/schemaValidator";
 import {
+  CreateImage,
   CreateImageResponse,
   createImageResponseSchema,
   CreationStore,
   creationStoreSchema,
+  EditImage,
+  EditImageResponse,
+  editImageResponseSchema,
+  GenerationStore,
+  generationStoreSchema,
   GetCreatedImage,
   getCreatedImageSchema,
 } from "../schemas/CreateImage";
 import { isApiError } from "@/core/lib/apiErrorHandler";
-import { CreateImage, EditImage, RegenerateCopy, RegenerateCopyResponse, regenerateCopyResponseSchema } from "../schemas/CreateImage";
+
+
 import {
   createLiveSubscription,
   UnsubscribeFn,
@@ -56,33 +63,39 @@ export const setCreateImage = async (
 };
 
 export const setEditImage = async (
-  edit_param: EditImage,
-): Promise<CreateImageResponse> => {
+  editPayload: EditImage,
+): Promise<EditImageResponse> => {
   try {
     const endpoint = API_CONFIG.ENDPOINTS.CREATION_STUDIO.editImage;
-    const response = await DJANGO_CLIENT.post(endpoint, edit_param);
+    const response = await DJANGO_CLIENT.post(endpoint, editPayload);
     const validationResult = validateSchemaSoft(
-      createImageResponseSchema,
+      editImageResponseSchema,
       response.data,
       {
         operation: "editImage",
         endpoint: endpoint,
       },
-    ) as CreateImageResponse;
+    ) as EditImageResponse;
     return validationResult;
   } catch (error) {
     if (isApiError(error)) {
       console.error("❌ API Error editing image:", {
-        edit_param,
+        editPayload,
         type: error.type,
         message: error.userMessage,
         statusCode: error.statusCode,
+        details: error.details,
       });
       throw new Error(error.userMessage);
     }
 
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error occurred";
+    console.error("❌ Failed to edit image:", {
+      operation: "editImage",
+      editPayload,
+      error: errorMessage,
+    });
 
     throw new Error(`Failed to edit image: ${errorMessage}`);
   }
@@ -222,4 +235,27 @@ export function getCreationsStatus(
 
   // Use retry version instead of direct subscription
   return getCreationsStatusWithRetry(uuid, callback);
+}
+
+/**
+ * Subscribe to the generations subcollection: creations/{uuid}/generations
+ * This is where n8n writes the img_url after image generation
+ */
+export function getGenerationsStatus(
+  creationUuid: string,
+  callback: (
+    data: GenerationStore[] | null,
+    error?: FirebaseSubscriptionError,
+  ) => void,
+): UnsubscribeFn {
+  console.log("Subscribing to generations subcollection:", creationUuid);
+
+  return createLiveSubscription(
+    `creations/${creationUuid}/generations`,
+    generationStoreSchema,
+    [],
+    (data, error) => {
+      callback(data, error);
+    },
+  );
 }

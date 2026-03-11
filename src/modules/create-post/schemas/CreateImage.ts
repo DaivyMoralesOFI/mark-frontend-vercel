@@ -44,14 +44,25 @@ export const createImageResponseSchema = z.object({
 
 export type CreateImageResponse = z.infer<typeof createImageResponseSchema>;
 
+// Edit image schemas — matches POST /edit-image
 export const editImageSchema = z.object({
   uuid: z.string(),
+  parent_uuid: z.string(),
   creation_uuid: z.string(),
   img_url: z.string(),
-  prompt: z.string(),
+  prompt: z.string().min(1, "Edit prompt is required"),
 });
 
 export type EditImage = z.infer<typeof editImageSchema>;
+
+export const editImageResponseSchema = z.object({
+  status: z.string(),
+  message: z.string(),
+  img_url: z.string().optional(),
+});
+
+export type EditImageResponse = z.infer<typeof editImageResponseSchema>;
+
 
 export const creationStoreSchema = z.object({
   uuid: z.string(),
@@ -75,6 +86,19 @@ export const creationStoreSchema = z.object({
 });
 
 export type CreationStore = z.infer<typeof creationStoreSchema>;
+
+// Schema for generation documents in subcollection: creations/{uuid}/generations/{gen_uuid}
+export const generationStoreSchema = z.object({
+  uuid: z.string().nullable().optional(),
+  img_url: z.string().nullable().optional(),
+  status: z.string().nullable().optional(),
+  creation_uuid: z.string().nullable().optional(),
+  prompt: z.string().nullable().optional(),
+  create_at: z.any().optional(),
+  parent_uuid: z.string().nullable().optional(),
+});
+
+export type GenerationStore = z.infer<typeof generationStoreSchema>;
 
 export const getCreatedImageSchema = z.object({
   file: z.instanceof(File),
