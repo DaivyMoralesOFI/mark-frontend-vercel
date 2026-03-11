@@ -5,11 +5,10 @@
       "Bash(npx vite:*)",
       "WebSearch",
       "Bash(file:*)",
-      "WebFetch(domain:www.remotion.dev)",
       "Bash(pnpm add:*)",
       "Bash(pkill:*)",
-      "Bash(npx remotion:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(git add:*)"
     ]
   }
 }
