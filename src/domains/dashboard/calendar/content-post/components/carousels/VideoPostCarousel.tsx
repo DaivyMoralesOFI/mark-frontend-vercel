@@ -28,9 +28,9 @@ export const VideoPostCarrousel = ({videos}:VideoPostCarrouselProps) => {
             dragFree: false,
           }}
         >
-          <CarouselContent className="p-0">
+          <CarouselContent className="flex-row flex-nowrap">
             {videos.map((video, idx) => (
-              <CarouselItem key={idx}className="pl-4 basis-full md:basis-1/2 lg:basis-1/3 ">
+              <CarouselItem key={idx} className="!basis-1/2 lg:!basis-1/3">
                 <VideoPostCard video={video} />
               </CarouselItem>
             ))}

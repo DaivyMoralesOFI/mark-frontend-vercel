@@ -43,9 +43,10 @@ export const postTone: PostTone[] = [
 
 export const postType: PostType[] = [
   { value: "post", label: "Post", icon: ImageIcon },
-  { value: "carrousel", label: "Carrousel", icon: LayoutGrid },
+  { value: "carousel", label: "Carousel", icon: LayoutGrid },
   { value: "story", label: "Story", icon: CircleFadingPlus },
   { value: "reel", label: "Reel", icon: Film },
+  { value: "video", label: "Video", icon: Tv },
 ];
 
 export const platforms: Platform[] = [

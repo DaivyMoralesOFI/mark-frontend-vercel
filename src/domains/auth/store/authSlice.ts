@@ -94,8 +94,8 @@ export const loginUser = createAsyncThunk<
     try {
       const response = await authService.login(credentials);
       // Store tokens in localStorage
-      localStorage.setItem('token', response.tokens.token);
-      localStorage.setItem('refreshToken', response.tokens.refreshToken);
+      localStorage.setItem('token', response.data.access_token);
+      localStorage.setItem('refreshToken', response.data.refresh_token);
       return response;
     } catch (error) {
       if (error instanceof ApiError && error.code === 'VALIDATION_ERROR') {
@@ -119,9 +119,13 @@ export const registerUser = createAsyncThunk<
   async (userData, { rejectWithValue }) => {
     try {
       const response = await authService.register(userData);
-      // Store tokens in localStorage
-      localStorage.setItem('token', response.tokens.token);
-      localStorage.setItem('refreshToken', response.tokens.refreshToken);
+      // Store tokens in localStorage - Note: register might still use old structure if not updated
+      // but for consistency with login:
+      const tokens = (response as any).data ? (response as any).data : (response as any).tokens;
+      const user = (response as any).data ? (response as any).data.user : (response as any).user;
+      
+      localStorage.setItem('token', tokens.access_token || tokens.token);
+      localStorage.setItem('refreshToken', tokens.refresh_token || tokens.refreshToken);
       return response;
     } catch (error) {
       if (error instanceof ApiError && error.code === 'VALIDATION_ERROR') {
@@ -166,16 +170,18 @@ const authSlice = createSlice({
     builder
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload.user;
-        state.token = action.payload.tokens.token;
-        state.refreshToken = action.payload.tokens.refreshToken;
+        state.user = action.payload.data.user;
+        state.token = action.payload.data.access_token;
+        state.refreshToken = action.payload.data.refresh_token;
         state.isAuthenticated = true;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload.user;
-        state.token = action.payload.tokens.token;
-        state.refreshToken = action.payload.tokens.refreshToken;
+        // Handle both old and new response structures for register
+        const data = (action.payload as any).data ? (action.payload as any).data : action.payload;
+        state.user = data.user;
+        state.token = data.access_token || (action.payload as any).tokens?.token;
+        state.refreshToken = data.refresh_token || (action.payload as any).tokens?.refreshToken;
         state.isAuthenticated = true;
       });
 

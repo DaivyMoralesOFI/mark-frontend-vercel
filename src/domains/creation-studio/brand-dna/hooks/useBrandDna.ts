@@ -13,17 +13,19 @@ import { CompanyBrand } from "@/domains/creation-studio/brand-dna/types/BrandDna
  * Uses the core useBrands hook for brand selection and data.
  */
 export const useBrandDna = () => {
-  const { brandDna, selectBrand, loading, dnaLoading, brands } = useBrands();
+  const { brandDna, selectBrand, loading, dnaLoading, brands, selectedBrandId } =
+    useBrands();
 
   return {
     // Map brandDna (detailed) to selectedCompany for compatibility
     // If brandDna is null, it's undefined/null
     selectedCompany: brandDna,
     selectCompany: (brand: CompanyBrand) => {
-      selectBrand(brand.url);
+      selectBrand(brand.uuid);
     },
     data: brandDna,
     loading: loading || dnaLoading,
     brands,
+    selectedBrandId,
   };
 };

@@ -11,6 +11,7 @@ import ReactFlow, {
   getBezierPath,
   ReactFlowProvider,
   useReactFlow,
+  Panel,
 } from "reactflow";
 import "reactflow/dist/style.css";
 
@@ -30,7 +31,8 @@ import BrandColorSystemNode from "@/modules/creation-studio/components/flow/Bran
 import BrandVoiceNode from "@/modules/creation-studio/components/flow/BrandVoiceNode";
 
 import { cn } from "@/shared/utils/utils";
-import { Globe, ArrowUp, Loader, Dna, ChevronRight, Loader2 } from "lucide-react";
+import { Globe, ArrowUp, Loader, Dna, ChevronRight, Loader2, ZoomIn, ZoomOut, Maximize } from "lucide-react";
+import { CreationsHistorySidebar } from "@/modules/creation-studio/components/sidebar/CreationsHistorySidebar";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -115,8 +117,9 @@ const FlowCanvas = ({
   const setEdges = useFlowStore((s) => s.setEdges);
   const brandData = useFlowStore((s) => s.brandData);
   const isLoading = useFlowStore((s) => s.isLoading);
+  const resetFlow = useFlowStore((s) => s.resetFlow);
 
-  const { fitView } = useReactFlow();
+  const { fitView, zoomIn, zoomOut } = useReactFlow();
 
   const lastWidthRef = useRef<number>(0);
 
@@ -277,7 +280,34 @@ const FlowCanvas = ({
       maxZoom={1.5}
     >
       {!isDark && <Background color="var(--outline-variant)" gap={20} size={1} />}
-      <Controls />
+      <Panel position="bottom-center" className="mb-24">
+        <div className="flex items-center bg-surface-container-high/80 dark:bg-[#1C1C1C] backdrop-blur-xl border border-outline-variant/30 dark:border-outline/20 rounded-full p-1.5 shadow-lg gap-1">
+          <button
+            type="button"
+            onClick={() => zoomIn()}
+            className="p-2 rounded-full hover:bg-on-surface/5 text-on-surface-variant transition-colors"
+            title="Zoom In"
+          >
+            <ZoomIn className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => zoomOut()}
+            className="p-2 rounded-full hover:bg-on-surface/5 text-on-surface-variant transition-colors"
+            title="Zoom Out"
+          >
+            <ZoomOut className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => fitView({ padding: 0.3, duration: 300 })}
+            className="p-2 rounded-full hover:bg-on-surface/5 text-on-surface-variant transition-colors"
+            title="Fit View"
+          >
+            <Maximize className="w-4 h-4" />
+          </button>
+        </div>
+      </Panel>
     </ReactFlow>
   );
 };
@@ -554,7 +584,26 @@ const BrandDnaUrlInput = () => {
 const CreateNewContentPage = () => {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [creationMode, setCreationMode] = useState<CreationMode>("canvas");
+  const [modeInitialized, setModeInitialized] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const { data: allBrands, isLoading: brandsLoading } = useBrands();
+  const brandData = useFlowStore((s) => s.brandData);
+
+  // Set initial mode based on whether the user has saved brands
+  useEffect(() => {
+    if (brandsLoading || modeInitialized) return;
+    const brands = allBrands ?? [];
+    setCreationMode(brands.length === 0 ? "brand-dna" : "canvas");
+    setModeInitialized(true);
+  }, [brandsLoading, allBrands, modeInitialized]);
+
+  // When brand DNA is created/selected, switch to canvas to start creating content
+  useEffect(() => {
+    if (brandData) {
+      setCreationMode("canvas");
+    }
+  }, [brandData]);
 
   useEffect(() => {
     setIsAlertOpen(true);
@@ -571,7 +620,12 @@ const CreateNewContentPage = () => {
   ];
 
   return (
-    <div className="w-full h-full relative" ref={containerRef}>
+    <div className="w-full h-full flex">
+      {/* Left creations history panel */}
+      <CreationsHistorySidebar />
+
+      {/* Main canvas area */}
+      <div className="flex-1 h-full relative" ref={containerRef}>
       <StartingAlert open={isAlertOpen} onOpenChange={setIsAlertOpen} />
 
       {/* Top Center Mode Toggle — Canvas / Brand DNA */}
@@ -624,6 +678,7 @@ const CreateNewContentPage = () => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

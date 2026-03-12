@@ -13,11 +13,12 @@ import axios from "axios";
 export interface User {
   id: string;
   email: string;
-  firstName: string;
-  lastName: string;
+  full_name: string;
   role: string;
-  createdAt: string;
-  updatedAt: string;
+  subscription_type: string;
+  subscription_status: string;
+  can_access_mark: boolean;
+  can_access_hr: boolean;
 }
 
 /**
@@ -46,9 +47,9 @@ export interface RegisterData {
  * Authentication tokens returned by the backend.
  */
 export interface AuthTokens {
-  token: string;
-  refreshToken: string;
-  expiresIn: number;
+  access_token: string;
+  refresh_token: string;
+  expires_in: number;
 }
 
 /**
@@ -56,10 +57,14 @@ export interface AuthTokens {
  * Response from the backend after login or registration.
  */
 export interface AuthResponse {
-  user: User;
-  tokens: AuthTokens;
+  success: boolean;
+  data: {
+    access_token: string;
+    refresh_token: string;
+    expires_in: number;
+    user: User;
+  };
 }
-
 /**
  * AuthService
  *
@@ -67,7 +72,7 @@ export interface AuthResponse {
  */
 class AuthService {
   private readonly endpoints = {
-    login: '/auth/login',
+    login: '/sia-api/api/auth/login/',
     register: '/auth/register',
   };
 
@@ -77,12 +82,16 @@ class AuthService {
    * @returns AuthResponse with user and tokens
    */
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const response = await apiService.post<AuthResponse>(this.endpoints.login, credentials);
+    // We use axios directly instead of apiService to ensure the relative URL
+    // hit the current origin (Vite dev server) so the proxy can catch it.
+    // Otherwise, apiService would use the local backend base URL.
+    const response = await axios.post<AuthResponse>(this.endpoints.login, credentials);
     return response.data;
   }
 
   /**
    * Registers a new user.
+...
    * @param userData Registration data
    * @returns AuthResponse with user and tokens
    */
@@ -98,35 +107,6 @@ class AuthService {
   isAuthenticated(): boolean {
     return !!localStorage.getItem('token');
   }
-}
-
-// Alternative API URL for direct login
-const API_URL = "https://auth.sofiatechnology.ai/auth";
-
-/**
- * login
- *
- * Logs in using the alternative API endpoint with username and password.
- * @param username The user's username
- * @param password The user's password
- * @returns The response data from the backend
- */
-export async function login(username: string, password: string) {
-  const params = new URLSearchParams();
-  params.append("username", username);
-  params.append("password", password);
-
-  const response = await axios.post(
-    `${API_URL}/login`,
-    params,
-    {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Accept": "*/*",
-      }
-    }
-  );
-  return response.data;
 }
 
 // Export a singleton instance of AuthService

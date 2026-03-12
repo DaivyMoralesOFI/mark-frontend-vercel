@@ -19,9 +19,9 @@ interface ApiErrorResponse {
  * API environment configuration constants.
  */
 export const API_CONFIG = {
-  BASE_URL: 'http://localhost:8000',
+  BASE_URL: 'http://127.0.0.1:8000',
   TIMEOUT: 30000, // 30 seconds
-  VERSION: 'v1'
+  VERSION: 'api'
 };
 
 /**

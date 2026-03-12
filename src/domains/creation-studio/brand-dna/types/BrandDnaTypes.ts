@@ -87,6 +87,7 @@ export interface BrandDnaApiResponse {
  * Complete Brand DNA response (mapped and normalized)
  */
 export interface BrandDnaResponse {
+  uuid?: string;
   brand_identity: BrandIdentity;
   color_palette: ColorPalette;
   typography: Typography;
@@ -107,17 +108,60 @@ export interface BrandDnaState {
  * Company/Brand from the backend API
  */
 export interface CompanyBrand {
+  uuid: string;
   name: string;
   url: string;
   logo?: string;
+  slug?: string;
+  industry?: string;
+  dna_uuid?: string | null;
+  created_at?: string;
 }
 
 /**
- * Companies API response structure (direct object)
+ * Raw brand list item from the backend API
  */
-export interface CompaniesApiResponse {
-  total_brands: number;
-  brands: CompanyBrand[];
+export interface BrandListApiItem {
+  uuid: string;
+  name: string;
+  slug: string;
+  industry: string;
+  is_active: boolean;
+  dna_uuid?: string | null;
+  logo_url?: string;
+  created_at?: string;
+}
+
+export interface BrandDNAApiResponse {
+  uuid: string;
+  primary_color: string;
+  secondary_color: string;
+  accent_color: string;
+  complementary_color: string;
+  font_body_family: string;
+  font_headings_family: string;
+  voice_tone: string;
+  keywords: string;
+  description: string;
+  archetype: string;
+  target_audience: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface BrandDetailApiResponse {
+  uuid: string;
+  name: string;
+  slug: string;
+  page_url: string;
+  logo_url: string;
+  is_active: boolean;
+  industry: string;
+  user_id?: string | null;
+  tenant_id?: string | null;
+  dna?: BrandDNAApiResponse | null;
+  created_at?: string;
+  updated_at?: string;
 }
 
 /**
@@ -138,4 +182,3 @@ export interface Company {
   url: string;
   lastUpdated?: string;
 }
-

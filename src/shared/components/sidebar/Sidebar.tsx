@@ -120,7 +120,7 @@ export function Sidebar() {
   const { state, setOpen } = useSidebar();
   const isExpanded = state === "expanded";
   const { theme, setTheme } = useTheme();
-  const profileUser: { user_name?: string; email?: string } | null = null;
+  const profileUser = null as { user_name?: string; email?: string } | null;
 
   const themeOptions = [
     { value: "light" as const, icon: Sun, label: "Light" },

@@ -41,7 +41,7 @@ export const useCompanies = () => {
             : '';
           
           return {
-            id: String(index + 1),
+            id: brand.uuid || String(index + 1),
             name: brand.name && typeof brand.name === 'string' ? brand.name : '',
             logo: logoUrl,
             url: brand.url && typeof brand.url === 'string' ? brand.url : '',
@@ -71,4 +71,3 @@ export const useCompanies = () => {
     error,
   };
 };
-

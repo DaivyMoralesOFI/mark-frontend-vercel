@@ -8,7 +8,7 @@ import { Eye, EyeOff } from "lucide-react"
 import { Input } from "@/shared/components/ui/Input"
 import { Button } from "@/shared/components/ui/Button"
 import { useNavigate, useLocation } from "react-router-dom"
-import { login as apiLogin } from "../services/authService"
+import { authService } from "../services/authService"
 import { useAuth } from "../hooks/useAuth"
 
 /**
@@ -32,11 +32,18 @@ export default function AuthPage() {
   // State for loading indicator
   const [loading, setLoading] = useState(false)
 
-  // Auth context
-  const { login } = useAuth()
   // Router navigation and location
   const navigate = useNavigate()
   const location = useLocation()
+
+  // Redirect if already authenticated
+  const { login, isAuthenticated } = useAuth()
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      const from = (location.state as any)?.from?.pathname || "/app/dashboard"
+      navigate(from, { replace: true })
+    }
+  }, [isAuthenticated, navigate, location])
 
   // Destination after login
   const from = (location.state as any)?.from?.pathname || "/dashboard"
@@ -50,8 +57,11 @@ export default function AuthPage() {
     setError("")
 
     try {
-      const response = await apiLogin(formData.email, formData.password)
-      const token = response.access_token || response.token
+      const response = await authService.login({
+        email: formData.email,
+        password: formData.password
+      })
+      const token = response.data?.access_token || (response as any).access_token || (response as any).token
       login(token)
       navigate(from, { replace: true })
     } catch (err: any) {

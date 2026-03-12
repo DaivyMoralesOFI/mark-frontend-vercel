@@ -9,7 +9,11 @@
       "Bash(pkill:*)",
       "Bash(curl:*)",
       "Bash(git add:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(find /Users/daivymorales/Documents/GitHub/mark-frontend/src -type f -name \"App.tsx\" -o -name \"*router*\" -o -name \"*routes*\" 2>/dev/null | grep -v node_modules)",
+      "Bash(find /Users/daivymorales/Documents/GitHub/mark-frontend/src -name \"creation-studio.app*\" -o -name \"*creation-studio*app*\" 2>/dev/null | grep -v node_modules | head -10)",
+      "Bash(pnpm tsc:*)",
+      "Bash(find /Users/daivymorales/Documents/GitHub/mark-frontend/src/modules/creation-studio/components/flow-nodes -name \"*.tsx\" | xargs ls -lah)"
     ]
   }
 }

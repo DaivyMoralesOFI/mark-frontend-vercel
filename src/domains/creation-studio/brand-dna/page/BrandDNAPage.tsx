@@ -13,7 +13,7 @@ import { Actions } from "@/shared/types/Types";
 import { Sparkles } from "lucide-react";
 
 export function BrandDashboard() {
-  const { selectedCompany, selectCompany } = useBrandDna();
+  const { selectedCompany, selectCompany, selectedBrandId } = useBrandDna();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -94,7 +94,7 @@ export function BrandDashboard() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSelectCompany={handleSelectCompany}
-        selectedCompanyUrl={selectedCompany?.brand_identity?.url}
+        selectedCompanyId={selectedBrandId ?? selectedCompany?.uuid}
       />
     </>
   );

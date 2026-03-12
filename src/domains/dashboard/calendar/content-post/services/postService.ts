@@ -4,7 +4,7 @@
 // It is used by the Redux slice and hooks to load post data for the content post module.
 
 import axios from "axios";
-import { Post, PostsResponse } from "../types/PostTypes";
+import { PostsResponse } from "../types/PostTypes";
 import { VideoPostsResponse } from "../schemas/VideoPosts.schemas";
 
 const API_BASE_URL = "https://n8n.sofiatechnology.ai/webhook";

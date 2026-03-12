@@ -18,14 +18,14 @@ interface CompanySelectorModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectCompany: (company: CompanyBrand) => void;
-  selectedCompanyUrl?: string;
+  selectedCompanyId?: string;
 }
 
 export function CompanySelectorModal({
   isOpen,
   onClose,
   onSelectCompany,
-  selectedCompanyUrl,
+  selectedCompanyId,
 }: CompanySelectorModalProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const { brands, loading, error } = useBrands();
@@ -87,11 +87,11 @@ export function CompanySelectorModal({
           ) : (
             filteredCompanies.map((brand) => (
               <button
-                key={brand.url}
+                key={brand.uuid}
                 onClick={() => handleSelectCompany(brand)}
                 className={cn(
                   "w-full flex items-center gap-4 p-4 rounded-lg border transition-all hover:border-primary hover:bg-accent/50",
-                  selectedCompanyUrl === brand.url
+                  selectedCompanyId === brand.uuid
                     ? "border-primary bg-accent/50"
                     : "border-border bg-card",
                 )}
@@ -106,7 +106,7 @@ export function CompanySelectorModal({
                 <div className="flex-1 text-left">
                   <div className="flex items-center gap-2">
                     <h3 className="font-semibold">{brand.name}</h3>
-                    {selectedCompanyUrl === brand.url && (
+                    {selectedCompanyId === brand.uuid && (
                       <CheckCircle2 className="h-4 w-4 text-primary" />
                     )}
                   </div>

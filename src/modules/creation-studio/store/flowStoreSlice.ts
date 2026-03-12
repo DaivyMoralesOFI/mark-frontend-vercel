@@ -29,6 +29,7 @@ type FlowState = {
   userPrompt: string;
   postCopy: string;
   copyVersions: string[];
+  copyEditPrompts: Record<string, string>;
   lastCreationPayload: CreateImage | null;
   focusedCardId: string | null;
   selectedImageUuid: string | null;
@@ -48,6 +49,7 @@ type FlowState = {
   setUserPrompt: (prompt: string) => void;
   setPostCopy: (copy: string) => void;
   addCopyVersion: (copy: string) => void;
+  setCopyEditPrompt: (parentGenUuid: string, prompt: string) => void;
   setLastCreationPayload: (payload: CreateImage | null) => void;
   setIsLoading: (isLoading: boolean) => void;
   setError: (error: string | null) => void;
@@ -65,6 +67,7 @@ export const useFlowStore = create<FlowState>((set, get) => ({
   userPrompt: "",
   postCopy: "",
   copyVersions: [],
+  copyEditPrompts: {},
   lastCreationPayload: null,
   focusedCardId: null,
   selectedImageUuid: null,
@@ -93,6 +96,8 @@ export const useFlowStore = create<FlowState>((set, get) => ({
   setUserPrompt: (userPrompt) => set({ userPrompt }),
   setPostCopy: (postCopy) => set({ postCopy }),
   addCopyVersion: (copy) => set((state) => ({ copyVersions: [...state.copyVersions, copy] })),
+  setCopyEditPrompt: (parentGenUuid, prompt) =>
+    set((state) => ({ copyEditPrompts: { ...state.copyEditPrompts, [parentGenUuid]: prompt } })),
   setLastCreationPayload: (lastCreationPayload) => set({ lastCreationPayload }),
   setFocusedCardId: (focusedCardId) => set({ focusedCardId }),
   setSelectedImageUuid: (selectedImageUuid) => set({ selectedImageUuid }),

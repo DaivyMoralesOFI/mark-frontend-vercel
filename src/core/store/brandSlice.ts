@@ -17,7 +17,7 @@ interface BrandState {
   loading: boolean;
   dnaLoading: boolean; // Loading state specifically for DNA fetch
   error: string | null;
-  selectedBrandUrl: string | null;
+  selectedBrandId: string | null;
 }
 
 // Initial state for the brands slice
@@ -27,7 +27,7 @@ const initialState: BrandState = {
   loading: false,
   dnaLoading: false,
   error: null,
-  selectedBrandUrl: null,
+  selectedBrandId: null,
 };
 
 /**
@@ -51,9 +51,9 @@ export const fetchAllBrands = createAsyncThunk(
  */
 export const fetchBrandDna = createAsyncThunk(
   "brands/fetchBrandDna",
-  async (url: string, { rejectWithValue }) => {
+  async (brandId: string, { rejectWithValue }) => {
     try {
-      const response = await brandDnaService.getBrandDna(url);
+      const response = await brandDnaService.getBrandDna(brandId);
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to fetch Brand DNA");
@@ -70,9 +70,9 @@ const brandSlice = createSlice({
   name: "brands",
   initialState,
   reducers: {
-    /** Sets the currently selected brand URL */
-    setSelectedBrandUrl: (state, action: PayloadAction<string | null>) => {
-      state.selectedBrandUrl = action.payload;
+    /** Sets the currently selected brand ID */
+    setSelectedBrandId: (state, action: PayloadAction<string | null>) => {
+      state.selectedBrandId = action.payload;
       // Clear DNA when selection changes (optional, but good for UI consistency)
       if (!action.payload) {
         state.brandDna = null;
@@ -85,7 +85,7 @@ const brandSlice = createSlice({
       state.loading = false;
       state.dnaLoading = false;
       state.error = null;
-      state.selectedBrandUrl = null;
+      state.selectedBrandId = null;
     },
   },
   extraReducers: (builder) => {
@@ -103,11 +103,11 @@ const brandSlice = createSlice({
 
         // Auto-select the first brand if none is selected
         if (
-          !state.selectedBrandUrl &&
+          !state.selectedBrandId &&
           action.payload &&
           action.payload.length > 0
         ) {
-          state.selectedBrandUrl = action.payload[0].url;
+          state.selectedBrandId = action.payload[0].uuid;
         }
       })
       .addCase(fetchAllBrands.rejected, (state, action) => {
@@ -143,6 +143,6 @@ const brandSlice = createSlice({
   },
 });
 
-export const { setSelectedBrandUrl, clearBrands } = brandSlice.actions;
+export const { setSelectedBrandId, clearBrands } = brandSlice.actions;
 
 export default brandSlice.reducer;

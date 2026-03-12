@@ -77,7 +77,8 @@ export type PostType =
   | "educational"
   | "entertainment"
   | "announcement"
-  | "user-generated";
+  | "user-generated"
+  | "video";
 
 /**
  * Mock: Linked accounts per platform
@@ -188,6 +189,7 @@ export const POST_TYPES = [
   { value: "entertainment", label: "Entertainment" },
   { value: "announcement", label: "Announcement" },
   { value: "user-generated", label: "User Generated Content" },
+  { value: "video", label: "Video" },
 ];
 
 /**

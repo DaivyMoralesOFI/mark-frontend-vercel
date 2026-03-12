@@ -59,6 +59,13 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     allowedHosts: true,
+    proxy: {
+      '/sia-api': {
+        target: 'https://sia-backend-sbw7.onrender.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/sia-api/, ''),
+      },
+    },
   },
   resolve: {
     alias: [...compatAliases, { find: '@', replacement: srcPath }],

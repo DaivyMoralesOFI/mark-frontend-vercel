@@ -6,7 +6,12 @@
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/core/store/rootReducer";
 import { AppDispatch } from "@/core/store/store";
-import { fetchAllBrands, fetchBrandDna, setSelectedBrandUrl, clearBrands } from "@/core/store/brandSlice";
+import {
+  clearBrands,
+  fetchAllBrands,
+  fetchBrandDna,
+  setSelectedBrandId,
+} from "@/core/store/brandSlice";
 import { useEffect, useMemo } from "react";
 
 /**
@@ -19,7 +24,7 @@ import { useEffect, useMemo } from "react";
  */
 export const useBrands = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { items, brandDna, loading, dnaLoading, error, selectedBrandUrl } = useSelector(
+  const { items, brandDna, loading, dnaLoading, error, selectedBrandId } = useSelector(
     (state: RootState) => state.brands,
   );
 
@@ -31,20 +36,19 @@ export const useBrands = () => {
   };
 
   /**
-   * Sets the active brand by URL
+   * Sets the active brand by ID
    */
-  const selectBrand = (url: string | null) => {
-    console.log("useBrands - selectBrand called with url:", url);
-    dispatch(setSelectedBrandUrl(url));
+  const selectBrand = (brandId: string | null) => {
+    dispatch(setSelectedBrandId(brandId));
   };
 
   /**
    * Memoized selected brand object (from list)
    */
   const selectedBrand = useMemo(() => {
-    if (!items || !selectedBrandUrl) return null;
-    return items.find((brand) => brand.url === selectedBrandUrl) || null;
-  }, [items, selectedBrandUrl]);
+    if (!items || !selectedBrandId) return null;
+    return items.find((brand) => brand.uuid === selectedBrandId) || null;
+  }, [items, selectedBrandId]);
 
   /**
    * Initial fetch if data is empty
@@ -56,16 +60,13 @@ export const useBrands = () => {
   }, [items, loading, error, dispatch]);
 
   /**
-   * Fetch Brand DNA when selectedBrandUrl changes
+   * Fetch Brand DNA when selectedBrandId changes
    */
   useEffect(() => {
-    if (selectedBrandUrl && !brandDna && !dnaLoading) {
-      // Only fetch if we don't have it (or force refresh logic could be added)
-      // Actually, we should probably fetch whenever selection changes to be safe,
-      // but brandSlice clears brandDna on selection change, so !brandDna check is valid.
-      dispatch(fetchBrandDna(selectedBrandUrl));
+    if (selectedBrandId && !brandDna && !dnaLoading) {
+      dispatch(fetchBrandDna(selectedBrandId));
     }
-  }, [selectedBrandUrl, brandDna, dnaLoading, dispatch]);
+  }, [selectedBrandId, brandDna, dnaLoading, dispatch]);
 
   return {
     brands: items,
@@ -73,7 +74,7 @@ export const useBrands = () => {
     loading,
     dnaLoading,
     error,
-    selectedBrandUrl,
+    selectedBrandId,
     selectedBrand, // List item
     refreshBrands,
     selectBrand,

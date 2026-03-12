@@ -70,11 +70,11 @@ const AccountSelector = () => {
           {brands?.map((brand) => {
             return (
               <DropdownMenuItem
-                key={brand.url}
-                onClick={() => selectBrand(brand.url)}
+                key={brand.uuid}
+                onClick={() => selectBrand(brand.uuid)}
                 className={cn(
                   "cursor-pointer",
-                  selectedBrand?.url === brand.url &&
+                  selectedBrand?.uuid === brand.uuid &&
                   "bg-primary/20 hover:bg-primary/50",
                 )}
               >

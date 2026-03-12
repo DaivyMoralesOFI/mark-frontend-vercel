@@ -10,6 +10,10 @@ const WorkflowContentPage = lazy(
   () => import("@/modules/creation-studio/pages/WorkflowContentPage"),
 );
 
+const CarouselEditorPage = lazy(
+  () => import("@/modules/creation-studio/pages/CarouselEditorPage"),
+);
+
 const ExtractorDNAPage = lazy(
   () =>
     import("@/domains/creation-studio/brand-dna/brand-dna-extractor/pages/BrandExtractor"),
@@ -24,5 +28,6 @@ export const CreationStudioRoutes = () => (
         <Route path=":uuid" element={<WorkflowContentPage />} />
       </Route>
     </Route>
+    <Route path="carousel-editor" element={<CarouselEditorPage />} />
   </Route>
 );

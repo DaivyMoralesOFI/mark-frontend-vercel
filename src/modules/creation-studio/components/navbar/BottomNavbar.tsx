@@ -1,6 +1,5 @@
 import { Textarea } from "@/shared/components/ui/Textarea";
 import {
-  Loader,
   ArrowUp,
   Paperclip,
   Link,
@@ -19,6 +18,7 @@ import {
   CreateImage,
   createImageSchema,
 } from "@/modules/creation-studio/schemas/CreateImage";
+import { CreationProcessingLoader } from "@/modules/creation-studio/components/loader/CreationProcessingLoader";
 
 import { useCreateImage, useEditImage } from "../../hooks/useCreateImage";
 import { useNavigate, useParams } from "react-router-dom";
@@ -105,6 +105,7 @@ function buildCreateImagePayload(
     platforms: formData.platforms,
     post_type: formData.post_type,
     post_tone: formData.post_tone,
+    brand_uuid: brand?._meta?.uuid ?? "",
     brand_dna: brandDna,
     identity,
   };
@@ -263,17 +264,7 @@ const BottomNavbar = ({ centered = false }: BottomNavbarProps) => {
           : "fixed bottom-0 left-0 w-full px-4 pb-5 flex flex-col items-center z-1000 pointer-events-none"
       )}>
         <div className="w-full max-w-[540px] pointer-events-auto">
-          <div className={cn(
-            "w-full flex items-center justify-center gap-3 px-5 py-4",
-            "bg-surface-container-lowest/95 dark:bg-[#1C1C1C] backdrop-blur-2xl",
-            "border border-outline-variant/60 dark:border-outline/10",
-            "rounded-[1.25rem] shadow-xl shadow-black/5"
-          )}>
-            <Loader className="w-4 h-4 animate-spin text-on-surface-variant/50 flex-shrink-0" />
-            <span className="text-[15px] text-on-surface-variant/60 font-medium">
-              Creating your image...
-            </span>
-          </div>
+          <CreationProcessingLoader />
         </div>
       </div>
     );

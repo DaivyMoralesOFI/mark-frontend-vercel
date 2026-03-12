@@ -66,7 +66,7 @@ export function CompanyDropdown({
         ) : (
           brands?.map((brand) => (
             <DropdownMenuItem
-              key={brand.url}
+              key={brand.uuid}
               onClick={() => onSelectCompany(brand)}
               className="flex items-center gap-3 cursor-pointer"
             >
@@ -82,7 +82,7 @@ export function CompanyDropdown({
                   {brand.name}
                 </div>
               </div>
-              {selectedCompany?.url === brand.url && (
+              {selectedCompany?.uuid === brand.uuid && (
                 <CheckCircle2 className="h-4 w-4 text-primary ml-auto flex-shrink-0" />
               )}
             </DropdownMenuItem>

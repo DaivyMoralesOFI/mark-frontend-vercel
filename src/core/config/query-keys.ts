@@ -13,8 +13,12 @@ export const queryKeys = {
       [...queryKeys.creation_studio.all, "edit-image"] as const,
     creations: (uuid: string) =>
       [...queryKeys.creation_studio.all, "creations", uuid] as const,
+    creations_list: () =>
+      [...queryKeys.creation_studio.all, "creations-list"] as const,
     regenerate_copy: () =>
       [...queryKeys.creation_studio.all, "regenerate-copy"] as const,
+    edit_copy: () =>
+      [...queryKeys.creation_studio.all, "edit-copy"] as const,
   },
   brands: {
     all: ["brands"] as const,
