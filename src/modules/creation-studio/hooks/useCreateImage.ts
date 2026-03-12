@@ -4,6 +4,7 @@ import {
   setCreateImage,
   setEditCopy,
   setEditImage,
+  setEditVideoScene,
   setRegenerateCopy,
   getAllCreations,
 } from "@/modules/creation-studio/services/createImageService";
@@ -11,6 +12,7 @@ import {
   CreateImage,
   EditCopy,
   EditImage,
+  EditVideoScene,
   GenerationStore,
   RegenerateCopy,
 } from "@/modules/creation-studio/schemas/CreateImage";
@@ -47,6 +49,12 @@ export const useEditImage = () => {
   };
 };
 
+export const useEditVideoScene = () => {
+  return useMutation({
+    mutationFn: (params: EditVideoScene) => setEditVideoScene(params),
+  });
+};
+
 export const useEditCopy = () => {
   return useMutation({
     mutationKey: queryKeys.creation_studio.edit_copy(),
@@ -72,9 +80,16 @@ export const useGetCreatedImage = (
     queryFn: () => getImageCreated(uuid),
     staleTime: 0,
     refetchInterval: (query) => {
-      const status = query.state.data?.status;
-      // Keep polling while pending/processing; stop once done or errored
+      const data = query.state.data;
+      const status = data?.status;
+      // Keep polling while the creation itself is pending/processing
       if (!status || status === "pending" || status === "processing") return 3000;
+      // Also keep polling if any individual generation slice is still pending
+      // (e.g. an edit_copy generation running after the main image is done)
+      const hasPendingSlice = data?.slices?.some(
+        (s) => s.status === "pending" || s.status === "processing",
+      );
+      if (hasPendingSlice) return 3000;
       return false;
     },
     ...options,
@@ -97,7 +112,7 @@ const mapGenerationToStore = (
     status: string;
     created_at?: string;
   }): GenerationStore => {
-    const isCopyGen = item.type === "copy" || item.type === "carousel";
+    const isCopyGen = item.type === "copy" || item.type === "edit_copy" || item.type === "carousel";
     const isUrl = (str?: string | null) => str?.startsWith("http");
 
     return {
@@ -161,7 +176,12 @@ export const useGenerationStatus = (uuid: string) => {
 
   return {
     generations,
-    hasImage: generations.some((generation) => !!generation.img_url || generation.gen_type === "carousel"),
+    hasImage: generations.some(
+      (generation) =>
+        !!generation.img_url ||
+        generation.gen_type === "carousel" ||
+        generation.gen_type === "video",
+    ),
     isLoading: query.isLoading,
     error: query.error,
     type: query.data?.type,

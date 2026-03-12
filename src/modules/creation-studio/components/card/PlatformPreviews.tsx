@@ -9,8 +9,6 @@ interface PlatformPreviewProps {
   avatarUrl: string;
 }
 
-const COPY_LIMIT = 120;
-
 export function InstagramPreview({ imageUrl, copy, displayName, avatarUrl }: PlatformPreviewProps) {
   const handle = displayName.toLowerCase().replace(/\s/g, "");
   return (
@@ -41,9 +39,9 @@ export function InstagramPreview({ imageUrl, copy, displayName, avatarUrl }: Pla
         </div>
         <p className="text-[13px] font-semibold text-black dark:text-white mt-2">1,234 likes</p>
         {copy && (
-          <p className="text-[13px] text-black dark:text-white mt-1 leading-[1.4]">
+          <p className="text-[13px] text-black dark:text-white mt-1 leading-[1.4] whitespace-pre-wrap">
             <span className="font-semibold">{handle} </span>
-            {copy.length > COPY_LIMIT ? `${copy.slice(0, COPY_LIMIT)}...` : copy}
+            {copy}
           </p>
         )}
         <p className="text-[11px] text-neutral-400 mt-1.5 uppercase tracking-wide">2 hours ago</p>
@@ -68,8 +66,8 @@ export function FacebookPreview({ imageUrl, copy, displayName, avatarUrl }: Plat
       </div>
       {/* Copy */}
       {copy && (
-        <p className="px-3 pb-2 text-[14px] text-[#050505] dark:text-[#E4E6EB] leading-[1.4]">
-          {copy.length > COPY_LIMIT * 1.5 ? `${copy.slice(0, Math.round(COPY_LIMIT * 1.5))}... See more` : copy}
+        <p className="px-3 pb-2 text-[14px] text-[#050505] dark:text-[#E4E6EB] leading-[1.4] whitespace-pre-wrap">
+          {copy}
         </p>
       )}
       {/* Image */}
@@ -121,8 +119,8 @@ export function LinkedInPreview({ imageUrl, copy, displayName, avatarUrl }: Plat
       </div>
       {/* Copy */}
       {copy && (
-        <p className="px-4 pb-2 text-[14px] text-[#000000E6] dark:text-[#FFFFFFE6] leading-[1.5]">
-          {copy.length > COPY_LIMIT * 2 ? `${copy.slice(0, COPY_LIMIT * 2)}...see more` : copy}
+        <p className="px-4 pb-2 text-[14px] text-[#000000E6] dark:text-[#FFFFFFE6] leading-[1.5] whitespace-pre-wrap">
+          {copy}
         </p>
       )}
       {/* Image */}
@@ -181,10 +179,10 @@ export function TikTokPreview({ imageUrl, copy, displayName }: PlatformPreviewPr
         ))}
       </div>
       {/* Bottom info */}
-      <div className="absolute bottom-0 left-0 right-14 p-3">
+      <div className="absolute bottom-0 left-0 right-14 p-3 max-h-[60%] overflow-y-auto scrollbar-none">
         <p className="text-white font-bold text-[15px]">@{displayName.toLowerCase().replace(/\s/g, "")}</p>
         {copy && (
-          <p className="text-white text-[13px] mt-1 leading-[1.3] line-clamp-2">{copy}</p>
+          <p className="text-white text-[13px] mt-1 leading-[1.3] whitespace-pre-wrap">{copy}</p>
         )}
         <div className="flex items-center gap-1.5 mt-2">
           <Music2 className="w-3.5 h-3.5 text-white" />

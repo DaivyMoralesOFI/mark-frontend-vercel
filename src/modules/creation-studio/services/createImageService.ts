@@ -9,6 +9,7 @@ import {
   EditImage,
   EditImageResponse,
   editImageResponseSchema,
+  EditVideoScene,
   GetCreatedImage,
   getCreatedImageSchema,
   RegenerateCopy,
@@ -89,18 +90,36 @@ export const setCreateImage = async (
 
     const creationUuid = creationResponse.data.uuid;
 
-    // Step 2: Trigger generation tied to this creation
+    // Step 2: Trigger generation tied to this creation.
+    // Video/reel generation can take several minutes on the backend.
+    // We fire the request without waiting for it and navigate immediately —
+    // the polling loop in useGetCreatedImage will pick up the result.
     const generationsUrl = API_CONFIG.ENDPOINTS.CREATION_STUDIO.creationGenerations(creationUuid);
-    const genResponse = await DJANGO_CLIENT.post<Record<string, unknown>>(generationsUrl, buildGenerationPayload(imageSchema));
-    
-    // Improved copy extraction
+    const isLongRunning =
+      imageSchema.post_type === "video" || imageSchema.post_type === "reel";
+
     let copy = "";
-    const rawCopy = genResponse.data?.copy;
-    if (typeof rawCopy === "string") {
-      copy = rawCopy;
-    } else if (rawCopy && typeof rawCopy === "object") {
-      // If it's an object, it might have a 'content' field
-      copy = (rawCopy as any).content || (rawCopy as any).text || JSON.stringify(rawCopy);
+    if (isLongRunning) {
+      // Fire-and-forget: don't block navigation on a potentially multi-minute job
+      DJANGO_CLIENT.post(generationsUrl, buildGenerationPayload(imageSchema)).catch(
+        () => {
+          // Timeout / network error is expected here — the backend job keeps running
+        },
+      );
+    } else {
+      const genResponse = await DJANGO_CLIENT.post<Record<string, unknown>>(
+        generationsUrl,
+        buildGenerationPayload(imageSchema),
+      );
+      const rawCopy = genResponse.data?.copy;
+      if (typeof rawCopy === "string") {
+        copy = rawCopy;
+      } else if (rawCopy && typeof rawCopy === "object") {
+        copy =
+          (rawCopy as any).content ||
+          (rawCopy as any).text ||
+          JSON.stringify(rawCopy);
+      }
     }
 
     return validateSchemaSoft(
@@ -192,7 +211,7 @@ export const getImageCreated = async (
     
     // Find associated copy text
     const copyGen = allGens.find(g => g.type === "copy");
-    let masterCopy = String(copyGen?.content || copyGen?.copy || firstGen?.copy || "");
+    let masterCopy = String(copyGen?.content || copyGen?.copy || firstGen?.copy || creation.copy || "");
     
     // If it's a JSON string (common for carousels), parse the caption
     if (masterCopy.trim().startsWith("{")) {
@@ -364,6 +383,24 @@ export const getImageCreated = async (
     });
 
     throw new Error(`Failed to fetch creation ${uuid}: ${errorMessage}`);
+  }
+};
+
+export const setEditVideoScene = async (
+  params: EditVideoScene,
+): Promise<{ generation: { uuid: string; type: string; status: string } }> => {
+  const endpoint = API_CONFIG.ENDPOINTS.CREATION_STUDIO.creationGenerations(params.creation_uuid);
+  try {
+    const response = await DJANGO_CLIENT.post(endpoint, {
+      parent: params.parent,
+      type: "edit_video_scene",
+      prompt: params.prompt,
+      scene_duration: params.scene_duration ?? 6,
+    });
+    return response.data;
+  } catch (error) {
+    if (isApiError(error)) throw new Error(error.userMessage);
+    throw new Error(error instanceof Error ? error.message : "Failed to edit video scene");
   }
 };
 

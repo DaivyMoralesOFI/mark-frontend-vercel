@@ -17,6 +17,8 @@ export function CreatedImageCard({
   onEditSubmit,
   isEditPending,
   prompt: promptProp,
+  genType,
+  hidePromptBubble,
 }: {
   image: File | string;
   creation_uuid?: string;
@@ -25,9 +27,11 @@ export function CreatedImageCard({
   copy?: string;
   variant?: "image" | "combined";
   isSelected?: boolean;
+  genType?: string;
   onSelect?: () => void;
   onEditSubmit?: (prompt: string) => void;
   isEditPending?: boolean;
+  hidePromptBubble?: boolean;
 }) {
   const { userPrompt, postCopy, focusedCardId, setFocusedCardId, addCopyVersion } = useFlowStore();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -71,11 +75,17 @@ export function CreatedImageCard({
         setFocusedCardId(null);
       }
     }
+    function handleOpenAll() {
+      setShowEditInput(true);
+      setFocusedCardId(null); // don't blur siblings — all are open
+    }
     document.addEventListener("mousedown", handleClickOutside);
     window.addEventListener("closeOtherImageTools", handleCloseOthers);
+    window.addEventListener("openAllEditInputs", handleOpenAll);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       window.removeEventListener("closeOtherImageTools", handleCloseOthers);
+      window.removeEventListener("openAllEditInputs", handleOpenAll);
     };
   }, [componentId]);
 
@@ -104,6 +114,8 @@ export function CreatedImageCard({
     if (opening) {
       window.dispatchEvent(new CustomEvent("closeOtherImageTools", { detail: { id: componentId } }));
       setFocusedCardId(componentId);
+      // Auto-select for preview when opening edit tools
+      if (onSelect) onSelect();
     } else {
       setFocusedCardId(null);
     }
@@ -191,7 +203,7 @@ export function CreatedImageCard({
               />
             ) : (
               <div className="w-full aspect-square bg-neutral-100 dark:bg-neutral-900 flex flex-col items-center justify-center gap-4">
-                {(image as any)?.genType === "carousel" ? (
+                {genType === "carousel" ? (
                   <>
                     <div className="w-16 h-16 rounded-2xl bg-[#D946EF]/10 flex items-center justify-center">
                       <LayoutGrid className="w-8 h-8 text-[#D946EF]" />
@@ -240,7 +252,7 @@ export function CreatedImageCard({
           )}
 
           {/* Copy section — combined variant only */}
-          {variant === "combined" && displayCopy && (
+          {variant === "combined" && (isLoading || displayCopy) && (
             <div
               className={`overflow-hidden transition-all duration-400 ease-in-out ${copyJustUpdated ? "ring-2 ring-inset ring-[#D946EF]/25" : ""}`}
               style={{
@@ -254,56 +266,72 @@ export function CreatedImageCard({
                 <div className="px-5 pt-4 pb-4">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
-                      <div className="flex items-center justify-center w-6 h-6 rounded-md bg-gradient-to-br from-[#D946EF]/15 to-[#D946EF]/5 dark:from-[#D946EF]/20 dark:to-[#D946EF]/5">
-                        <Sparkles className="w-3.5 h-3.5 text-[#D946EF]" />
+                      <div className={`flex items-center justify-center w-6 h-6 rounded-md ${isLoading ? "bg-[#D946EF]/10 animate-pulse" : "bg-gradient-to-br from-[#D946EF]/15 to-[#D946EF]/5 dark:from-[#D946EF]/20 dark:to-[#D946EF]/5"}`}>
+                        {!isLoading && <Sparkles className="w-3.5 h-3.5 text-[#D946EF]" />}
                       </div>
-                      <span className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400 dark:text-neutral-500">
-                        Generated Copy
-                      </span>
-                    </div>
-                    <button
-                      onClick={handleCopyText}
-                      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-all"
-                    >
-                      {copied ? (
-                        <>
-                          <Check className="w-3.5 h-3.5 text-emerald-500" />
-                          <span className="text-emerald-500">Copied</span>
-                        </>
+                      {isLoading ? (
+                        <div className="w-28 h-3 rounded-full bg-neutral-200 dark:bg-neutral-700 animate-pulse" />
                       ) : (
-                        <>
-                          <Copy className="w-3.5 h-3.5" />
-                          <span>Copy</span>
-                        </>
+                        <span className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400 dark:text-neutral-500">
+                          Generated Copy
+                        </span>
                       )}
-                    </button>
-                  </div>
-                  <div className="relative">
-                    <style>{`
-                      @keyframes fadeInUp {
-                        from { opacity: 0; transform: translateY(6px); }
-                        to   { opacity: 1; transform: translateY(0); }
-                      }
-                    `}</style>
-                    <p
-                      key={displayCopy}
-                      className="text-neutral-700 dark:text-neutral-300 text-[13px] leading-[1.7] whitespace-pre-line"
-                      style={{ animation: "fadeInUp 0.4s ease-out" }}
-                    >
-                      {isCopyLong && !copyExpanded
-                        ? displayCopy.slice(0, COPY_PREVIEW_LENGTH) + "…"
-                        : displayCopy}
-                    </p>
-                    {isCopyLong && (
+                    </div>
+                    {!isLoading && (
                       <button
-                        onClick={() => setCopyExpanded(!copyExpanded)}
-                        className="flex items-center gap-1 mt-2 text-[12px] font-medium text-[#D946EF] hover:text-[#D946EF]/80 transition-colors"
+                        onClick={handleCopyText}
+                        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-all"
                       >
-                        <span>{copyExpanded ? "Show less" : "Read more"}</span>
-                        <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${copyExpanded ? "rotate-180" : ""}`} />
+                        {copied ? (
+                          <>
+                            <Check className="w-3.5 h-3.5 text-emerald-500" />
+                            <span className="text-emerald-500">Copied</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-3.5 h-3.5" />
+                            <span>Copy</span>
+                          </>
+                        )}
                       </button>
                     )}
                   </div>
+                  {isLoading ? (
+                    <div className="space-y-2">
+                      <div className="w-full h-3 rounded-full bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
+                      <div className="w-5/6 h-3 rounded-full bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
+                      <div className="w-4/6 h-3 rounded-full bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
+                      <div className="w-full h-3 rounded-full bg-neutral-100 dark:bg-neutral-800 animate-pulse mt-2" />
+                      <div className="w-3/4 h-3 rounded-full bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
+                    </div>
+                  ) : (
+                    <div className="relative">
+                      <style>{`
+                        @keyframes fadeInUp {
+                          from { opacity: 0; transform: translateY(6px); }
+                          to   { opacity: 1; transform: translateY(0); }
+                        }
+                      `}</style>
+                      <p
+                        key={displayCopy}
+                        className="text-neutral-700 dark:text-neutral-300 text-[13px] leading-[1.7] whitespace-pre-line"
+                        style={{ animation: "fadeInUp 0.4s ease-out" }}
+                      >
+                        {isCopyLong && !copyExpanded
+                          ? displayCopy.slice(0, COPY_PREVIEW_LENGTH) + "…"
+                          : displayCopy}
+                      </p>
+                      {isCopyLong && (
+                        <button
+                          onClick={() => setCopyExpanded(!copyExpanded)}
+                          className="flex items-center gap-1 mt-2 text-[12px] font-medium text-[#D946EF] hover:text-[#D946EF]/80 transition-colors"
+                        >
+                          <span>{copyExpanded ? "Show less" : "Read more"}</span>
+                          <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${copyExpanded ? "rotate-180" : ""}`} />
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -311,8 +339,8 @@ export function CreatedImageCard({
         </div>
       </div>
 
-      {/* User prompt bubble */}
-      {(promptProp || userPrompt) && (
+      {/* User prompt bubble — hidden for initial generations (bubble shown separately on the left) */}
+      {!hidePromptBubble && (promptProp || userPrompt) && (
         <div className="w-full flex items-start gap-2.5 mt-3">
           <div className="flex-shrink-0 w-8 h-8 rounded-lg overflow-hidden border border-black/10 dark:border-white/10 bg-neutral-200 dark:bg-neutral-800">
             <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />

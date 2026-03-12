@@ -28,6 +28,9 @@ import {
   ArrowUp,
   Loader,
   Brush,
+  Rows3,
+  CheckCircle2,
+  Circle,
 } from "lucide-react";
 
 import WaitingCard from "@/modules/creation-studio/components/card/WaitingCard";
@@ -35,6 +38,7 @@ import {
   useCreationStatus,
   useGenerationStatus,
   useEditImage,
+  useEditVideoScene,
   useEditCopy,
 } from "@/modules/creation-studio/hooks/useCreateImage";
 import { CreatedImageCard } from "@/modules/creation-studio/components/card/CreatedImageCard";
@@ -42,18 +46,23 @@ import sampleImage from "@/assets/img/sample_mark_respond.png";
 import ImageEdge from "@/modules/creation-studio/components/flow/ImageEdge";
 import CopyEdge from "@/modules/creation-studio/components/flow/CopyEdge";
 import { useFlowStore } from "@/modules/creation-studio/store/flowStoreSlice";
+import type { PendingCopyEdit } from "@/modules/creation-studio/store/flowStoreSlice";
 import type { GenerationStore } from "@/modules/creation-studio/schemas/CreateImage";
 import { CreationsHistorySidebar } from "@/modules/creation-studio/components/sidebar/CreationsHistorySidebar";
 import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/core/config/query-keys";
 import { cn } from "@/shared/utils/utils";
+import { SocialPreviewAside } from "@/modules/creation-studio/components/sidebar/SocialPreviewAside";
+import { Smartphone } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Layout constants — horizontal tree (left → right)
 const NODE_WIDTH = 380;
 const NODE_HEIGHT = 520;
 const H_GAP = 20;
 const V_GAP = 16;
-const START_X = 80;
+const BUBBLE_NODE_WIDTH = 260; // width of the standalone prompt bubble node
+const START_X = 360; // image nodes start here; bubble fits in the 80..360 space
 const START_Y = 80;
 
 type TreeNode = {
@@ -77,12 +86,13 @@ function buildFlowFromGenerations(
   postCopy?: string,
   userPrompt?: string,
   copyEditPrompts: Record<string, string> = {},
+  pendingCopyEdits: Record<string, PendingCopyEdit> = {},
 ): { nodes: Node[]; edges: Edge[] } {
   const withImages = generations.filter(
-    (g) => 
-      g.img_url?.startsWith("http") || 
-      g.gen_type === "carousel" || 
-      g.gen_type === "video" || 
+    (g) =>
+      g.img_url?.startsWith("http") ||
+      g.gen_type === "carousel" ||
+      g.gen_type === "video" ||
       (g as any).type === "video"
   );
   if (withImages.length === 0 && !isProcessing) {
@@ -102,11 +112,41 @@ function buildFlowFromGenerations(
     }
   }
 
-  const roots = withImages.filter((g) => {
+  let roots = withImages.filter((g) => {
     const parentId = g.parent_uuid ?? "";
     const selfId = g.uuid ?? "";
     return !parentId || parentId === selfId || !allIds.has(parentId);
   });
+
+  // For video workflow the service wraps the real video generation inside a
+  // creation-uuid root, producing a chain:
+  //   creation-root (video, no img_url) → video-gen (video, no img_url) → scenes
+  // Both nodes hit the isCarouselOrVideoRoot check → two bubbles.
+  // Fix: collapse any video-type child with no img_url into the root so scenes
+  // become direct children of the single bubble node.
+  for (const root of roots) {
+    const rootGenType = root.gen_type || (root as any).type;
+    if (rootGenType !== "video") continue;
+    const rootId = root.uuid ?? "";
+    let changed = true;
+    while (changed) {
+      changed = false;
+      const children = childrenMap.get(rootId) ?? [];
+      const intermediaries = children.filter(
+        (c) =>
+          (c.gen_type || (c as any).type) === "video" &&
+          !c.img_url?.startsWith("http"),
+      );
+      if (intermediaries.length === 0) break;
+      const keep = children.filter((c) => !intermediaries.includes(c));
+      const promoted = intermediaries.flatMap(
+        (c) => childrenMap.get(c.uuid ?? "") ?? [],
+      );
+      childrenMap.set(rootId, [...keep, ...promoted]);
+      intermediaries.forEach((c) => childrenMap.delete(c.uuid ?? ""));
+      changed = true;
+    }
+  }
 
   let editCounter = 0;
   function buildTree(gen: GenerationStore, depth: number): TreeNode {
@@ -220,21 +260,41 @@ function buildFlowFromGenerations(
     return String(raw);
   };
 
-  function flattenTree(tree: TreeNode, parentNodeId?: string) {
+  function flattenTree(tree: TreeNode, parentNodeId?: string, parentIsBubble = false, hidePromptBubble = false, isVideoScene = false) {
     const nodeId = `gen-${tree.gen.uuid ?? ""}`;
     const genType = tree.gen.gen_type || (tree.gen as any).type;
-    const isCarousel = genType === "carousel";
-    
-    // For carousels, gen.content almost ALWAYS contains a list of slide UUIDs.
-    // We want to show the actual copy text if available.
-    let carouselCopy = tree.gen.copy || "";
-    
-    if (isIdList(carouselCopy)) {
-      carouselCopy = ""; // Don't show it if it looks like IDs
-    }
+    // For video: only the root generation (no img_url) becomes the bubble;
+    // individual scenes (which have img_url) render as normal result nodes.
+    const isCarouselOrVideoRoot =
+      genType === "carousel" ||
+      (genType === "video" && !tree.gen.img_url?.startsWith("http"));
 
-    if (!carouselCopy && tree.gen.content && !isIdList(tree.gen.content)) {
-        carouselCopy = tree.gen.content;
+    if (isCarouselOrVideoRoot) {
+      const bubbleWidth = 260;
+      nodes.push({
+        id: nodeId,
+        type: "promptBubble",
+        position: { x: tree.x, y: tree.y },
+        data: {
+          prompt: tree.gen.prompt ?? "",
+          genUuid: tree.gen.uuid ?? "",
+          genParentUuid: tree.gen.parent_uuid ?? tree.gen.uuid ?? "",
+          genType: genType,
+        },
+      });
+      // Chain: bubble → scene[0] → scene[1] → ... placed horizontally
+      const isVideoRoot = genType === "video";
+      let prevId = nodeId;
+      let slideX = tree.x + bubbleWidth + H_GAP;
+      const slideY = tree.y;
+      for (const child of tree.children) {
+        child.x = slideX;
+        child.y = slideY;
+        flattenTree(child, prevId, true, true, isVideoRoot);
+        prevId = `gen-${child.gen.uuid ?? ""}`;
+        slideX += NODE_WIDTH + H_GAP;
+      }
+      return;
     }
 
     nodes.push({
@@ -250,7 +310,9 @@ function buildFlowFromGenerations(
         genLabel: tree.label,
         genType: genType,
         prompt: tree.gen.prompt ?? "",
-        copy: isCarousel ? parseCopy(carouselCopy) : parseCopy(tree.gen.copy || tree.gen.content),
+        copy: parseCopy(tree.gen.copy || (tree.gen as any).content),
+        hidePromptBubble: hidePromptBubble || !parentNodeId,
+        isVideoScene,
       },
     });
     if (parentNodeId) {
@@ -258,8 +320,8 @@ function buildFlowFromGenerations(
         id: `edge-${parentNodeId}-${nodeId}`,
         source: parentNodeId,
         target: nodeId,
-        sourceHandle: alignment === "vertical" ? "right" : "bottom",
-        targetHandle: alignment === "vertical" ? "left" : "top",
+        sourceHandle: parentIsBubble ? "right" : (alignment === "vertical" ? "right" : "bottom"),
+        targetHandle: parentIsBubble ? "left" : (alignment === "vertical" ? "left" : "top"),
         type: "imageEdge",
       });
     }
@@ -272,16 +334,51 @@ function buildFlowFromGenerations(
     flattenTree(tree);
   }
 
+  // Add standalone prompt bubble nodes on the LEFT of each non-carousel/non-video root image
+  for (const root of roots) {
+    const rootGenType = root.gen_type || (root as any).type;
+    if (
+      rootGenType === "carousel" ||
+      (rootGenType === "video" && !root.img_url?.startsWith("http"))
+    ) continue;
+    const imgNodeId = `gen-${root.uuid ?? ""}`;
+    const imgNode = nodes.find((n) => n.id === imgNodeId);
+    if (!imgNode) continue;
+    const bubbleNodeId = `bubble-root-${root.uuid ?? ""}`;
+    if (nodes.find((n) => n.id === bubbleNodeId)) continue;
+    nodes.push({
+      id: bubbleNodeId,
+      type: "promptBubble",
+      position: {
+        x: imgNode.position.x - BUBBLE_NODE_WIDTH - H_GAP,
+        y: imgNode.position.y + NODE_HEIGHT / 2 - 30,
+      },
+      data: {
+        prompt: root.prompt || userPrompt || "",
+        genUuid: root.uuid ?? "",
+      },
+    });
+    edges.push({
+      id: `edge-${bubbleNodeId}-${imgNodeId}`,
+      source: bubbleNodeId,
+      target: imgNodeId,
+      sourceHandle: "right",
+      targetHandle: "left",
+      type: "imageEdge",
+    });
+  }
+
   // Copy nodes — one per root generation that has copy text, plus edit chain
-  const allCopyGens = generations.filter((g) => g.gen_type === "copy");
+  const allCopyGens = generations.filter((g) => g.gen_type === "copy" || g.gen_type === "edit_copy");
 
   function addCopyEdits(parentUuid: string, parentNodeId: string, baseX: number, baseY: number, depth: number) {
     const children = allCopyGens.filter((g) => g.parent_uuid === parentUuid);
     for (const child of children) {
       const childNodeId = `copy-${child.uuid ?? ""}`;
+      const isPending = child.status === "pending" || child.status === "processing";
       nodes.push({
         id: childNodeId,
-        type: "copyCard",
+        type: isPending ? "copySkeletonCard" : "copyCard",
         position: {
           x: baseX + (depth + 1) * (NODE_WIDTH + H_GAP),
           y: baseY,
@@ -306,13 +403,21 @@ function buildFlowFromGenerations(
   for (let i = 0; i < roots.length; i++) {
     const root = roots[i];
 
+    let rootCopyRaw = root.copy || "";
+    // For carousels, root.copy is often a list of slide UUIDs — fall back to content.
+    if (isIdList(rootCopyRaw.trim())) {
+      rootCopyRaw = (root as any).content || "";
+    }
+    
     // The copy may be stored directly on the image generation (root.copy) or as a
     // separate gen_type="copy" generation whose parent_uuid points to this image.
-    const rootCopyGen = allCopyGens.find((g) => g.parent_uuid === (root.uuid ?? ""));
-    const rawCopyValue = root.copy || rootCopyGen?.copy || postCopy || "";
+    // If rootCopyRaw exists, root.copy is the original. Otherwise, the first child is the original.
+    const rootCopyGen = !rootCopyRaw ? allCopyGens.find((g) => g.parent_uuid === (root.uuid ?? "")) : undefined;
+    
+    const rawCopyValue = rootCopyRaw || rootCopyGen?.copy || postCopy || "";
     const copyText = parseCopy(rawCopyValue);
     
-    if (!copyText) continue;
+    if (!copyText && !allCopyGens.some(g => g.parent_uuid === (root.uuid ?? ""))) continue;
 
     const imgNodeId = `gen-${root.uuid ?? ""}`;
     const imgNode = nodes.find((n) => n.id === imgNodeId);
@@ -330,24 +435,69 @@ function buildFlowFromGenerations(
       data: {
         copy: copyText,
         genUuid: copyGenUuid,
-        prompt: rootCopyGen?.prompt || root.prompt || (imgNode.data as any)?.prompt || userPrompt || "",
+        // Initial copy: prompt bubble shown separately on the left
+        prompt: "",
+        hidePromptBubble: true,
       },
     });
+    // Connect bubble → copy (instead of image → copy)
+    // For carousel/video roots the bubble node id is `gen-${uuid}`; for regular roots it is `bubble-root-${uuid}`
+    const rootGenTypeForCopy = root.gen_type || (root as any).type;
+    const isCarouselOrVideo =
+      rootGenTypeForCopy === "carousel" ||
+      (rootGenTypeForCopy === "video" && !root.img_url?.startsWith("http"));
+    const bubbleNodeId = isCarouselOrVideo
+      ? `gen-${root.uuid ?? ""}`
+      : `bubble-root-${root.uuid ?? ""}`;
     edges.push({
-      id: `edge-${imgNodeId}-${copyNodeId}`,
-      source: imgNodeId,
+      id: `edge-${bubbleNodeId}-${copyNodeId}`,
+      source: bubbleNodeId,
       target: copyNodeId,
-      sourceHandle: "bottom",
-      targetHandle: "top",
+      sourceHandle: isCarouselOrVideo ? "bottom" : "right",
+      targetHandle: "left",
       type: "copyEdge",
     });
     addCopyEdits(copyGenUuid, copyNodeId, imgNode.position.x, copyY, 0);
   }
 
+  // Pending copy edit skeletons — show while waiting for the API to return the new generation
+  for (const [parentUuid, editInfo] of Object.entries(pendingCopyEdits)) {
+    const alreadyInApi = allCopyGens.some((g) => g.parent_uuid === parentUuid);
+    if (alreadyInApi) continue;
+    const parentNodeId = `copy-${parentUuid}`;
+    const parentNode = nodes.find((n) => n.id === parentNodeId);
+    if (!parentNode) continue;
+    const skeletonId = `pending-copy-skeleton-${parentUuid}`;
+    if (nodes.find((n) => n.id === skeletonId)) continue;
+    nodes.push({
+      id: skeletonId,
+      type: "copySkeletonCard",
+      position: {
+        x: parentNode.position.x + NODE_WIDTH + H_GAP,
+        y: parentNode.position.y,
+      },
+      data: { prompt: editInfo.prompt, currentCopy: editInfo.copyText },
+    });
+    edges.push({
+      id: `edge-${parentNodeId}-${skeletonId}`,
+      source: parentNodeId,
+      target: skeletonId,
+      type: "copyEdge",
+    });
+  }
+
   // Skeleton to the right of selected node — only when a generation is genuinely pending
-  const hasPendingGen = generations.some(
-    (g) => g.gen_type !== "copy" && !g.img_url?.startsWith("http"),
-  );
+  // Only show skeleton for edit operations (parent_uuid set), not initial generation
+  const hasPendingGen =
+    isProcessing &&
+    generations.some(
+      (g) =>
+        g.gen_type !== "copy" &&
+        g.gen_type !== "carousel" &&
+        g.gen_type !== "video" &&
+        !g.img_url?.startsWith("http") &&
+        !!g.parent_uuid,
+    );
   if (hasPendingGen && nodes.length > 0) {
     const targetNodeId = selectedGenUuid
       ? `gen-${selectedGenUuid}`
@@ -378,12 +528,17 @@ function buildFlowFromGenerations(
 
 const ResultNode = ({ data, id, xPos, yPos }: NodeProps) => {
   const { uuid: creationUuid } = useParams<{ uuid: string }>();
-  const { mutate: editImage, isPending } = useEditImage();
+  const { mutate: editImage, isPending: isImagePending } = useEditImage();
+  const { mutate: editVideoScene, isPending: isVideoScenePending } = useEditVideoScene();
+  const isPending = isImagePending || isVideoScenePending;
   const queryClient = useQueryClient();
   const { addNodes, addEdges } = useReactFlow();
+  const selectedGeneration = useFlowStore((s) => s.selectedGeneration);
+  const setSelectedGeneration = useFlowStore((s) => s.setSelectedGeneration);
+  const isVideoScene = !!(data.isVideoScene as boolean);
 
   const handleEdit = (prompt: string) => {
-    if (!creationUuid || !data.genImgUrl) return;
+    if (!creationUuid) return;
 
     const skeletonId = `edit-skeleton-${data.genUuid}-${Date.now()}`;
     addNodes({
@@ -400,37 +555,60 @@ const ResultNode = ({ data, id, xPos, yPos }: NodeProps) => {
       type: "imageEdge",
     });
 
-    editImage(
-      {
-        uuid: data.genUuid,
-        parent_uuid: data.genParentUuid || data.genUuid,
-        creation_uuid: creationUuid,
-        img_url: data.genImgUrl,
-        prompt,
-      },
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries({
-            queryKey: queryKeys.creation_studio.get_image(creationUuid),
-          });
+    const onSuccess = () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.creation_studio.get_image(creationUuid),
+      });
+    };
+
+    if (isVideoScene) {
+      editVideoScene(
+        {
+          creation_uuid: creationUuid,
+          parent: data.genUuid as string,
+          prompt,
+          scene_duration: 6,
         },
-      },
-    );
+        { onSuccess },
+      );
+    } else {
+      if (!data.genImgUrl) return;
+      editImage(
+        {
+          uuid: data.genUuid,
+          parent_uuid: data.genParentUuid || data.genUuid,
+          creation_uuid: creationUuid,
+          img_url: data.genImgUrl,
+          prompt,
+        },
+        { onSuccess },
+      );
+    }
   };
 
   return (
     <div style={{ width: 380 }}>
-      <Handle type="target" position={Position.Left} style={{ opacity: 0, width: 1, height: 1 }} />
+      <Handle type="target" position={Position.Left} id="left" style={{ opacity: 0, width: 1, height: 1 }} />
       <Handle type="source" position={Position.Right} id="right" style={{ opacity: 0, width: 1, height: 1 }} />
       <Handle type="source" position={Position.Bottom} id="bottom" style={{ opacity: 0, width: 1, height: 1 }} />
-      
+
       <CreatedImageCard
-        image={data.image || sampleImage}
+        image={data.image || (data.genType === "carousel" || data.genType === "video" ? "" : sampleImage)}
         onEditSubmit={handleEdit}
         isEditPending={isPending}
-        variant="combined"
-        copy={data.copy as string}
+        variant="image"
+        isSelected={selectedGeneration?.uuid === data.genUuid}
+        onSelect={() => {
+          setSelectedGeneration({
+            uuid: data.genUuid as string,
+            parent_uuid: data.genParentUuid as string,
+            img_url: data.genImgUrl as string,
+            label: data.genLabel as string,
+          });
+        }}
+        genType={data.genType as string}
         prompt={data.prompt as string}
+        hidePromptBubble={data.hidePromptBubble as boolean}
       />
     </div>
   );
@@ -455,34 +633,60 @@ function PromptBubble({ prompt }: { prompt: string }) {
   );
 }
 
-const CopySkeletonNode = ({ data }: NodeProps) => (
-  <div style={{ width: 380, animation: "skeletonEnter 0.4s cubic-bezier(0.2, 0, 0, 1) forwards" }}>
-    <style>{`
-      @keyframes skeletonEnter {
-        from { opacity: 0; transform: translateX(20px) scale(0.96); }
-        to   { opacity: 1; transform: translateX(0)    scale(1);    }
-      }
-    `}</style>
-    <Handle type="target" position={Position.Left} style={{ opacity: 0, width: 1, height: 1 }} />
-    <div className="bg-white dark:bg-[#18181B] rounded-[1.5rem] border border-dashed border-[#D946EF]/30 dark:border-[#D946EF]/20 shadow-xl overflow-hidden animate-pulse">
-      <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-black/[0.04] dark:border-white/[0.04]">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-md bg-[#D946EF]/10 animate-pulse" />
-          <div className="w-28 h-3 rounded-full bg-neutral-200 dark:bg-neutral-700 animate-pulse" />
+const CopySkeletonNode = ({ data }: NodeProps) => {
+  const currentCopy = (data.currentCopy as string) ?? "";
+  const SKELETON_COPY_PREVIEW = 220;
+  const displayCopy = currentCopy.length > SKELETON_COPY_PREVIEW
+    ? currentCopy.slice(0, SKELETON_COPY_PREVIEW) + "…"
+    : currentCopy;
+
+  return (
+    <div style={{ width: 380, animation: "skeletonEnter 0.4s cubic-bezier(0.2, 0, 0, 1) forwards" }}>
+      <style>{`
+        @keyframes skeletonEnter {
+          from { opacity: 0; transform: translateX(20px) scale(0.96); }
+          to   { opacity: 1; transform: translateX(0)    scale(1);    }
+        }
+      `}</style>
+      <Handle type="target" position={Position.Left} style={{ opacity: 0, width: 1, height: 1 }} />
+      <div className="bg-white dark:bg-[#18181B] rounded-[1.5rem] border border-dashed border-[#D946EF]/30 dark:border-[#D946EF]/20 shadow-xl overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-black/[0.04] dark:border-white/[0.04]">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-md bg-[#D946EF]/10 animate-pulse" />
+            <div className="w-28 h-3 rounded-full bg-neutral-200 dark:bg-neutral-700 animate-pulse" />
+          </div>
+          <div className="w-14 h-6 rounded-lg bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
         </div>
-        <div className="w-14 h-6 rounded-lg bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
+        {/* Body — show previous copy blurred, or fallback to skeleton bars */}
+        <div className="px-5 py-4 relative">
+          {currentCopy ? (
+            <>
+              <p className="text-neutral-700 dark:text-neutral-300 text-[13px] leading-[1.7] whitespace-pre-line opacity-25 blur-[3px] select-none pointer-events-none">
+                {displayCopy}
+              </p>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="flex items-center gap-2 bg-white/80 dark:bg-[#18181B]/80 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-sm">
+                  <Loader className="w-3.5 h-3.5 text-[#D946EF] animate-spin" />
+                  <span className="text-xs font-medium text-[#D946EF]">Rewriting…</span>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="space-y-2">
+              <div className="w-full h-3 rounded-full bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
+              <div className="w-5/6 h-3 rounded-full bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
+              <div className="w-4/6 h-3 rounded-full bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
+              <div className="w-full h-3 rounded-full bg-neutral-100 dark:bg-neutral-800 animate-pulse mt-2" />
+              <div className="w-3/4 h-3 rounded-full bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
+            </div>
+          )}
+        </div>
       </div>
-      <div className="px-5 py-4 space-y-2">
-        <div className="w-full h-3 rounded-full bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
-        <div className="w-5/6 h-3 rounded-full bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
-        <div className="w-4/6 h-3 rounded-full bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
-        <div className="w-full h-3 rounded-full bg-neutral-100 dark:bg-neutral-800 animate-pulse mt-2" />
-        <div className="w-3/4 h-3 rounded-full bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
-      </div>
+      <PromptBubble prompt={(data.prompt as string) ?? ""} />
     </div>
-    <PromptBubble prompt={(data.prompt as string) ?? ""} />
-  </div>
-);
+  );
+};
 
 const SkeletonNode = ({ data }: NodeProps) => (
   <div className="flex flex-col items-center" style={{ width: 380, animation: "skeletonEnter 0.4s cubic-bezier(0.2, 0, 0, 1) forwards" }}>
@@ -503,25 +707,53 @@ const WaitingNodeComponent = ({ data }: NodeProps) => (
   <WaitingCard title={data?.title} description={data?.description} />
 );
 
+const PromptBubbleNodeComponent = ({ data }: NodeProps) => (
+  <div style={{ width: 260 }}>
+    <Handle type="source" position={Position.Right} id="right" style={{ opacity: 0, width: 1, height: 1 }} />
+    <Handle type="source" position={Position.Bottom} id="bottom" style={{ opacity: 0, width: 1, height: 1 }} />
+    <div className="flex items-start gap-2.5">
+      <div className="flex-shrink-0 w-8 h-8 rounded-lg overflow-hidden border border-black/10 dark:border-white/10 bg-neutral-200 dark:bg-neutral-800">
+        <img src={avatarUrl} alt="U" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+      </div>
+      <div className="relative bg-white dark:bg-[#1C1C1F] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl rounded-tl-md px-3.5 py-2.5 shadow-lg">
+        <div className="absolute -top-[5px] left-3.5 w-2.5 h-2.5 bg-white dark:bg-[#1C1C1F] border-l border-t border-black/[0.06] dark:border-white/[0.06] rotate-45" />
+        <p className="text-neutral-700 dark:text-neutral-300 text-[13px] leading-relaxed font-medium line-clamp-4">
+          {(data.prompt as string) || ""}
+        </p>
+      </div>
+    </div>
+  </div>
+);
+
 const COPY_PREVIEW_LENGTH = 220;
 
-const CopyNode = ({ data, id, xPos, yPos }: NodeProps) => {
+const CopyNode = ({ data }: NodeProps) => {
   const { uuid: creationUuid } = useParams<{ uuid: string }>();
   const queryClient = useQueryClient();
   const { mutate: editCopy, isPending } = useEditCopy();
-  const { addNodes, addEdges } = useReactFlow();
   const [feedback, setFeedback] = useState("");
   const [showEditInput, setShowEditInput] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const componentId = useRef(crypto.randomUUID()).current;
 
-  const userPromptFromStore = useFlowStore((s) => s.userPrompt);
-  const setCopyEditPrompt = useFlowStore((s) => s.setCopyEditPrompt);
+  const {
+    userPrompt: userPromptFromStore,
+    postCopy,
+    setPostCopy,
+    setCopyEditPrompt,
+    addPendingCopyEdit,
+    removePendingCopyEdit,
+    focusedCardId,
+    setFocusedCardId,
+  } = useFlowStore();
+
   const copy = (data.copy as string) ?? "";
   const prompt = (data.prompt as string) || userPromptFromStore || "";
   const isLong = copy.length > COPY_PREVIEW_LENGTH;
+  const isBlurred = focusedCardId !== null && focusedCardId !== componentId;
 
   useEffect(() => {
     if (showEditInput) {
@@ -530,41 +762,44 @@ const CopyNode = ({ data, id, xPos, yPos }: NodeProps) => {
   }, [showEditInput]);
 
   useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setShowEditInput(false);
+        setFocusedCardId(null);
+      }
+    }
     function handleCloseOthers(event: Event) {
       const customEvent = event as CustomEvent;
       if (customEvent.detail?.id !== componentId) {
         setShowEditInput(false);
+        setFocusedCardId(null);
       }
     }
+    document.addEventListener("mousedown", handleClickOutside);
     window.addEventListener("closeOtherImageTools", handleCloseOthers);
-    return () => window.removeEventListener("closeOtherImageTools", handleCloseOthers);
-  }, [componentId]);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("closeOtherImageTools", handleCloseOthers);
+    };
+  }, [componentId, setFocusedCardId]);
 
   const handleSubmit = () => {
     if (!creationUuid || !feedback.trim()) return;
 
-    // Cache the feedback so the resulting node can display it even if backend
-    // doesn't return `prompt` on copy-type generations.
-    setCopyEditPrompt(data.genUuid as string, feedback);
+    const parentUuid = data.genUuid as string;
 
-    const skeletonId = `copy-skeleton-${data.genUuid}-${Date.now()}`;
-    addNodes({
-      id: skeletonId,
-      type: "copySkeletonCard",
-      position: { x: xPos + NODE_WIDTH + H_GAP, y: yPos },
-      data: { prompt: feedback },
-    });
-    addEdges({
-      id: `edge-${id}-${skeletonId}`,
-      source: id,
-      target: skeletonId,
-      type: "copyEdge",
-    });
+    // Add a pending skeleton via the store so it's part of computedNodes
+    // and survives any subsequent useMemo recomputes.
+    addPendingCopyEdit(parentUuid, { copyText: copy, prompt: feedback });
+
+    // Cache the feedback so the resulting node can display it even if the
+    // backend doesn't return `prompt` on edit_copy generations.
+    setCopyEditPrompt(parentUuid, feedback);
 
     editCopy(
       {
         creation_uuid: creationUuid,
-        parent: data.genUuid as string,
+        parent: parentUuid,
         current_copy: copy,
         copy_feedback: feedback,
       },
@@ -572,9 +807,13 @@ const CopyNode = ({ data, id, xPos, yPos }: NodeProps) => {
         onSuccess: () => {
           setFeedback("");
           setShowEditInput(false);
+          setFocusedCardId(null);
           queryClient.invalidateQueries({
             queryKey: queryKeys.creation_studio.get_image(creationUuid),
           });
+          // Remove the pending skeleton once the API has accepted the request.
+          // The real node (skeleton or card) will come from the refetched data.
+          removePendingCopyEdit(parentUuid);
         },
       },
     );
@@ -590,12 +829,24 @@ const CopyNode = ({ data, id, xPos, yPos }: NodeProps) => {
     const opening = !showEditInput;
     if (opening) {
       window.dispatchEvent(new CustomEvent("closeOtherImageTools", { detail: { id: componentId } }));
+      setFocusedCardId(componentId);
+      // Auto-select for preview when opening edit tools
+      setPostCopy(copy);
+    } else {
+      setFocusedCardId(null);
     }
     setShowEditInput(opening);
   };
 
   return (
-    <div style={{ width: 380 }}>
+    <div
+      ref={containerRef}
+      style={{ width: 380 }}
+      className={cn(
+        "transition-all duration-300 ease-out",
+        isBlurred ? "opacity-40 scale-[0.97] saturate-50" : "opacity-100 scale-100 saturate-100",
+      )}
+    >
       <Handle type="target" position={Position.Top} id="top" style={{ opacity: 0, width: 1, height: 1 }} />
       <Handle type="target" position={Position.Left} id="left" style={{ opacity: 0, width: 1, height: 1 }} />
       <Handle type="source" position={Position.Right} style={{ opacity: 0, width: 1, height: 1 }} />
@@ -648,7 +899,12 @@ const CopyNode = ({ data, id, xPos, yPos }: NodeProps) => {
       </div>
 
       {/* Card */}
-      <div className="bg-white dark:bg-[#18181B] rounded-[1.5rem] border border-black/[0.06] dark:border-white/[0.06] shadow-xl overflow-hidden">
+      <div 
+        className={cn(
+          "bg-white dark:bg-[#18181B] rounded-[1.5rem] border shadow-xl overflow-hidden transition-all duration-300 cursor-pointer",
+          "border-black/[0.06] dark:border-white/[0.06] hover:border-black/[0.12] dark:hover:border-white/[0.12]"
+        )}
+      >
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-black/[0.04] dark:border-white/[0.04]">
           <div className="flex items-center gap-2">
@@ -660,7 +916,10 @@ const CopyNode = ({ data, id, xPos, yPos }: NodeProps) => {
             </span>
           </div>
           <button
-            onClick={handleCopyText}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCopyText();
+            }}
             className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-all"
           >
             {copied ? (
@@ -694,9 +953,36 @@ const CopyNode = ({ data, id, xPos, yPos }: NodeProps) => {
             </button>
           )}
         </div>
+
+        {/* Select bar — same as CreatedImageCard */}
+        <div
+          className={cn(
+            "overflow-hidden transition-all duration-300 ease-in-out",
+            showEditInput ? "max-h-14 opacity-100" : "max-h-0 opacity-0"
+          )}
+        >
+          <div className="flex items-center justify-between px-5 py-2.5 border-t border-black/[0.04] dark:border-white/[0.04] bg-neutral-50/50 dark:bg-white/[0.02]">
+            <span className="text-[11px] font-medium text-neutral-400 dark:text-neutral-500">Use in final preview</span>
+            <button
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                setPostCopy(copy);
+              }}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-colors",
+                postCopy === copy
+                  ? "bg-[#D946EF]/10 text-[#D946EF]"
+                  : "text-neutral-400 hover:text-[#D946EF] hover:bg-[#D946EF]/[0.06]"
+              )}
+            >
+              {postCopy === copy ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Circle className="w-3.5 h-3.5" />}
+              <span>{postCopy === copy ? "Selected" : "Select"}</span>
+            </button>
+          </div>
+        </div>
       </div>
 
-      <PromptBubble prompt={prompt} />
+      {!(data.hidePromptBubble as boolean) && <PromptBubble prompt={prompt} />}
     </div>
   );
 };
@@ -707,24 +993,40 @@ const edgeTypes: EdgeTypes = {
 };
 
 /**
- * Create a stable fingerprint from generations data
+ * Create a stable fingerprint from generations data.
+ * Includes edit_copy generations and their status so computedNodes
+ * updates whenever an edit arrives or transitions to done.
  */
 function generationsFingerprint(generations: GenerationStore[]): string {
   return generations
-    .filter((g) => !!g.img_url || g.gen_type === "copy")
-    .map((g) => `${g.uuid}:${g.img_url ?? ""}:${g.copy ?? ""}`)
+    .filter(
+      (g) =>
+        !!g.img_url ||
+        g.gen_type === "copy" ||
+        g.gen_type === "edit_copy" ||
+        g.gen_type === "edit_video_scene",
+    )
+    .map((g) => `${g.uuid}:${g.img_url ?? ""}:${g.copy ?? ""}:${g.status ?? ""}`)
     .sort()
     .join("|");
 }
 
-const WorkflowContentInner = () => {
+const WorkflowContentInner = ({
+  showPreview,
+  setShowPreview,
+}: {
+  showPreview: boolean;
+  setShowPreview: (val: boolean) => void;
+}) => {
   const { uuid } = useParams<{ uuid: string }>();
   const prevFingerprintRef = useRef("");
   const setSelectedGeneration = useFlowStore((s) => s.setSelectedGeneration);
   const selectedGeneration = useFlowStore((s) => s.selectedGeneration);
   const postCopy = useFlowStore((s) => s.postCopy);
+  const setPostCopy = useFlowStore((s) => s.setPostCopy);
   const userPrompt = useFlowStore((s) => s.userPrompt);
   const copyEditPrompts = useFlowStore((s) => s.copyEditPrompts);
+  const pendingCopyEdits = useFlowStore((s) => s.pendingCopyEdits);
   const resetFlow = useFlowStore((s) => s.resetFlow);
 
   const { fitView, zoomIn, zoomOut } = useReactFlow();
@@ -740,13 +1042,24 @@ const WorkflowContentInner = () => {
   // Subscribe to generations subcollection
   const { generations, hasImage, type } = useGenerationStatus(uuid ?? "");
   const isCarousel = type === "carousel";
+  const isVideo = type === "video" || type === "reel";
+
+  // On refresh, postCopy is lost from Zustand — restore it from the API data
+  useEffect(() => {
+    if (!postCopy && generations.length > 0) {
+      const copyFromApi =
+        generations.find((g) => g.gen_type === "copy")?.copy ||
+        generations[0]?.copy;
+      if (copyFromApi) setPostCopy(copyFromApi);
+    }
+  }, [postCopy, generations, setPostCopy]);
 
   const [alignment, setAlignment] = useState<"horizontal" | "vertical">(
     "vertical",
   );
 
   useEffect(() => {
-    if (isCarousel) {
+    if (isCarousel || isVideo) {
       setAlignment("horizontal");
     }
   }, [isCarousel]);
@@ -788,8 +1101,14 @@ const WorkflowContentInner = () => {
           {
             id: "skeleton-node",
             type: "skeleton" as const,
-            position: { x: 200, y: START_Y },
+            position: { x: START_X, y: START_Y },
             data: { label: isDone ? "Finalizing..." : "Creating magic..." },
+          },
+          {
+            id: "copy-skeleton-initial",
+            type: "copySkeletonCard" as const,
+            position: { x: START_X, y: START_Y + NODE_HEIGHT + V_GAP },
+            data: { currentCopy: postCopy ?? "" },
           },
         ] as Node[],
         computedEdges: [] as Edge[],
@@ -805,6 +1124,7 @@ const WorkflowContentInner = () => {
       postCopy,
       userPrompt,
       copyEditPrompts,
+      pendingCopyEdits,
     );
 
     return {
@@ -832,6 +1152,7 @@ const WorkflowContentInner = () => {
     postCopy,
     userPrompt,
     copyEditPrompts,
+    pendingCopyEdits,
   ]);
 
   // Sync computed layout → local state.
@@ -886,9 +1207,13 @@ const WorkflowContentInner = () => {
           img_url: node.data.genImgUrl,
           label: node.data.genLabel,
         });
+      } else if (node.type === "copyCard" && node.data) {
+        if (node.data.copy) {
+          setPostCopy(node.data.copy as string);
+        }
       }
     },
-    [setSelectedGeneration],
+    [setSelectedGeneration, setPostCopy],
   );
 
   const nodeTypes: NodeTypes = useMemo(
@@ -898,6 +1223,7 @@ const WorkflowContentInner = () => {
       waiting: WaitingNodeComponent,
       copyCard: CopyNode,
       copySkeletonCard: CopySkeletonNode,
+      promptBubble: PromptBubbleNodeComponent,
     }),
     [],
   );
@@ -907,7 +1233,9 @@ const WorkflowContentInner = () => {
   }, []);
 
   const onPaneClick = useCallback(() => {
-    window.dispatchEvent(new CustomEvent("closeOtherImageTools", { detail: { id: null } }));
+    window.dispatchEvent(
+      new CustomEvent("closeOtherImageTools", { detail: { id: null } }),
+    );
   }, []);
 
   const resetLayout = useCallback(() => {
@@ -977,6 +1305,18 @@ const WorkflowContentInner = () => {
                   <div className="w-px h-4 bg-outline-variant/30 mx-1" />
                   <button
                     type="button"
+                    onClick={() =>
+                      window.dispatchEvent(new CustomEvent("openAllEditInputs"))
+                    }
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                    title="Edit All Slides"
+                  >
+                    <Rows3 className="w-3.5 h-3.5" />
+                    Edit All
+                  </button>
+                  <div className="w-px h-4 bg-outline-variant/30 mx-1" />
+                  <button
+                    type="button"
                     onClick={() => setAlignment("horizontal")}
                     className={cn(
                       "p-2 rounded-full transition-colors",
@@ -1011,15 +1351,50 @@ const WorkflowContentInner = () => {
   );
 };
 
-const WorkflowContentPage = () => (
-  <div className="w-full h-full flex">
-    <CreationsHistorySidebar />
-    <div className="flex-1 h-full relative">
-      <ReactFlowProvider>
-        <WorkflowContentInner />
-      </ReactFlowProvider>
+const WorkflowContentPage = () => {
+  const [showPreview, setShowPreview] = useState(false);
+
+  return (
+    <div className="w-full h-full flex">
+      <CreationsHistorySidebar />
+      <div className="flex-1 h-full relative">
+        <ReactFlowProvider>
+          <WorkflowContentInner
+            showPreview={showPreview}
+            setShowPreview={setShowPreview}
+          />
+        </ReactFlowProvider>
+
+        <AnimatePresence>
+          {!showPreview && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.9, x: 20 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              exit={{ opacity: 0, scale: 0.9, x: 20 }}
+              onClick={() => setShowPreview(true)}
+              className="absolute top-4 right-4 z-10 p-2.5 bg-surface-container-high/80 dark:bg-[#1C1C1C] backdrop-blur-xl border border-outline-variant/30 rounded-xl shadow-lg text-on-surface hover:bg-surface-container-highest transition-colors group"
+              title="Open Social Preview"
+            >
+              <Smartphone className="w-5 h-5 text-on-surface-variant group-hover:text-on-surface transition-colors" />
+            </motion.button>
+          )}
+        </AnimatePresence>
+      </div>
+      <AnimatePresence>
+        {showPreview && (
+          <motion.div
+            initial={{ x: "100%", opacity: 0.5 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: "100%", opacity: 0.5 }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="h-full z-20"
+          >
+            <SocialPreviewAside onClose={() => setShowPreview(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
-  </div>
-);
+  );
+};
 
 export default WorkflowContentPage;

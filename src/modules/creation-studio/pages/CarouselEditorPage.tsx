@@ -6,10 +6,8 @@ import {
   Plus,
   Trash2,
   Copy,
-  GripVertical,
   Image,
   Type,
-  LayoutGrid,
   Save,
   Send,
   ChevronLeft,
@@ -18,10 +16,18 @@ import {
   AlignLeft,
   AlignCenter,
   AlignRight,
+  Rows3,
+  X,
+  Pencil,
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/Button";
 import { Input } from "@/shared/components/ui/Input";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/components/ui/Tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/shared/components/ui/Dialog";
 import { cn } from "@/shared/utils/utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -33,7 +39,7 @@ interface Slide {
   id: string;
   headline: string;
   body: string;
-  localBg?: string;      // overrides global bg when set
+  localBg?: string;
   localTextColor?: string;
   textAlign: TextAlign;
   imageUrl?: string;
@@ -129,13 +135,11 @@ const BgSwatch = ({
       "w-8 h-8 rounded-lg border-2 transition-all flex-shrink-0 hover:scale-110",
       selected ? "border-primary shadow-sm shadow-primary/30" : "border-transparent"
     )}
-    style={{
-      background: value,
-    }}
+    style={{ background: value }}
   />
 );
 
-// ─── Slide canvas preview ─────────────────────────────────────────────────────
+// ─── Slide canvas ─────────────────────────────────────────────────────────────
 
 const SlideCanvas = ({
   slide,
@@ -143,18 +147,27 @@ const SlideCanvas = ({
   isActive,
   isThumbnail,
   onClick,
+  editingField,
+  onFieldClick,
+  onPatch,
+  onStopEdit,
 }: {
   slide: Slide;
   settings: CarouselSettings;
   isActive?: boolean;
   isThumbnail?: boolean;
   onClick?: () => void;
+  editingField?: "headline" | "body" | null;
+  onFieldClick?: (field: "headline" | "body") => void;
+  onPatch?: (patch: Partial<Slide>) => void;
+  onStopEdit?: () => void;
 }) => {
   const { w, h } = ASPECT_CONFIGS[settings.aspectRatio];
   const width  = isThumbnail ? 72 : CANVAS_BASE_W;
   const height = Math.round(width * h / w);
   const bg = slide.localBg ?? settings.globalBg;
   const textColor = slide.localTextColor ?? settings.globalTextColor;
+  const canEdit = !isThumbnail && !!onFieldClick;
 
   return (
     <div
@@ -188,29 +201,83 @@ const SlideCanvas = ({
         )}
         style={{ color: textColor }}
       >
-        {slide.headline && (
-          <p
+        {/* Headline */}
+        {isThumbnail ? (
+          slide.headline && (
+            <p className="font-bold leading-tight text-[8px]">{slide.headline}</p>
+          )
+        ) : editingField === "headline" ? (
+          <input
+            autoFocus
+            value={slide.headline}
+            onChange={(e) => onPatch?.({ headline: e.target.value })}
+            onBlur={onStopEdit}
+            placeholder="Headline..."
             className={cn(
-              "font-bold leading-tight",
-              isThumbnail ? "text-[8px]" : "text-2xl"
+              "bg-transparent border-none outline-none w-full font-bold leading-tight text-2xl",
+              "placeholder:opacity-30 caret-current"
+            )}
+            style={{ color: textColor, textAlign: slide.textAlign }}
+          />
+        ) : (
+          <div
+            onClick={() => canEdit && onFieldClick?.("headline")}
+            className={cn(
+              "group/headline relative",
+              canEdit && "cursor-text"
             )}
           >
-            {slide.headline}
-          </p>
+            <p className="font-bold leading-tight text-2xl">
+              {slide.headline || <span className="opacity-30">Add headline…</span>}
+            </p>
+            {canEdit && (
+              <span className="absolute -right-6 top-0 opacity-0 group-hover/headline:opacity-60 transition-opacity">
+                <Pencil className="w-3 h-3" />
+              </span>
+            )}
+          </div>
         )}
-        {slide.body && (
-          <p
+
+        {/* Body */}
+        {isThumbnail ? (
+          slide.body && (
+            <p className="leading-snug opacity-80 text-[6px]">{slide.body}</p>
+          )
+        ) : editingField === "body" ? (
+          <textarea
+            autoFocus
+            value={slide.body}
+            onChange={(e) => onPatch?.({ body: e.target.value })}
+            onBlur={onStopEdit}
+            placeholder="Body text..."
+            rows={3}
             className={cn(
-              "leading-snug opacity-80",
-              isThumbnail ? "text-[6px]" : "text-sm"
+              "bg-transparent border-none outline-none w-full text-sm leading-snug opacity-80",
+              "placeholder:opacity-30 caret-current resize-none"
+            )}
+            style={{ color: textColor, textAlign: slide.textAlign }}
+          />
+        ) : (
+          <div
+            onClick={() => canEdit && onFieldClick?.("body")}
+            className={cn(
+              "group/body relative",
+              canEdit && "cursor-text"
             )}
           >
-            {slide.body}
-          </p>
+            <p className="leading-snug opacity-80 text-sm">
+              {slide.body || <span className="opacity-30">Add body text…</span>}
+            </p>
+            {canEdit && (
+              <span className="absolute -right-6 top-0 opacity-0 group-hover/body:opacity-60 transition-opacity">
+                <Pencil className="w-3 h-3" />
+              </span>
+            )}
+          </div>
         )}
       </div>
 
-      {/* Thumbnail overlay placeholder */}
+      {/* Thumbnail placeholder */}
       {!slide.headline && !slide.body && isThumbnail && (
         <div className="absolute inset-0 flex items-center justify-center">
           <Image className="w-4 h-4 opacity-20" style={{ color: textColor }} />
@@ -219,6 +286,120 @@ const SlideCanvas = ({
     </div>
   );
 };
+
+// ─── Bulk copy editor (table view) ────────────────────────────────────────────
+
+const BulkCopyEditor = ({
+  slides,
+  settings,
+  onPatchSlide,
+  onDuplicateSlide,
+  onDeleteSlide,
+  onAddSlide,
+}: {
+  slides: Slide[];
+  settings: CarouselSettings;
+  onPatchSlide: (id: string, patch: Partial<Slide>) => void;
+  onDuplicateSlide: (id: string) => void;
+  onDeleteSlide: (id: string) => void;
+  onAddSlide: () => void;
+}) => (
+  <div className="flex flex-col gap-4">
+    <p className="text-xs text-on-surface-variant/50">
+      Edit copy for all slides at once. Visual settings (background, alignment) remain in the side panel.
+    </p>
+
+    {/* Table */}
+    <div className="rounded-xl border border-outline-variant/20 overflow-hidden">
+      {/* Header */}
+      <div className="grid grid-cols-[32px_80px_1fr_1fr_72px] gap-3 px-4 py-2 bg-surface-container-low border-b border-outline-variant/20">
+        <span className="text-[10px] font-semibold text-on-surface-variant/50 uppercase tracking-wider">#</span>
+        <span className="text-[10px] font-semibold text-on-surface-variant/50 uppercase tracking-wider">Preview</span>
+        <span className="text-[10px] font-semibold text-on-surface-variant/50 uppercase tracking-wider flex items-center gap-1">
+          <Type className="w-3 h-3" /> Headline
+        </span>
+        <span className="text-[10px] font-semibold text-on-surface-variant/50 uppercase tracking-wider">Body</span>
+        <span className="text-[10px] font-semibold text-on-surface-variant/50 uppercase tracking-wider">Actions</span>
+      </div>
+
+      {/* Rows */}
+      {slides.map((slide, i) => (
+        <div
+          key={slide.id}
+          className={cn(
+            "grid grid-cols-[32px_80px_1fr_1fr_72px] gap-3 px-4 py-3 items-start",
+            "border-b border-outline-variant/10 last:border-0",
+            "hover:bg-on-surface/[0.02] transition-colors"
+          )}
+        >
+          {/* Slide number */}
+          <span className="text-sm font-semibold text-on-surface-variant/40 mt-1">{i + 1}</span>
+
+          {/* Thumbnail */}
+          <div className="flex-shrink-0">
+            <SlideCanvas slide={slide} settings={settings} isActive={false} isThumbnail />
+          </div>
+
+          {/* Headline */}
+          <input
+            value={slide.headline}
+            onChange={(e) => onPatchSlide(slide.id, { headline: e.target.value })}
+            placeholder="Add headline…"
+            className={cn(
+              "w-full rounded-lg border border-outline-variant/30 bg-surface-container-low",
+              "px-3 py-2 text-sm text-on-surface placeholder:text-on-surface-variant/30",
+              "focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/50",
+              "font-medium"
+            )}
+          />
+
+          {/* Body */}
+          <textarea
+            value={slide.body}
+            onChange={(e) => onPatchSlide(slide.id, { body: e.target.value })}
+            placeholder="Add body text…"
+            rows={2}
+            className={cn(
+              "w-full rounded-lg border border-outline-variant/30 bg-surface-container-low",
+              "px-3 py-2 text-sm text-on-surface placeholder:text-on-surface-variant/30",
+              "focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/50",
+              "resize-none"
+            )}
+          />
+
+          {/* Actions */}
+          <div className="flex flex-col gap-1 pt-0.5">
+            <button
+              onClick={() => onDuplicateSlide(slide.id)}
+              className="flex items-center gap-1 px-2 py-1 rounded-md text-[11px] text-on-surface-variant/50 hover:text-on-surface hover:bg-on-surface/5 transition-colors"
+            >
+              <Copy className="w-3 h-3" /> Dupe
+            </button>
+            <button
+              onClick={() => onDeleteSlide(slide.id)}
+              disabled={slides.length === 1}
+              className="flex items-center gap-1 px-2 py-1 rounded-md text-[11px] text-on-surface-variant/50 hover:text-error hover:bg-error/5 transition-colors disabled:opacity-30 disabled:pointer-events-none"
+            >
+              <Trash2 className="w-3 h-3" /> Del
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    {/* Add slide row */}
+    <button
+      onClick={onAddSlide}
+      className={cn(
+        "w-full rounded-xl border-2 border-dashed border-outline-variant/30 py-3",
+        "flex items-center justify-center gap-2 text-sm text-on-surface-variant/50",
+        "hover:border-primary/50 hover:text-primary hover:bg-primary/5 transition-all"
+      )}
+    >
+      <Plus className="w-4 h-4" /> Add Slide
+    </button>
+  </div>
+);
 
 // ─── Left panel — Global settings ─────────────────────────────────────────────
 
@@ -252,7 +433,7 @@ const GlobalSettingsPanel = ({
         </label>
         <div className="flex gap-2">
           {ratios.map((r) => {
-            const { w, h, label } = ASPECT_CONFIGS[r];
+            const { label } = ASPECT_CONFIGS[r];
             return (
               <button
                 key={r}
@@ -264,7 +445,6 @@ const GlobalSettingsPanel = ({
                     : "border-outline-variant/30 text-on-surface-variant/50 hover:border-outline-variant/60"
                 )}
               >
-                {/* Mini frame preview */}
                 <div
                   className={cn(
                     "rounded border-2 transition-colors",
@@ -468,6 +648,8 @@ const CarouselEditorPage = () => {
   const [settings, setSettings] = useState<CarouselSettings>(SEED_SETTINGS);
   const [activeId, setActiveId] = useState<string>(SEED_SLIDES[0].id);
   const [panelTab, setPanelTab] = useState<"global" | "slide">("slide");
+  const [editingField, setEditingField] = useState<"headline" | "body" | null>(null);
+  const [showBulkEdit, setShowBulkEdit] = useState(false);
   const filmstripRef = useRef<HTMLDivElement>(null);
 
   const activeIndex = slides.findIndex((s) => s.id === activeId);
@@ -481,15 +663,11 @@ const CarouselEditorPage = () => {
 
   const addSlide = useCallback(() => {
     const id = `s${Date.now()}`;
-    const newSlide: Slide = {
-      id,
-      headline: "New Slide",
-      body: "",
-      textAlign: "center",
-    };
+    const newSlide: Slide = { id, headline: "New Slide", body: "", textAlign: "center" };
     setSlides((prev) => [...prev, newSlide]);
     setActiveId(id);
     setPanelTab("slide");
+    setEditingField(null);
   }, []);
 
   const duplicateSlide = useCallback(
@@ -505,6 +683,7 @@ const CarouselEditorPage = () => {
         return next;
       });
       setActiveId(newId);
+      setEditingField(null);
     },
     [slides]
   );
@@ -517,6 +696,7 @@ const CarouselEditorPage = () => {
       setSlides(newSlides);
       const newActive = newSlides[Math.min(idx, newSlides.length - 1)];
       setActiveId(newActive.id);
+      setEditingField(null);
     },
     [slides]
   );
@@ -528,10 +708,17 @@ const CarouselEditorPage = () => {
       if (next >= 0 && next < slides.length) {
         setActiveId(slides[next].id);
         setPanelTab("slide");
+        setEditingField(null);
       }
     },
     [slides, activeId]
   );
+
+  const selectSlide = useCallback((id: string) => {
+    setActiveId(id);
+    setPanelTab("slide");
+    setEditingField(null);
+  }, []);
 
   return (
     <div className="flex flex-col h-screen bg-surface dark:bg-[#111]">
@@ -553,12 +740,21 @@ const CarouselEditorPage = () => {
           )}
         />
 
-        {/* Slide counter */}
         <span className="text-xs text-on-surface-variant/50 hidden sm:block">
           {activeIndex + 1} / {slides.length} slides
         </span>
 
         <div className="flex-1" />
+
+        {/* Edit All Slides button */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowBulkEdit(true)}
+          className="gap-1.5 border-outline-variant/40 text-on-surface-variant h-8 text-xs hidden sm:flex"
+        >
+          <Rows3 className="w-3.5 h-3.5" /> Edit All Slides
+        </Button>
 
         <Button
           variant="outline"
@@ -579,6 +775,24 @@ const CarouselEditorPage = () => {
       <div className="flex flex-1 overflow-hidden">
         {/* ── Canvas area ────────────────────────────────────────────────────── */}
         <div className="flex-1 flex flex-col items-center justify-center bg-surface-container-lowest/50 overflow-hidden relative">
+          {/* Breadcrumb hint while editing inline */}
+          <AnimatePresence>
+            {editingField && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                className="absolute top-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs text-primary"
+              >
+                <Pencil className="w-3 h-3" />
+                Editing {editingField} — click outside or press Tab to finish
+                <button onClick={() => setEditingField(null)}>
+                  <X className="w-3 h-3 opacity-60 hover:opacity-100" />
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Canvas nav arrows */}
           <button
             onClick={() => goToSlide(-1)}
@@ -619,9 +833,19 @@ const CarouselEditorPage = () => {
                 transition={{ duration: 0.2, ease: "easeOut" }}
                 className="flex flex-col items-center gap-4"
               >
-                <SlideCanvas slide={activeSlide} settings={settings} />
+                <SlideCanvas
+                  slide={activeSlide}
+                  settings={settings}
+                  editingField={editingField}
+                  onFieldClick={(field) => {
+                    setEditingField(field);
+                    setPanelTab("slide");
+                  }}
+                  onPatch={(patch) => patchSlide(activeId, patch)}
+                  onStopEdit={() => setEditingField(null)}
+                />
 
-                {/* Per-slide quick actions below canvas */}
+                {/* Per-slide quick actions */}
                 <div className="flex items-center gap-1.5">
                   <button
                     onClick={() => duplicateSlide(activeId)}
@@ -630,9 +854,7 @@ const CarouselEditorPage = () => {
                     <Copy className="w-3 h-3" /> Duplicate
                   </button>
                   <button
-                    onClick={() => {
-                      setPanelTab("slide");
-                    }}
+                    onClick={() => setPanelTab("slide")}
                     className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs text-on-surface-variant/60 hover:text-on-surface hover:bg-on-surface/5 transition-colors"
                   >
                     <Image className="w-3 h-3" /> Add Image
@@ -651,10 +873,10 @@ const CarouselEditorPage = () => {
 
           {/* Dot indicators */}
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5">
-            {slides.map((s, i) => (
+            {slides.map((s) => (
               <button
                 key={s.id}
-                onClick={() => { setActiveId(s.id); setPanelTab("slide"); }}
+                onClick={() => selectSlide(s.id)}
                 className={cn(
                   "rounded-full transition-all",
                   s.id === activeId
@@ -758,10 +980,7 @@ const CarouselEditorPage = () => {
               >
                 <div
                   className="flex flex-col items-center gap-1 group"
-                  onClick={() => {
-                    setActiveId(slide.id);
-                    setPanelTab("slide");
-                  }}
+                  onClick={() => selectSlide(slide.id)}
                 >
                   <div className="relative">
                     <SlideCanvas
@@ -781,6 +1000,13 @@ const CarouselEditorPage = () => {
                     >
                       {i + 1}
                     </span>
+                    {/* Duplicate on hover */}
+                    <button
+                      onClick={(e) => { e.stopPropagation(); duplicateSlide(slide.id); }}
+                      className="absolute -top-1.5 -left-1.5 w-4 h-4 rounded-full bg-surface-container border border-outline-variant/30 items-center justify-center hidden group-hover:flex transition-all hover:scale-110"
+                    >
+                      <Copy className="w-2 h-2 text-on-surface-variant" />
+                    </button>
                     {/* Delete on hover */}
                     <button
                       onClick={(e) => { e.stopPropagation(); deleteSlide(slide.id); }}
@@ -810,6 +1036,28 @@ const CarouselEditorPage = () => {
           </button>
         </div>
       </div>
+
+      {/* ── Bulk Copy Editor Dialog ───────────────────────────────────────────── */}
+      <Dialog open={showBulkEdit} onOpenChange={setShowBulkEdit}>
+        <DialogContent className="max-w-4xl max-h-[85vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-base">
+              <Rows3 className="w-4 h-4 text-primary" />
+              Edit All Slides
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 overflow-y-auto pr-1 scrollbar-thin">
+            <BulkCopyEditor
+              slides={slides}
+              settings={settings}
+              onPatchSlide={patchSlide}
+              onDuplicateSlide={duplicateSlide}
+              onDeleteSlide={deleteSlide}
+              onAddSlide={addSlide}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

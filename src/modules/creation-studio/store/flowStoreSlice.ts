@@ -22,6 +22,11 @@ export type SelectedGeneration = {
   label: string;
 } | null;
 
+export type PendingCopyEdit = {
+  copyText: string;
+  prompt: string;
+};
+
 type FlowState = {
   nodes: Node[];
   edges: Edge[];
@@ -30,6 +35,7 @@ type FlowState = {
   postCopy: string;
   copyVersions: string[];
   copyEditPrompts: Record<string, string>;
+  pendingCopyEdits: Record<string, PendingCopyEdit>;
   lastCreationPayload: CreateImage | null;
   focusedCardId: string | null;
   selectedImageUuid: string | null;
@@ -50,6 +56,8 @@ type FlowState = {
   setPostCopy: (copy: string) => void;
   addCopyVersion: (copy: string) => void;
   setCopyEditPrompt: (parentGenUuid: string, prompt: string) => void;
+  addPendingCopyEdit: (parentUuid: string, edit: PendingCopyEdit) => void;
+  removePendingCopyEdit: (parentUuid: string) => void;
   setLastCreationPayload: (payload: CreateImage | null) => void;
   setIsLoading: (isLoading: boolean) => void;
   setError: (error: string | null) => void;
@@ -68,6 +76,7 @@ export const useFlowStore = create<FlowState>((set, get) => ({
   postCopy: "",
   copyVersions: [],
   copyEditPrompts: {},
+  pendingCopyEdits: {},
   lastCreationPayload: null,
   focusedCardId: null,
   selectedImageUuid: null,
@@ -98,6 +107,14 @@ export const useFlowStore = create<FlowState>((set, get) => ({
   addCopyVersion: (copy) => set((state) => ({ copyVersions: [...state.copyVersions, copy] })),
   setCopyEditPrompt: (parentGenUuid, prompt) =>
     set((state) => ({ copyEditPrompts: { ...state.copyEditPrompts, [parentGenUuid]: prompt } })),
+  addPendingCopyEdit: (parentUuid, edit) =>
+    set((state) => ({ pendingCopyEdits: { ...state.pendingCopyEdits, [parentUuid]: edit } })),
+  removePendingCopyEdit: (parentUuid) =>
+    set((state) => {
+      const next = { ...state.pendingCopyEdits };
+      delete next[parentUuid];
+      return { pendingCopyEdits: next };
+    }),
   setLastCreationPayload: (lastCreationPayload) => set({ lastCreationPayload }),
   setFocusedCardId: (focusedCardId) => set({ focusedCardId }),
   setSelectedImageUuid: (selectedImageUuid) => set({ selectedImageUuid }),
@@ -111,6 +128,7 @@ export const useFlowStore = create<FlowState>((set, get) => ({
       edges: initialEdges,
       brandData: null,
       copyVersions: [],
+      pendingCopyEdits: {},
       selectedImageUuid: null,
       selectedCopyIndex: null,
       // userPrompt is intentionally preserved across navigation

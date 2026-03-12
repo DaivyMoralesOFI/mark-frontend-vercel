@@ -112,6 +112,15 @@ export const generationStoreSchema = z.object({
 
 export type GenerationStore = z.infer<typeof generationStoreSchema>;
 
+export const editVideoSceneSchema = z.object({
+  creation_uuid: z.string(),
+  parent: z.string(),
+  prompt: z.string().min(1),
+  scene_duration: z.number().default(6),
+});
+
+export type EditVideoScene = z.infer<typeof editVideoSceneSchema>;
+
 export const editCopySchema = z.object({
   creation_uuid: z.string(),
   parent: z.string(),
