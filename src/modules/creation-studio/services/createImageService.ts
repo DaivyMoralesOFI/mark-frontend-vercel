@@ -239,6 +239,7 @@ export const getImageCreated = async (
         prompt: creation.title ?? "",
         status: creation.status ?? "pending",
         content: "",
+        copy: "",
         slices: [],
         created_at: creation.created_at,
       };
@@ -278,6 +279,7 @@ export const getImageCreated = async (
                 status: String(s.status ?? "done"),
                 prompt: String(s.prompt ?? ""),
                 content: String(s.content ?? ""),
+                copy: String(s.copy ?? ""),
                 created_at: s.created_at as string | undefined,
               }),
             ),
@@ -427,14 +429,14 @@ export const setRegenerateCopy = async (
   params: RegenerateCopy,
 ): Promise<RegenerateCopyResponse> => {
   try {
-    const response = await DJANGO_CLIENT.post(generationEndpoint, {
+    const response = await DJANGO_CLIENT.post(creationsEndpoint, {
       type: "edit_copy",
       ...params,
     });
 
     return validateSchemaSoft(regenerateCopyResponseSchema, response.data, {
       operation: "regenerateCopy",
-      endpoint: generationEndpoint,
+      endpoint: creationsEndpoint,
     }) as RegenerateCopyResponse;
   } catch (error) {
     if (isApiError(error)) {

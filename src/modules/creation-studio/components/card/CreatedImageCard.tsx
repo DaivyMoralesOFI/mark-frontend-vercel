@@ -8,7 +8,6 @@ const COPY_PREVIEW_LENGTH = 280;
 
 export function CreatedImageCard({
   image,
-  creation_uuid,
   isProcessing: firebaseProcessing,
   copy,
   variant = "combined",
@@ -21,7 +20,6 @@ export function CreatedImageCard({
   hidePromptBubble,
 }: {
   image: File | string;
-  creation_uuid?: string; // reserved for future use
   isProcessing?: boolean;
   prompt?: string;
   copy?: string;

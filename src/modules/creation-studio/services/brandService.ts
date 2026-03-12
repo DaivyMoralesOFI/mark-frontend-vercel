@@ -32,28 +32,6 @@ type ExtractBrandResponse = {
   brand_dna: ExtractBrandDnaPayload;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type BrandDetailResponse = {
-  uuid: string;
-  name: string;
-  slug: string;
-  page_url: string;
-  logo_url: string;
-  industry: string;
-  dna?: {
-    primary_color?: string;
-    secondary_color?: string;
-    accent_color?: string;
-    complementary_color?: string;
-    font_body_family?: string;
-    font_headings_family?: string;
-    voice_tone?: string;
-    archetype?: string;
-    target_audience?: string;
-    keywords?: string;
-    description?: string;
-  } | null;
-};
 
 type BrandListItem = {
   uuid: string;

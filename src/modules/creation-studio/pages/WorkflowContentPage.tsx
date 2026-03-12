@@ -80,7 +80,7 @@ type TreeNode = {
 function buildFlowFromGenerations(
   generations: GenerationStore[],
   isProcessing: boolean,
-  _isDone: boolean,
+  isDone: boolean,
   selectedGenUuid?: string,
   alignment: "horizontal" | "vertical" = "vertical",
   postCopy?: string,
@@ -88,6 +88,7 @@ function buildFlowFromGenerations(
   copyEditPrompts: Record<string, string> = {},
   pendingCopyEdits: Record<string, PendingCopyEdit> = {},
 ): { nodes: Node[]; edges: Edge[] } {
+  void isDone;
   const withImages = generations.filter(
     (g) =>
       g.img_url?.startsWith("http") ||
@@ -1011,13 +1012,7 @@ function generationsFingerprint(generations: GenerationStore[]): string {
     .join("|");
 }
 
-const WorkflowContentInner = ({
-  showPreview,
-  setShowPreview,
-}: {
-  showPreview: boolean;
-  setShowPreview: (val: boolean) => void;
-}) => {
+const WorkflowContentInner = () => {
   const { uuid } = useParams<{ uuid: string }>();
   const prevFingerprintRef = useRef("");
   const setSelectedGeneration = useFlowStore((s) => s.setSelectedGeneration);
@@ -1036,7 +1031,7 @@ const WorkflowContentInner = ({
   }, [resetFlow]);
 
   // Subscribe to creation status
-  const { isProcessing, isDone: _isDone, hasSubscriptionError, subscriptionError } =
+  const { isProcessing, isDone, hasSubscriptionError, subscriptionError } =
     useCreationStatus(uuid ?? "");
 
   // Subscribe to generations subcollection
@@ -1118,7 +1113,7 @@ const WorkflowContentInner = ({
     const { nodes: built, edges: builtEdges } = buildFlowFromGenerations(
       generations,
       isProcessing,
-      _isDone,
+      isDone,
       selectedGeneration?.uuid,
       alignment,
       postCopy,
@@ -1359,10 +1354,7 @@ const WorkflowContentPage = () => {
       <CreationsHistorySidebar />
       <div className="flex-1 h-full relative">
         <ReactFlowProvider>
-          <WorkflowContentInner
-            showPreview={showPreview}
-            setShowPreview={setShowPreview}
-          />
+          <WorkflowContentInner />
         </ReactFlowProvider>
 
         <AnimatePresence>
