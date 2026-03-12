@@ -21,7 +21,7 @@ export function CreatedImageCard({
   hidePromptBubble,
 }: {
   image: File | string;
-  creation_uuid?: string;
+  creation_uuid?: string; // reserved for future use
   isProcessing?: boolean;
   prompt?: string;
   copy?: string;
@@ -33,7 +33,7 @@ export function CreatedImageCard({
   isEditPending?: boolean;
   hidePromptBubble?: boolean;
 }) {
-  const { userPrompt, postCopy, focusedCardId, setFocusedCardId, addCopyVersion } = useFlowStore();
+  const { userPrompt, postCopy, focusedCardId, setFocusedCardId } = useFlowStore();
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const componentId = useRef(crypto.randomUUID()).current;

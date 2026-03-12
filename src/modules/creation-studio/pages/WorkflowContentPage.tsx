@@ -80,7 +80,7 @@ type TreeNode = {
 function buildFlowFromGenerations(
   generations: GenerationStore[],
   isProcessing: boolean,
-  isDone: boolean,
+  _isDone: boolean,
   selectedGenUuid?: string,
   alignment: "horizontal" | "vertical" = "vertical",
   postCopy?: string,
@@ -763,7 +763,7 @@ const CopyNode = ({ data }: NodeProps) => {
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (containerRef.current && !containerRef.current.contains(event.target as globalThis.Node)) {
         setShowEditInput(false);
         setFocusedCardId(null);
       }
@@ -1036,7 +1036,7 @@ const WorkflowContentInner = ({
   }, [resetFlow]);
 
   // Subscribe to creation status
-  const { isProcessing, isDone, hasSubscriptionError, subscriptionError } =
+  const { isProcessing, isDone: _isDone, hasSubscriptionError, subscriptionError } =
     useCreationStatus(uuid ?? "");
 
   // Subscribe to generations subcollection
@@ -1118,7 +1118,7 @@ const WorkflowContentInner = ({
     const { nodes: built, edges: builtEdges } = buildFlowFromGenerations(
       generations,
       isProcessing,
-      isDone,
+      _isDone,
       selectedGeneration?.uuid,
       alignment,
       postCopy,

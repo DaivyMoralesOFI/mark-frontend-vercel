@@ -45,7 +45,7 @@ export const useEditImage = () => {
 
   return {
     ...mutation,
-    imgUrl: mutation.data?.img_url,
+    imgUrl: mutation.data?.generation?.content,
   };
 };
 

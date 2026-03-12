@@ -150,6 +150,7 @@ export const getCreatedImageSchema = z.object({
   prompt: z.string().optional().default(""),
   status: z.string(),
   content: z.string().optional().default(""),
+  copy: z.string().optional().default(""),
   slices: z.array(generationSliceSchema).optional().default([]),
   created_at: z.string().optional(),
 });

@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState, memo, useCallback, useRef } from "react";
 import ReactFlow, {
   Background,
-  Controls,
   NodeTypes,
   EdgeTypes,
   Handle,
@@ -117,7 +116,7 @@ const FlowCanvas = ({
   const setEdges = useFlowStore((s) => s.setEdges);
   const brandData = useFlowStore((s) => s.brandData);
   const isLoading = useFlowStore((s) => s.isLoading);
-  const resetFlow = useFlowStore((s) => s.resetFlow);
+
 
   const { fitView, zoomIn, zoomOut } = useReactFlow();
 

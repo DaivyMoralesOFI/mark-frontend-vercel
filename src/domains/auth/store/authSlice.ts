@@ -122,7 +122,8 @@ export const registerUser = createAsyncThunk<
       // Store tokens in localStorage - Note: register might still use old structure if not updated
       // but for consistency with login:
       const tokens = (response as any).data ? (response as any).data : (response as any).tokens;
-      const user = (response as any).data ? (response as any).data.user : (response as any).user;
+      const _user = (response as any).data ? (response as any).data.user : (response as any).user;
+      void _user;
       
       localStorage.setItem('token', tokens.access_token || tokens.token);
       localStorage.setItem('refreshToken', tokens.refresh_token || tokens.refreshToken);

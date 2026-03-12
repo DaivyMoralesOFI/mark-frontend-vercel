@@ -32,6 +32,7 @@ type ExtractBrandResponse = {
   brand_dna: ExtractBrandDnaPayload;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type BrandDetailResponse = {
   uuid: string;
   name: string;

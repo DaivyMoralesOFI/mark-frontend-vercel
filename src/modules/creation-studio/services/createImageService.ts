@@ -254,6 +254,7 @@ export const getImageCreated = async (
           status: String(s.status ?? "done"),
           prompt: String(s.prompt ?? ""),
           content: String(s.content ?? ""),
+          copy: String(s.copy ?? ""),
           created_at: s.created_at as string | undefined,
         }));
 

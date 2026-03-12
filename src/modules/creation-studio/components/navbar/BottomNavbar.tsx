@@ -6,6 +6,7 @@ import {
   SlidersHorizontal,
   Maximize2,
   Hash,
+  Loader,
 } from "lucide-react";
 import PostTypeSelector from "@/modules/creation-studio/components/dropdown/PostTypeSelector";
 import SocialMediaSelector from "../dropdown/SocialMediaSelector";
