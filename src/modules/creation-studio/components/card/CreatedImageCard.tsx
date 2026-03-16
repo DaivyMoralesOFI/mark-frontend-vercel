@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { transformGoogleDriveUrl } from "@/core/lib/imageUtils";
-import { ArrowUp, Loader, Copy, Check, ChevronDown, Sparkles, CheckCircle2, Circle, LayoutGrid } from "lucide-react";
+import { ArrowUp, Loader, Copy, Check, ChevronDown, Sparkles, CheckCircle2, Circle, LayoutGrid, Download } from "lucide-react";
 import { useFlowStore } from "../../store/flowStoreSlice";
 import sampleImage from "@/assets/img/sample_mark_respond.png";
 
@@ -127,6 +127,24 @@ export function CreatedImageCard({
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!imageUrl || imageUrl.includes("undefined")) return;
+    try {
+      const res = await fetch(imageUrl);
+      const blob = await res.blob();
+      const ext = isVideo ? "mp4" : "png";
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `mark-${Date.now()}.${ext}`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      window.open(imageUrl, "_blank");
+    }
+  };
+
   const imageUrl =
     image instanceof File
       ? URL.createObjectURL(image)
@@ -184,7 +202,7 @@ export function CreatedImageCard({
       <div className="relative w-full">
         <div className="w-full rounded-[1.5rem] overflow-hidden shadow-2xl shadow-black/10 dark:shadow-black/40 bg-white dark:bg-[#18181B] border border-black/[0.06] dark:border-white/[0.06]">
           {/* Content (Image or Video) */}
-          <div className="relative cursor-pointer" onClick={handleImageClick}>
+          <div className="group relative cursor-pointer" onClick={handleImageClick}>
             {isVideo ? (
               <video
                 src={imageUrl}
@@ -222,6 +240,15 @@ export function CreatedImageCard({
                 <Loader className="w-7 h-7 text-white animate-spin mb-2" />
                 <span className="text-white text-sm font-medium">Re-imagining...</span>
               </div>
+            )}
+            {!isLoading && imageUrl && !imageUrl.includes("undefined") && (
+              <button
+                onClick={handleDownload}
+                className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1.5 rounded-lg bg-black/40 hover:bg-black/60 text-white backdrop-blur-sm"
+                title="Download"
+              >
+                <Download className="w-3.5 h-3.5" />
+              </button>
             )}
           </div>
 
