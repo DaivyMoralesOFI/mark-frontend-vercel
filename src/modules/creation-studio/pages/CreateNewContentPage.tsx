@@ -31,7 +31,6 @@ import BrandVoiceNode from "@/modules/creation-studio/components/flow/BrandVoice
 
 import { cn } from "@/shared/utils/utils";
 import { Globe, ArrowUp, Loader, Dna, ChevronRight, Loader2, ZoomIn, ZoomOut, Maximize, ArrowLeft } from "lucide-react";
-import { CreationsHistorySidebar } from "@/modules/creation-studio/components/sidebar/CreationsHistorySidebar";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -615,9 +614,6 @@ const CreateNewContentPage = () => {
 
   return (
     <div className="w-full h-full flex">
-      {/* Left creations history panel */}
-      <CreationsHistorySidebar />
-
       {/* Main canvas area */}
       <div className="flex-1 h-full relative" ref={containerRef}>
       <StartingAlert open={isAlertOpen} onOpenChange={setIsAlertOpen} />

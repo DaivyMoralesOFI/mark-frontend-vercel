@@ -6,7 +6,6 @@
 //
 // The component leverages custom hooks and modular subcomponents for a clean, maintainable structure.
 
-import { useState, useEffect } from "react";
 import { Loader } from "lucide-react";
 import {
   Dialog,
@@ -16,14 +15,6 @@ import {
 } from "@/shared/components/ui/Dialog";
 import { Button } from "@/shared/components/ui/Button";
 import { Label } from "@/shared/components/ui/Label";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/shared/components/ui/Select";
 import { ScrollArea } from "@/shared/components/ui/ScrollArea";
 
 import { usePost } from "../hooks/usePost";
@@ -38,6 +29,7 @@ import { SuccessNotification } from "./SuccessNotification";
 
 import { cn } from "@/shared/utils/utils";
 import { useAppSelector, RootState } from "@/core/store/store";
+import { useBrands } from "@/shared/hooks/useBrands";
 
 
 /**
@@ -66,42 +58,8 @@ interface CreatePostModalProps {
  * State and actions are managed via the usePost custom hook.
  */
 export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
-  // Local state for company dropdown
-  const [companies, setCompanies] = useState<
-    Array<{ name: string; url: string }>
-  >([]);
-  const [selectedCompany, setSelectedCompany] = useState<string>("");
-
-  // Fetch companies list from API when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      fetch("https://n8n.sofiatechnology.ai/webhook/brands-list")
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          return response.text();
-        })
-        .then((text) => {
-          if (!text || text.trim() === "") {
-            console.warn("Empty response from brands API");
-            setCompanies([]);
-            return;
-          }
-          const data = JSON.parse(text);
-          setCompanies(data.brands || []);
-        })
-        .catch((error) => {
-          console.error("Failed to load companies:", error);
-          setCompanies([]);
-        });
-    }
-  }, [isOpen]);
-
-  // Get the URL of the selected company
-  const selectedCompanyUrl = companies.find(
-    (c) => c.name === selectedCompany,
-  )?.url;
+  const { selectedBrand } = useBrands();
+  const selectedCompanyUrl = selectedBrand?.url;
 
   // usePost hook provides all state, actions, and validators for the post creation flow
   const {
@@ -210,26 +168,6 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
                 </div> */}
                 </div>
 
-                {/* Company Selection - Only shown when Use Brand DNA is checked */}
-
-                <div className="space-y-2">
-                  <Label htmlFor="company">Select Company *</Label>
-                  <Select
-                    value={selectedCompany}
-                    onValueChange={(value) => setSelectedCompany(value)}
-                  >
-                    <SelectTrigger id="company">
-                      <SelectValue placeholder="Choose a company" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {companies.map((company) => (
-                        <SelectItem key={company.name} value={company.name}>
-                          {company.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
                 <AISuggestion />
                 <div className="flex w-full flex-col relative gap-3 m-0 p-2 border border-outline rounded-md">
                   {/* <div className="flex flex-row justify-start items-start gap-0">

@@ -1,3 +1,4 @@
+import { AnimatePresence } from "framer-motion";
 import { Textarea } from "@/shared/components/ui/Textarea";
 import {
   ArrowUp,
@@ -11,7 +12,6 @@ import {
 import PostTypeSelector from "@/modules/creation-studio/components/dropdown/PostTypeSelector";
 import SocialMediaSelector from "../dropdown/SocialMediaSelector";
 import PostToneSelector from "../dropdown/PostToneSelector";
-import BrandDnaSelector from "../dropdown/BrandDnaSelector";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
@@ -23,10 +23,10 @@ import { CreationProcessingLoader } from "@/modules/creation-studio/components/l
 
 import { useCreateImage, useEditImage } from "../../hooks/useCreateImage";
 import { useNavigate, useParams } from "react-router-dom";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useMemo } from "react";
 import { BrandExtractor } from "@/modules/creation-studio/schemas/BrandSchema";
-import { useAppDispatch } from "@/core/store/store";
-import { setSelectedBrandId } from "../../store/createPostSlice";
+import { useAppSelector, RootState } from "@/core/store/store";
+import { useBrands } from "../../hooks/useBrands";
 import { useFlowStore } from "../../store/flowStoreSlice";
 import { cn } from "@/shared/utils/utils";
 import { useQueryClient } from "@tanstack/react-query";
@@ -118,12 +118,16 @@ interface BottomNavbarProps {
 
 const BottomNavbar = ({ centered = false }: BottomNavbarProps) => {
   const [start_workflow, setStartWorkflow] = useState(false);
-  const [selectedBrand, setSelectedBrand] =
-    useState<BrandExtractor | null>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
+
+  const selectedBrandId = useAppSelector((state: RootState) => state.brands.selectedBrandId);
+  const { data: allBrands } = useBrands();
+  const selectedBrand = useMemo<BrandExtractor | null>(
+    () => allBrands?.find((b) => b._meta.uuid === selectedBrandId) ?? null,
+    [allBrands, selectedBrandId]
+  );
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const queryClient = useQueryClient();
   const { mutate: startCreation } = useCreateImage();
@@ -145,20 +149,8 @@ const BottomNavbar = ({ centered = false }: BottomNavbarProps) => {
     },
   });
 
-  const [selectedBrandName, setSelectedBrandName] = useState<string | null>(
-    null
-  );
   const promptValue = _form.watch("prompt");
   const hasPrompt = promptValue?.trim().length > 0;
-
-  const handleBrandChange = (
-    brandName: string | null,
-    brand: BrandExtractor | null
-  ) => {
-    setSelectedBrandName(brandName);
-    setSelectedBrand(brand);
-    dispatch(setSelectedBrandId(brandName));
-  };
 
   // Auto-resize textarea
   const handleTextareaChange = useCallback(() => {
@@ -257,22 +249,12 @@ const BottomNavbar = ({ centered = false }: BottomNavbarProps) => {
     }
   };
 
-  if (start_workflow) {
-    return (
-      <div className={cn(
-        centered
-          ? "w-full flex flex-col items-center pointer-events-auto"
-          : "fixed bottom-0 left-0 w-full px-4 pb-5 flex flex-col items-center z-1000 pointer-events-none"
-      )}>
-        <div className="w-full max-w-[540px] pointer-events-auto">
-          <CreationProcessingLoader />
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className={cn(
+    <>
+      <AnimatePresence>
+        {start_workflow && <CreationProcessingLoader />}
+      </AnimatePresence>
+      {!start_workflow && <div className={cn(
       centered
         ? "w-full flex flex-col items-center pointer-events-auto"
         : "fixed bottom-0 left-0 w-full px-4 pb-5 flex flex-col items-center z-1000 pointer-events-none"
@@ -327,7 +309,7 @@ const BottomNavbar = ({ centered = false }: BottomNavbarProps) => {
               "border rounded-[1.25rem] shadow-xl",
               "transition-all duration-300 ease-out",
               isFocused || hasPrompt
-                ? "border-primary/40 shadow-primary/5"
+                ? "border-outline/60 dark:border-outline/30 shadow-black/5"
                 : "border-outline-variant/60 dark:border-outline/10 shadow-black/5"
             )}
           >
@@ -425,7 +407,7 @@ const BottomNavbar = ({ centered = false }: BottomNavbarProps) => {
                           ? `Describe what to change in "${selectedGeneration?.label}"...`
                           : "Describe your post idea..."
                       }
-                      rows={1}
+                      rows={2}
                       onFocus={() => setIsFocused(true)}
                       onBlur={() => setIsFocused(false)}
                       onChange={(e) => {
@@ -435,10 +417,10 @@ const BottomNavbar = ({ centered = false }: BottomNavbarProps) => {
                       onKeyDown={handleKeyDown}
                       className={cn(
                         "flex-1 resize-none shadow-none border-none bg-transparent",
-                        "text-on-surface text-[15px] leading-relaxed",
-                        "placeholder:text-on-surface-variant/40",
+                        "text-on-surface text-[22px] leading-relaxed",
+                        "placeholder:text-on-surface-variant/35",
                         "focus-visible:ring-0 focus-visible:ring-offset-0",
-                        "px-0 py-1 min-h-[28px] max-h-[120px]"
+                        "px-0 py-1 min-h-[44px] max-h-[160px]"
                       )}
                     />
                   )}
@@ -468,12 +450,6 @@ const BottomNavbar = ({ centered = false }: BottomNavbarProps) => {
                 >
                   <Link className="w-4 h-4" strokeWidth={1.8} />
                 </button>
-
-                {/* Brand DNA */}
-                <BrandDnaSelector
-                  value={selectedBrandName}
-                  onChange={handleBrandChange}
-                />
 
                 {/* Settings (hidden in centered mode as it's active above) */}
                 {!centered && (
@@ -532,7 +508,8 @@ const BottomNavbar = ({ centered = false }: BottomNavbarProps) => {
       <p className="text-[10px] text-muted-foreground/30 mt-2 pointer-events-none select-none">
         Mark AI will generate content using your Brand DNA
       </p>
-    </div>
+    </div>}
+    </>
   );
 };
 

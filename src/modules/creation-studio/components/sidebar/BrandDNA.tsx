@@ -1,11 +1,4 @@
 import { useBrands, useActiveBrand } from "@/modules/creation-studio/hooks/useBrands";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/shared/components/ui/Select";
 import { ScrollArea } from "@/shared/components/ui/ScrollArea";
 import { useGoogleFonts } from "@/shared/hooks/useGoogleFonts";
 import { cn } from "@/shared/utils/utils";
@@ -16,10 +9,9 @@ import {
   ExternalLink,
   Sparkles,
 } from "lucide-react";
-import { useAppSelector, useAppDispatch, RootState } from "@/core/store/store";
-import { setSelectedBrandId } from "@/modules/creation-studio/store/createPostSlice";
+import { useAppSelector, RootState } from "@/core/store/store";
 import { BrandExtractor } from "@/modules/creation-studio/schemas/BrandSchema";
-import { useMemo, useEffect, useState, useCallback } from "react";
+import { useMemo, useState } from "react";
 
 /* ─────────────────────────────────────────────
    Collapsible section — lightweight, no Radix
@@ -66,9 +58,8 @@ const Section = ({
    Main BrandDNA Component
    ───────────────────────────────────────────── */
 const BrandDNA = () => {
-  const dispatch = useAppDispatch();
   const selectedBrandId = useAppSelector(
-    (state: RootState) => state.createPost.selectedBrandId
+    (state: RootState) => state.brands.selectedBrandId
   );
 
   const { data: allBrands, isLoading: brandsLoading } = useBrands();
@@ -76,7 +67,7 @@ const BrandDNA = () => {
 
   const displayBrand: BrandExtractor | null | undefined = useMemo(() => {
     if (selectedBrandId && allBrands) {
-      return allBrands.find((b) => b.brand_identity.name === selectedBrandId) ?? null;
+      return allBrands.find((b) => b._meta.uuid === selectedBrandId) ?? null;
     }
     return activeBrand;
   }, [selectedBrandId, allBrands, activeBrand]);
@@ -86,17 +77,6 @@ const BrandDNA = () => {
   const headfont = displayBrand?.typography?.headings?.font_family;
   const bodyfont = displayBrand?.typography?.body?.font_family;
   useGoogleFonts([headfont || "", bodyfont || ""].filter(Boolean));
-
-  useEffect(() => {
-    if (!selectedBrandId && activeBrand) {
-      dispatch(setSelectedBrandId(activeBrand.brand_identity.name));
-    }
-  }, [activeBrand, selectedBrandId, dispatch]);
-
-  const handleBrandSwitch = useCallback(
-    (brandName: string) => dispatch(setSelectedBrandId(brandName)),
-    [dispatch]
-  );
 
   if (isLoading) {
     return (
@@ -142,36 +122,6 @@ const BrandDNA = () => {
               Brand DNA
             </span>
           </div>
-          {allBrands && allBrands.length > 1 && (
-            <Select
-              value={displayBrand.brand_identity.name}
-              onValueChange={handleBrandSwitch}
-            >
-              <SelectTrigger className="w-auto max-w-[120px] h-7 text-[11px] border-outline-variant/20 rounded-full px-2.5 gap-1 bg-transparent">
-                <SelectValue placeholder="Switch" />
-              </SelectTrigger>
-              <SelectContent className="z-[99999]">
-                {allBrands.map((brand) => (
-                  <SelectItem
-                    key={brand._meta.uuid}
-                    value={brand.brand_identity.name}
-                    className="text-xs"
-                  >
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="w-2.5 h-2.5 rounded-full"
-                        style={{
-                          backgroundColor:
-                            brand.color_system?.roles?.primary?.hex ?? "#888",
-                        }}
-                      />
-                      {brand.brand_identity.name}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
         </div>
 
         {/* Brand card — compact */}

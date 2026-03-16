@@ -4,23 +4,27 @@ import {
   Bot,
   Calendar,
   LayoutDashboard,
-  ChevronRight,
   LogOut,
   Plus,
-  MoreVertical,
   Sun,
   Moon,
   Monitor,
+  Loader2,
+  Check,
+  Sparkles,
+  ChevronsUpDown,
+  ChevronRight,
+  HelpCircle,
+  Building2,
+  Palette,
 } from "lucide-react";
 import { useTheme } from "@/core/context/ThemeProvider";
 import { cn } from "@/shared/utils/utils";
-import { useState } from "react";
 import {
   Sidebar as SidebarComponent,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -43,369 +47,465 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/shared/components/ui/Collapsible";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/shared/components/ui/Avatar";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { formatDistanceToNow } from "date-fns";
 
 import { useAuth } from "@/domains/auth/hooks/useAuth";
+import { useBrands } from "@/shared/hooks/useBrands";
+import { useCreations } from "@/modules/creation-studio/hooks/useCreateImage";
 import { LinkedInIcon } from "@/shared/components/icons/LinkedInIcon";
 import { InstagramIcon } from "@/shared/components/icons/InstagramIcon";
 import { TikTokIcon } from "@/shared/components/icons/TikTokIcon";
 import { FacebookIcon } from "@/shared/components/icons/FacebookIcon";
 
-// Navigation Groups
-const navigationGroups = [
-  {
-    label: "Navigation",
-    items: [
-      {
-        title: "Dashboard",
-        icon: LayoutDashboard,
-        isActive: false,
-        to: "/app/dashboard",
-        items: [
-          {
-            title: "Overview",
-            url: "/app/dashboard",
-          },
-          {
-            title: "LinkedIn",
-            url: "/app/dashboard?platform=linkedin",
-            icon: LinkedInIcon,
-          },
-          {
-            title: "Instagram",
-            url: "/app/dashboard?platform=instagram",
-            icon: InstagramIcon,
-          },
-          {
-            title: "TikTok",
-            url: "/app/dashboard?platform=tiktok",
-            icon: TikTokIcon,
-          },
-          {
-            title: "Facebook",
-            url: "/app/dashboard?platform=facebook",
-            icon: FacebookIcon,
-          },
-        ],
-      },
-      { title: "Calendar", icon: Calendar, isActive: false, to: "/app/calendar" },
-      { title: "Campaigns", icon: TrendingUp, isActive: false, to: "/app/campaigns" },
-    ],
-  },
-  {
-    label: "Account",
-    items: [
-      {
-        title: "Settings",
-        icon: Settings,
-        isActive: false,
-        to: "/settings",
-      },
-      {
-        title: "Chat with Mark",
-        icon: Bot,
-        isActive: false,
-        to: "/app/chat",
-      },
-    ],
-  },
-];
+/* ─── Status dot colours ──────────────────────────────────── */
+const STATUS_DOT: Record<string, string> = {
+  pending:    "bg-amber-400",
+  processing: "bg-blue-400 animate-pulse",
+  done:       "bg-emerald-400",
+  failed:     "bg-red-400",
+};
 
+function relativeTime(dateStr: string) {
+  try {
+    return formatDistanceToNow(new Date(dateStr), { addSuffix: true });
+  } catch {
+    return "";
+  }
+}
+
+/* ─── Flat nav items ───────────────────────────────────────── */
+const NAV_ITEMS = [
+  {
+    title: "Dashboard",
+    icon: LayoutDashboard,
+    to: "/app/dashboard",
+    sub: [
+      { title: "Overview",   url: "/app/dashboard" },
+      { title: "LinkedIn",   url: "/app/dashboard?platform=linkedin",  icon: LinkedInIcon },
+      { title: "Instagram",  url: "/app/dashboard?platform=instagram", icon: InstagramIcon },
+      { title: "TikTok",     url: "/app/dashboard?platform=tiktok",    icon: TikTokIcon },
+      { title: "Facebook",   url: "/app/dashboard?platform=facebook",  icon: FacebookIcon },
+    ],
+  },
+  { title: "Calendar",       icon: Calendar,   to: "/app/calendar"    },
+  { title: "Campaigns",      icon: TrendingUp, to: "/app/campaigns"   },
+  { title: "Chat with Mark", icon: Bot,        to: "/app/chat"        },
+] as const;
+
+/* ─── Shared item class ────────────────────────────────────── */
+const itemCls = (active: boolean) =>
+  cn(
+    "h-10 rounded-lg transition-colors",
+    "hover:bg-neutral-200/60 dark:hover:bg-white/[0.06]",
+    active
+      ? "bg-neutral-200/80 dark:bg-white/[0.08] text-neutral-900 dark:text-white"
+      : "text-neutral-500 dark:text-white/60"
+  );
+
+/* ══════════════════════════════════════════════════════════════
+   Sidebar
+═══════════════════════════════════════════════════════════════ */
 export function Sidebar() {
   const { state, setOpen } = useSidebar();
   const isExpanded = state === "expanded";
   const { theme, setTheme } = useTheme();
-  const profileUser = null as { user_name?: string; email?: string } | null;
-
-  const themeOptions = [
-    { value: "light" as const, icon: Sun, label: "Light" },
-    { value: "dark" as const, icon: Moon, label: "Dark" },
-    { value: "system" as const, icon: Monitor, label: "System" },
-  ];
-  const location = useLocation();
-  const navigate = useNavigate();
+  const location  = useLocation();
+  const navigate  = useNavigate();
   const { logout } = useAuth();
 
-  const handleLogout = () => {
-    logout();
-    navigate("/auth");
-  };
-
+  const profileUser = null as { user_name?: string; email?: string } | null;
   const displayName = profileUser?.user_name || "Sienna Hewitt";
+  const initials    = displayName.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
 
-  const mockBrands = [
-    { id: "1", name: "Ofi Services", url: "@ofiservices" },
-    { id: "2", name: "EAOS", url: "@eaos" },
-    { id: "3", name: "Anthorpic", url: "@anthorpic" },
+  const { brands, selectedBrand, selectedBrandId, selectBrand, loading: brandsLoading } = useBrands();
+  const { data: creations, isLoading: creationsLoading } = useCreations();
+  const recentCreations = creations
+    ? [...creations].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 8)
+    : [];
+
+  const themeOptions = [
+    { value: "light"  as const, icon: Sun,     label: "Light"  },
+    { value: "dark"   as const, icon: Moon,    label: "Dark"   },
+    { value: "system" as const, icon: Monitor, label: "System" },
   ];
-
-  const [activeBrand, setActiveBrand] = useState(mockBrands[0]);
 
   return (
     <SidebarComponent
       variant="sidebar"
       collapsible="icon"
-      className={`bg-transparent dark:bg-[#1C1C1C] border-outline-variant transition-all ${!isExpanded ? "cursor-pointer" : ""}`}
-      onClick={() => {
-        if (!isExpanded) {
-          setOpen(true);
-        }
-      }}
+      className={cn(
+        "bg-neutral-100 dark:bg-[#1a1a1a] border-neutral-200 dark:border-white/[0.06] transition-all",
+        !isExpanded && "cursor-pointer"
+      )}
+      onClick={() => { if (!isExpanded) setOpen(true); }}
     >
-      {/* 1. Sidebar Header: Logo */}
-      <SidebarHeader className={`transition-all ${isExpanded ? "p-4" : "p-2"}`}>
+      {/* ── Header ───────────────────────────────────────────── */}
+      <SidebarHeader className={cn("transition-all", isExpanded ? "px-4 pt-5 pb-3" : "p-2")}>
         {isExpanded ? (
-          <div className="flex items-center justify-between gap-2 px-1">
-            <div className="flex items-center gap-2">
-              <div className="flex aspect-square items-center justify-center size-10">
-                <img src="/mark-apple-icon.png" alt="Logo" className="w-full h-full object-contain" />
-              </div>
-              <div className="flex flex-col leading-none">
-                <span className="font-semibold text-sm">Mark</span>
-                <span className="text-muted-foreground text-[10px]">v1.0</span>
-              </div>
-            </div>
-            <SidebarTrigger className="text-muted-foreground/50 hover:text-foreground" />
+          <div className="flex items-center justify-between">
+            <span className="text-[18px] font-bold text-neutral-900 dark:text-white tracking-tight leading-none">
+              Mark
+            </span>
+            <SidebarTrigger className="text-neutral-400 dark:text-white/25 hover:text-neutral-600 dark:hover:text-white/60 transition-colors" />
           </div>
         ) : (
-          <div className="flex flex-col gap-2 items-center justify-center relative group/trigger">
-            <div className="flex aspect-square items-center justify-center size-10 mx-auto">
-              <img src="/mark-apple-icon.png" alt="Logo" className="w-full h-full object-contain" />
-            </div>
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/trigger:opacity-100 transition-opacity">
-              <SidebarTrigger className="size-12 text-muted-foreground bg-surface border border-outline-variant rounded-full hover:text-foreground shadow-sm" />
-            </div>
+          <div className="flex items-center justify-center">
+            <SidebarTrigger className="size-8 text-neutral-400 dark:text-white/30 hover:text-neutral-700 dark:hover:text-white/70 hover:bg-neutral-200/60 dark:hover:bg-white/[0.06] rounded-lg transition-colors" />
           </div>
         )}
       </SidebarHeader>
-      {/* 2. Sidebar Content: Navigation Groups */}
-      <SidebarContent className={`transition-all ${isExpanded ? "px-3" : "px-0"}`}>
-        <SidebarGroup className="py-0">
+
+      {/* ── Content ──────────────────────────────────────────── */}
+      <SidebarContent className="px-2 gap-0">
+
+        {/* New post */}
+        <SidebarGroup className="py-1.5">
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
                 asChild
-                className="group-data-[collapsible=icon]:!p-2 text-foreground hover:bg-muted/50 h-9"
+                tooltip="New post"
+                className={cn(
+                  "h-10 rounded-lg hover:bg-neutral-200/60 dark:hover:bg-white/[0.06] transition-colors",
+                  "group-data-[collapsible=icon]:!p-0 group-data-[collapsible=icon]:justify-center"
+                )}
               >
                 <Link to="/app/creation-studio/new/content">
-                  <Plus className="w-[18px] h-[18px] text-muted-foreground group-data-[active=true]/menu-button:text-foreground" />
-                  <span className="font-medium text-[13px]">Create post</span>
+                  <div className="w-7 h-7 rounded-full bg-neutral-200 dark:bg-white/10 flex items-center justify-center shrink-0">
+                    <Plus className="w-4 h-4 text-neutral-500 dark:text-white/70" strokeWidth={2} />
+                  </div>
+                  <span className="text-[14px] text-neutral-700 dark:text-white/80 font-normal">New post</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
-        {
-          navigationGroups.map((group) => (
-            <SidebarGroup key={group.label}>
-              <SidebarGroupLabel className="uppercase text-muted-foreground/70 text-[11px] font-medium tracking-wider px-2 mt-2 mb-1">
-                {group.label}
-              </SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {group.items.map((item) =>
-                    item.items ? (
-                      // Collapsible Item (Dashboard)
-                      <Collapsible
-                        key={item.title}
-                        asChild
-                        defaultOpen={item.isActive}
-                        className="group/collapsible"
-                      >
-                        <SidebarMenuItem>
-                          <CollapsibleTrigger asChild>
-                            <SidebarMenuButton
-                              tooltip={item.title}
-                              isActive={
-                                location.pathname === item.to ||
-                                item.items.some(
-                                  (sub) => location.pathname === sub.url
-                                )
-                              }
-                              className="font-medium text-muted-foreground/80 hover:text-foreground h-9 hover:bg-muted/50 data-[active=true]:bg-muted/80 data-[active=true]:text-foreground"
-                            >
-                              <item.icon className="w-[18px] h-[18px] text-muted-foreground group-data-[active=true]/menu-button:text-foreground" />
-                              <span className="text-[13px]">{item.title}</span>
-                              <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 text-muted-foreground/50" />
-                            </SidebarMenuButton>
-                          </CollapsibleTrigger>
-                          <CollapsibleContent>
-                            <SidebarMenuSub>
-                              {item.items.map((subItem) => (
-                                <SidebarMenuSubItem key={subItem.title}>
+
+        {/* Navigation */}
+        <SidebarGroup className="py-1.5">
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {NAV_ITEMS.map((item) => {
+                const isActive = location.pathname === item.to ||
+                  ("sub" in item && item.sub.some((s) => location.pathname + location.search === s.url));
+
+                if ("sub" in item) {
+                  return (
+                    <Collapsible key={item.title} asChild defaultOpen={false} className="group/collapsible">
+                      <SidebarMenuItem>
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuButton
+                            tooltip={item.title}
+                            isActive={isActive}
+                            className={itemCls(isActive)}
+                          >
+                            <item.icon className={cn("w-[18px] h-[18px] shrink-0", isActive ? "text-neutral-700 dark:text-white/80" : "text-neutral-400 dark:text-white/40")} />
+                            <span className="text-[14px] flex-1">{item.title}</span>
+                            <ChevronRight className="w-3.5 h-3.5 text-neutral-300 dark:text-white/20 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 shrink-0" />
+                          </SidebarMenuButton>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <SidebarMenuSub className="border-l border-neutral-200 dark:border-white/[0.06] ml-3.5">
+                            {item.sub.map((sub) => {
+                              const subActive =
+                                (sub.url === "/app/dashboard" && location.pathname === "/app/dashboard" && !location.search) ||
+                                location.pathname + location.search === sub.url;
+                              return (
+                                <SidebarMenuSubItem key={sub.title}>
                                   <SidebarMenuSubButton
                                     asChild
-                                    isActive={
-                                      (subItem.url === "/app/dashboard" &&
-                                        location.pathname === "/app/dashboard" &&
-                                        !location.search) ||
-                                      (location.pathname + location.search ===
-                                        subItem.url)
-                                    }
-                                    className="font-medium text-muted-foreground/80 hover:text-foreground h-8 hover:bg-muted/50 data-[active=true]:bg-muted/80 data-[active=true]:text-foreground"
+                                    isActive={subActive}
+                                    className={cn(
+                                      "h-8 rounded-lg transition-colors hover:bg-neutral-200/60 dark:hover:bg-white/[0.05]",
+                                      subActive ? "text-neutral-900 dark:text-white/90" : "text-neutral-400 dark:text-white/40 hover:text-neutral-600 dark:hover:text-white/70"
+                                    )}
                                   >
-                                    <Link to={subItem.url}>
-                                      {subItem.icon && (
-                                        <subItem.icon className="w-[18px] h-[18px] mr-2 text-muted-foreground group-data-[active=true]/menu-button:text-foreground" />
+                                    <Link to={sub.url}>
+                                      {"icon" in sub && sub.icon && (
+                                        <sub.icon className="w-[15px] h-[15px] mr-1.5 shrink-0" />
                                       )}
-                                      <span className="text-[13px]">{subItem.title}</span>
+                                      <span className="text-[14px]">{sub.title}</span>
                                     </Link>
                                   </SidebarMenuSubButton>
                                 </SidebarMenuSubItem>
-                              ))}
-                            </SidebarMenuSub>
-                          </CollapsibleContent>
-                        </SidebarMenuItem>
-                      </Collapsible>
-                    ) : (
-                      // Standard Item
-                      <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton
-                          asChild
-                          isActive={location.pathname === item.to}
-                          tooltip={item.title}
-                          className="font-medium text-muted-foreground/80 hover:text-foreground h-9 hover:bg-muted/50 data-[active=true]:bg-muted/80 data-[active=true]:text-foreground"
-                        >
-                          <Link to={item.to}>
-                            <item.icon className="w-[18px] h-[18px] text-muted-foreground group-data-[active=true]/menu-button:text-foreground" />
-                            <span className="text-[13px]">{item.title}</span>
-                          </Link>
-                        </SidebarMenuButton>
+                              );
+                            })}
+                          </SidebarMenuSub>
+                        </CollapsibleContent>
                       </SidebarMenuItem>
-                    )
-                  )}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          ))
-        }
-      </SidebarContent >
+                    </Collapsible>
+                  );
+                }
 
-      {/* 3. Sidebar Footer: User Profile */}
-      < SidebarFooter className={`transition-all ${isExpanded ? "p-4" : "p-1 pb-2 items-center"}`}>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton
-                  size="lg"
-                  className={`hover:bg-neutral-50 dark:hover:bg-white/5 data-[state=open]:bg-neutral-50 dark:data-[state=open]:bg-white/5 transition-all outline-none ${isExpanded ? "border border-neutral-300 dark:border-neutral-800 shadow-[0_1px_2px_rgba(0,0,0,0.05)] rounded-[10px] h-auto py-2 px-2.5 dark:bg-transparent" : "justify-center hover:bg-muted/50"}`}
-                >
-                  <div className="relative">
-                    <Avatar className={`${isExpanded ? "h-9 w-9" : "h-8 w-8"} rounded-[8px]`}>
-                      <AvatarImage src={`https://ui-avatars.com/api/?name=${displayName}&background=random`} />
-                      <AvatarFallback className="rounded-[8px] font-normal text-foreground border border-outline-variant text-xs">
-                        {displayName.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                  </div>
-                  {isExpanded && (
-                    <>
-                      <div className="grid flex-1 text-left leading-tight ml-2.5">
-                        <span className="truncate font-medium text-neutral-900 dark:text-neutral-100 text-[13px]">
-                          {displayName}
-                        </span>
-                        <span className="truncate text-[12px] text-neutral-500 dark:text-neutral-400 font-normal mt-0.5">
-                          {profileUser?.email || "hi@ameliedesign.co"}
-                        </span>
-                      </div>
-                      <MoreVertical className="ml-1 size-[18px] text-neutral-400" strokeWidth={2} />
-                    </>
-                  )}
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-[15.5rem] rounded-[12px] shadow-xs p-1.5 gap-0 border-[1px] border-neutral-300 bg-white dark:bg-neutral-900 dark:border-neutral-800"
-                side={isExpanded ? "top" : "right"}
-                align="center"
-                sideOffset={isExpanded ? 12 : 10}
-              >
-                {/* User/Brand Switcher Section */}
-                <div className="flex flex-col gap-1 mb-1">
-                  {mockBrands.map((brand) => (
-                    <DropdownMenuItem
-                      key={brand.id}
-                      onClick={(e) => {
-                        e.preventDefault(); // Keep menu open when selecting brand
-                        setActiveBrand(brand);
-                      }}
-                      className={`flex items-center gap-2.5 p-2 rounded-[6px] cursor-pointer outline-none transition-colors ${activeBrand.id === brand.id ? "bg-neutral-50 dark:bg-white/5" : "hover:bg-neutral-50 dark:hover:bg-white/5"}`}
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActive}
+                      tooltip={item.title}
+                      className={itemCls(isActive)}
                     >
+                      <Link to={item.to}>
+                        <item.icon className={cn("w-[18px] h-[18px] shrink-0", isActive ? "text-neutral-700 dark:text-white/80" : "text-neutral-400 dark:text-white/40")} />
+                        <span className="text-[14px]">{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
 
-                      <div className="grid flex-1 text-left leading-tight">
-                        <span className="truncate font-medium text-neutral-900 dark:text-neutral-100 text-[13px]">
-                          {brand.name}
-                        </span>
-                        <span className="truncate text-neutral-500 dark:text-neutral-400 text-[12px] font-normal">
-                          {brand.url}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center justify-center pl-2">
-                        {activeBrand.id === brand.id ? (
-                          <div className="w-4 h-4 rounded-full border-[5px] border-neutral-900 dark:border-neutral-100" />
-                        ) : (
-                          <div className="w-4 h-4 rounded-full border-[1.5px] border-neutral-300 dark:border-neutral-600" />
-                        )}
-                      </div>
-                    </DropdownMenuItem>
-                  ))}
+        {/* Recents — only shown when sidebar is expanded */}
+        {isExpanded && <SidebarGroup className="py-3 flex-1">
+          <p className="px-3 mb-2 text-[14px] font-normal text-neutral-400 dark:text-white/30 tracking-normal">
+            Recents
+          </p>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {creationsLoading ? (
+                <div className="flex justify-center py-6">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-neutral-300 dark:text-white/20" />
                 </div>
-
-                <div className="h-[1px] bg-neutral-200 dark:bg-neutral-800 my-2 mx-1" />
-
-                {/* Appearance Section */}
-                <div className="flex items-center gap-2 px-2 py-1.5">
-                  <span className="font-medium text-[13px] text-neutral-900 dark:text-neutral-100 flex-1">Appearance</span>
-                  <div className="flex items-center gap-0.5 bg-neutral-100 dark:bg-neutral-800 rounded-md p-0.5">
-                    {themeOptions.map((option) => (
-                      <button
-                        key={option.value}
-                        onClick={() => setTheme(option.value)}
+              ) : recentCreations.length === 0 && isExpanded ? (
+                <p className="px-3 text-[14px] text-neutral-400 dark:text-white/20">No creations yet</p>
+              ) : (
+                recentCreations.map((creation) => {
+                  const isActive = location.pathname.includes(creation.uuid);
+                  return (
+                    <SidebarMenuItem key={creation.uuid}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActive}
+                        tooltip={creation.title || "Untitled"}
                         className={cn(
-                          "flex items-center gap-1 px-2 py-1 rounded text-[11px] font-medium transition-all",
-                          theme === option.value
-                            ? "bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 shadow-sm"
-                            : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100"
+                          "h-9 rounded-lg transition-colors",
+                          "hover:bg-neutral-200/60 dark:hover:bg-white/[0.04]",
+                          "group-data-[collapsible=icon]:!p-0 group-data-[collapsible=icon]:justify-center",
+                          isActive && "bg-neutral-200/80 dark:bg-white/[0.06]"
                         )}
                       >
-                        <option.icon className="w-3 h-3" />
-                        <span>{option.label}</span>
-                      </button>
-                    ))}
+                        <Link to={`/app/creation-studio/new/content/${creation.uuid}`}>
+                          <span className={cn(
+                            "text-[14px] truncate transition-colors",
+                            isActive ? "text-neutral-900 dark:text-white/90" : "text-neutral-500 dark:text-white/50 group-hover:text-neutral-700 dark:group-hover:text-white/75"
+                          )}>
+                            {creation.title || "Untitled"}
+                          </span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })
+              )}
+              {isExpanded && (creations?.length ?? 0) > 8 && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild className="h-8 rounded-lg hover:bg-white/[0.04]">
+                    <Link to="/app/creation-studio/new/content">
+                      <span className="text-[14px] text-neutral-400 dark:text-white/25 hover:text-neutral-600 dark:hover:text-white/50 transition-colors">
+                        View all {creations!.length} creations
+                      </span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>}
+      </SidebarContent>
+
+      {/* ── Footer ───────────────────────────────────────────── */}
+      <SidebarFooter className="p-0 border-t border-neutral-200 dark:border-white/[0.06]">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              className={cn(
+                "flex items-center gap-3 w-full transition-colors outline-none",
+                "hover:bg-neutral-200/60 dark:hover:bg-white/[0.06]",
+                isExpanded ? "p-4" : "p-4 justify-center"
+              )}
+            >
+              {/* Avatar */}
+              <div className="w-9 h-9 rounded-full bg-neutral-600 flex items-center justify-center shrink-0 relative">
+                <span className="text-[14px] font-semibold text-white">{initials}</span>
+                {!isExpanded && selectedBrand && (
+                  <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-neutral-100 dark:border-[#1a1a1a]" />
+                )}
+              </div>
+
+              {isExpanded && (
+                <>
+                  <div className="flex-1 min-w-0 text-left">
+                    <span className="block text-[13px] font-medium text-neutral-900 dark:text-white/90 truncate leading-tight">
+                      {displayName}
+                    </span>
+                    <span className="block text-[12px] text-neutral-400 dark:text-white/35 truncate mt-0.5 leading-tight">
+                      {selectedBrand?.name ?? "No brand selected"}
+                    </span>
                   </div>
+                  <div className="shrink-0 w-7 h-7 rounded-lg border border-neutral-200 dark:border-white/10 flex items-center justify-center">
+                    <ChevronsUpDown className="w-3.5 h-3.5 text-neutral-400 dark:text-white/30" />
+                  </div>
+                </>
+              )}
+            </button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent
+            className="w-[22rem] rounded-[18px] shadow-2xl p-1.5 border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#242424]"
+            side={isExpanded ? "top" : "right"}
+            align={isExpanded ? "start" : "center"}
+            sideOffset={12}
+          >
+            {/* ── User email ─────────────────────────────────── */}
+            <div className="px-3 py-1.5">
+              <p className="text-[12px] text-neutral-500 dark:text-white/40 truncate">{displayName}</p>
+            </div>
+
+            <div className="h-px bg-neutral-100 dark:bg-white/[0.06] mx-1" />
+
+            {/* ── Main actions ───────────────────────────────── */}
+            <div className="flex flex-col gap-0.5 py-1">
+              <DropdownMenuItem
+                onClick={() => navigate("/settings")}
+                className="flex items-center gap-2.5 px-3 py-1.5 rounded-[10px] cursor-pointer outline-none hover:bg-neutral-50 dark:hover:bg-white/[0.05] transition-colors text-neutral-800 dark:text-white/80"
+              >
+                <Settings className="w-3.5 h-3.5 text-neutral-500 dark:text-white/40 shrink-0" strokeWidth={1.75} />
+                <span className="text-[12px]">Account settings</span>
+              </DropdownMenuItem>
+
+              {/* Appearance row */}
+              <div className="flex items-center gap-2.5 px-3 py-2 rounded-[10px]">
+                <Palette className="w-3.5 h-3.5 text-neutral-500 dark:text-white/40 shrink-0" strokeWidth={1.75} />
+                <span className="text-[12px] text-neutral-800 dark:text-white/80 flex-1">Appearance</span>
+                <div className="flex items-center gap-0.5 bg-neutral-100 dark:bg-white/[0.06] rounded-md p-0.5">
+                  {themeOptions.map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setTheme(opt.value)}
+                      className={cn(
+                        "flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-medium transition-all",
+                        theme === opt.value
+                          ? "bg-white dark:bg-white/[0.12] text-neutral-800 dark:text-white shadow-sm"
+                          : "text-neutral-400 dark:text-white/30 hover:text-neutral-600 dark:hover:text-white/60"
+                      )}
+                    >
+                      <opt.icon className="w-2.5 h-2.5" />
+                      <span>{opt.label}</span>
+                    </button>
+                  ))}
                 </div>
+              </div>
 
-                <div className="h-[1px] bg-neutral-200 dark:bg-neutral-800 my-2 mx-1" />
+              <DropdownMenuItem className="flex items-center gap-2.5 px-3 py-1.5 rounded-[10px] cursor-pointer outline-none hover:bg-neutral-50 dark:hover:bg-white/[0.05] transition-colors text-neutral-800 dark:text-white/80">
+                <HelpCircle className="w-3.5 h-3.5 text-neutral-500 dark:text-white/40 shrink-0" strokeWidth={1.75} />
+                <span className="text-[12px]">Get help</span>
+              </DropdownMenuItem>
+            </div>
 
-                {/* Actions Section */}
-                <div className="flex flex-col gap-0.5 mt-1 mb-1">
-                  <DropdownMenuItem className="gap-2.5 p-2 cursor-pointer rounded-[6px] hover:bg-neutral-50 dark:hover:bg-white/5 text-neutral-900 dark:text-neutral-100 outline-none">
-                    <span className="font-medium text-[13px]">Account settings</span>
-                  </DropdownMenuItem>
+            <div className="h-px bg-neutral-100 dark:bg-white/[0.06] mx-1" />
 
-                  <DropdownMenuItem className="gap-2.5 p-2 cursor-pointer rounded-[6px] hover:bg-neutral-50 dark:hover:bg-white/5 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 outline-none transition-colors">
-                    <span className="font-medium text-[13px]">Device management</span>
-                  </DropdownMenuItem>
+            {/* ── Workspace / Brand Switcher ─────────────────── */}
+            <div className="py-1">
+              <div className="flex items-center gap-2.5 px-3 pt-1 pb-1">
+                <Building2 className="w-3.5 h-3.5 text-neutral-500 dark:text-white/40 shrink-0" strokeWidth={1.75} />
+                <span className="text-[12px] text-neutral-800 dark:text-white/80 flex-1">Workspace</span>
+              </div>
 
-                  <DropdownMenuItem
-                    className="flex justify-between items-center gap-2.5 p-2 cursor-pointer rounded-[6px] hover:bg-neutral-50 dark:hover:bg-white/5 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 outline-none group transition-colors"
-                    onClick={handleLogout}
-                  >
-                    <span className="font-medium text-[13px]">Sign out</span>
-                    <LogOut className="h-[16px] w-[16px] text-neutral-400 dark:text-neutral-500 group-hover:text-neutral-600 dark:group-hover:text-neutral-300 transition-colors" strokeWidth={2} />
-                  </DropdownMenuItem>
+              {brandsLoading ? (
+                <div className="flex items-center gap-2 px-4 py-1.5">
+                  <Loader2 className="w-3 h-3 animate-spin text-neutral-400 dark:text-white/30" />
+                  <span className="text-[11px] text-neutral-400 dark:text-white/30">Loading...</span>
                 </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter >
-    </SidebarComponent >
+              ) : brands.length === 0 ? (
+                <div className="flex flex-col items-center py-2 gap-1">
+                  <Sparkles className="w-3.5 h-3.5 text-neutral-300 dark:text-white/20" />
+                  <span className="text-[11px] text-neutral-400 dark:text-white/30">No brands yet</span>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-0.5 px-1.5">
+                  {brands.map((brand) => {
+                    const isSelected = selectedBrandId === brand.uuid;
+                    const brandInitials = brand.name.slice(0, 2).toUpperCase();
+                    return (
+                      <DropdownMenuItem
+                        key={brand.uuid}
+                        onClick={(e) => { e.preventDefault(); selectBrand(brand.uuid); }}
+                        className={cn(
+                          "flex items-center gap-2 px-2 py-1 rounded-[8px] cursor-pointer outline-none transition-all",
+                          isSelected
+                            ? "bg-neutral-100 dark:bg-white/[0.08]"
+                            : "hover:bg-neutral-50 dark:hover:bg-white/[0.05]"
+                        )}
+                      >
+                        <div className={cn(
+                          "w-6 h-6 rounded-[5px] flex items-center justify-center shrink-0 text-[9px] font-bold overflow-hidden",
+                          isSelected
+                            ? "bg-neutral-800 dark:bg-white text-white dark:text-neutral-900"
+                            : "bg-neutral-200 dark:bg-white/[0.10] text-neutral-600 dark:text-white/50"
+                        )}>
+                          {brand.logo ? (
+                            <img
+                              src={brand.logo}
+                              alt={brand.name}
+                              className="w-full h-full object-contain"
+                              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                            />
+                          ) : brandInitials}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span className={cn(
+                            "block text-[12px] font-medium truncate leading-tight",
+                            isSelected
+                              ? "text-neutral-900 dark:text-white/90"
+                              : "text-neutral-600 dark:text-white/60"
+                          )}>
+                            {brand.name}
+                          </span>
+                          <span className="block text-[9px] text-neutral-400 dark:text-white/30 truncate mt-0.5 leading-tight">
+                            {brand.url.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+                          </span>
+                        </div>
+                        <div className="shrink-0 w-3.5">
+                          {isSelected && <Check className="w-3 h-3 text-neutral-500 dark:text-white/50" strokeWidth={2.5} />}
+                        </div>
+                      </DropdownMenuItem>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Add new brand */}
+              <DropdownMenuItem
+                onClick={() => navigate("/app/creation-studio/extractor")}
+                className="flex items-center gap-2 px-2.5 py-1.5 mt-0.5 rounded-[10px] cursor-pointer outline-none transition-all hover:bg-neutral-50 dark:hover:bg-white/[0.05] group"
+              >
+                <div className="w-6 h-6 rounded-[5px] border border-dashed border-neutral-300 dark:border-white/20 flex items-center justify-center shrink-0 group-hover:border-neutral-400 dark:group-hover:border-white/35 transition-colors">
+                  <Plus className="w-3 h-3 text-neutral-400 dark:text-white/30 group-hover:text-neutral-600 dark:group-hover:text-white/60 transition-colors" strokeWidth={2} />
+                </div>
+                <span className="text-[12px] text-neutral-500 dark:text-white/40 group-hover:text-neutral-700 dark:group-hover:text-white/70 transition-colors">
+                  Add new brand
+                </span>
+              </DropdownMenuItem>
+            </div>
+
+            <div className="h-px bg-neutral-100 dark:bg-white/[0.06] mx-1" />
+
+            {/* ── Sign out ───────────────────────────────────── */}
+            <div className="py-1">
+              <DropdownMenuItem
+                onClick={() => { logout(); navigate("/auth"); }}
+                className="flex items-center gap-2.5 px-3 py-1.5 rounded-[10px] cursor-pointer outline-none hover:bg-neutral-50 dark:hover:bg-white/[0.05] transition-colors text-neutral-800 dark:text-white/80"
+              >
+                <LogOut className="w-3.5 h-3.5 text-neutral-500 dark:text-white/40 shrink-0" strokeWidth={1.75} />
+                <span className="text-[12px]">Log out</span>
+              </DropdownMenuItem>
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </SidebarFooter>
+    </SidebarComponent>
   );
 }

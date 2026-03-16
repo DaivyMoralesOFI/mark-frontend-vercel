@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useCallback, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useParams } from "react-router-dom";
 import ReactFlow, {
   EdgeTypes,
@@ -49,13 +49,11 @@ import CopyEdge from "@/modules/creation-studio/components/flow/CopyEdge";
 import { useFlowStore } from "@/modules/creation-studio/store/flowStoreSlice";
 import type { PendingCopyEdit } from "@/modules/creation-studio/store/flowStoreSlice";
 import type { GenerationStore } from "@/modules/creation-studio/schemas/CreateImage";
-import { CreationsHistorySidebar } from "@/modules/creation-studio/components/sidebar/CreationsHistorySidebar";
 import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/core/config/query-keys";
 import { cn } from "@/shared/utils/utils";
 import { SocialPreviewAside } from "@/modules/creation-studio/components/sidebar/SocialPreviewAside";
 import { Smartphone } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 
 // Layout constants — horizontal tree (left → right)
 const NODE_WIDTH = 380;
@@ -1074,8 +1072,11 @@ const WorkflowContentInner = () => {
     [generations],
   );
 
-  // Local draggable state — ReactFlow owns positions after initial layout
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  // Local draggable state — ReactFlow owns positions after initial layout.
+  // Pre-seed with a skeleton so ReactFlow never renders with zero nodes on mount.
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([
+    { id: "initial-skeleton", type: "skeleton", position: { x: START_X, y: START_Y }, data: { label: "Loading..." } },
+  ]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const lastAlignmentRef = useRef(alignment);
 
@@ -1360,7 +1361,6 @@ const WorkflowContentPage = () => {
 
   return (
     <div className="w-full h-full flex">
-      <CreationsHistorySidebar />
       <div className="flex-1 h-full relative">
         <ReactFlowProvider>
           <WorkflowContentInner />

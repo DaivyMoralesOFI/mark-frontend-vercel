@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Sparkles, Loader2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Sparkles } from "lucide-react";
 import { cn } from "@/shared/utils/utils";
 
 interface CreationProcessingLoaderProps {
@@ -14,65 +15,130 @@ const MESSAGES = [
   "Finalizing your masterpiece...",
 ];
 
-export const CreationProcessingLoader: React.FC<CreationProcessingLoaderProps> = ({ className }) => {
+const stagger = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0.08, delayChildren: 0.1 },
+  },
+  exit: {
+    transition: { staggerChildren: 0.05, staggerDirection: -1 },
+  },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 18, filter: "blur(4px)" },
+  show:   { opacity: 1, y: 0,  filter: "blur(0px)", transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
+  exit:   { opacity: 0, y: -12, filter: "blur(6px)", transition: { duration: 0.3, ease: [0.55, 0, 1, 0.45] } },
+};
+
+export const CreationProcessingLoader: React.FC<CreationProcessingLoaderProps> = ({
+  className,
+}) => {
   const [messageIndex, setMessageIndex] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setMessageIndex((prev) => (prev + 1) % MESSAGES.length);
-    }, 2500);
+    }, 2800);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className={cn(
-      "relative flex items-center gap-4 px-6 py-4 overflow-hidden",
-      "bg-surface-container-lowest/95 dark:bg-[#1C1C1C]/95 backdrop-blur-2xl",
-      "border border-outline-variant/60 dark:border-outline/10",
-      "rounded-[1.25rem] shadow-2xl shadow-black/10",
-      className
-    )}>
-      {/* Animated Gradient Background Glow */}
-      <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 animate-pulse pointer-events-none" />
+    <motion.div
+      className={cn("fixed inset-0 z-[9999] flex items-center justify-center", className)}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+    >
+      {/* Backdrop */}
+      <motion.div
+        className="absolute inset-0 bg-background/75 backdrop-blur-xl"
+        initial={{ backdropFilter: "blur(0px)", opacity: 0 }}
+        animate={{ backdropFilter: "blur(20px)", opacity: 1 }}
+        exit={{ backdropFilter: "blur(0px)", opacity: 0 }}
+        transition={{ duration: 0.45, ease: "easeOut" }}
+      />
 
-      {/* Icon Section */}
-      <div className="relative flex items-center justify-center">
-        <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full animate-pulse" />
-        <div className="relative bg-primary/10 p-2 rounded-xl border border-primary/20">
-          <Sparkles className="w-5 h-5 text-primary animate-pulse" />
-        </div>
-      </div>
+      {/* Content */}
+      <motion.div
+        className="relative flex flex-col items-center gap-10"
+        variants={stagger}
+        initial="hidden"
+        animate="show"
+        exit="exit"
+      >
+        {/* Animated icon */}
+        <motion.div
+          className="relative flex items-center justify-center"
+          variants={fadeUp}
+        >
+          {/* Pulsing rings */}
+          <motion.div
+            className="absolute w-28 h-28 rounded-full border border-primary/10"
+            animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.1, 0.4] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute w-20 h-20 rounded-full border border-primary/20"
+            animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.15, 0.5] }}
+            transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+          />
 
-      {/* Text Section */}
-      <div className="flex flex-col">
-        <div className="flex items-center gap-2">
-          <span className="text-[15px] font-semibold bg-gradient-to-r from-on-surface to-on-surface/70 bg-clip-text text-transparent dark:from-white dark:to-white/70">
-            {MESSAGES[messageIndex]}
+          {/* Core icon */}
+          <div className="relative w-14 h-14 rounded-2xl bg-primary/8 border border-primary/15 flex items-center justify-center">
+            <div className="absolute inset-0 rounded-2xl bg-primary/10 blur-2xl" />
+            <motion.div
+              animate={{ opacity: [0.7, 1, 0.7] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <Sparkles className="w-6 h-6 text-primary relative z-10" />
+            </motion.div>
+          </div>
+        </motion.div>
+
+        {/* Text */}
+        <motion.div
+          className="flex flex-col items-center gap-3 text-center"
+          variants={fadeUp}
+        >
+          <span className="text-[13px] font-medium text-on-surface-variant/40 uppercase tracking-[0.12em]">
+            Processing with Mark AI
           </span>
-          <Loader2 className="w-3.5 h-3.5 animate-spin text-primary/60" />
-        </div>
-        <p className="text-[11px] text-on-surface-variant/50 font-medium uppercase tracking-wider">
-          Processing with Mark AI
-        </p>
-      </div>
 
-      {/* Simulated Progress Line at the bottom */}
-      <div className="absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-transparent via-primary/40 to-transparent w-full">
-        <div className="h-full bg-primary animate-shimmer w-full" 
-             style={{ 
-               background: 'linear-gradient(90deg, transparent 0%, var(--primary) 50%, transparent 100%)',
-               backgroundSize: '200% 100%',
-               animation: 'shimmer 2s infinite linear'
-             }} 
-        />
-      </div>
+          <div className="h-6 flex items-center justify-center overflow-hidden">
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={messageIndex}
+                className="text-[17px] font-semibold text-on-surface tracking-tight"
+                initial={{ opacity: 0, y: 10, filter: "blur(4px)" }}
+                animate={{ opacity: 1, y: 0,  filter: "blur(0px)" }}
+                exit={{   opacity: 0, y: -10, filter: "blur(4px)" }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              >
+                {MESSAGES[messageIndex]}
+              </motion.p>
+            </AnimatePresence>
+          </div>
+        </motion.div>
 
-      <style>{`
-        @keyframes shimmer {
-          0% { background-position: 200% 0; }
-          100% { background-position: -200% 0; }
-        }
-      `}</style>
-    </div>
+        {/* Animated dots */}
+        <motion.div className="flex items-center gap-2" variants={fadeUp}>
+          {[0, 1, 2].map((i) => (
+            <motion.div
+              key={i}
+              className="w-1.5 h-1.5 rounded-full bg-primary/50"
+              animate={{ opacity: [0.3, 1, 0.3], scale: [0.8, 1, 0.8] }}
+              transition={{
+                duration: 1.2,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: i * 0.18,
+              }}
+            />
+          ))}
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 };

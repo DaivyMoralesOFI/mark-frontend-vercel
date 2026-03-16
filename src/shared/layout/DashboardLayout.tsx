@@ -25,17 +25,15 @@ const DashboardLayout = () => {
       <SidebarProvider
         open={isOpen}
         onOpenChange={setIsOpen}
-        className="relative bg-neutral-200/50 dark:bg-[#1C1C1C]"
+        className="bg-neutral-200/50 dark:bg-[#1C1C1C]"
       >
         <Sidebar />
         {/*  <Toaster /> */}
-        <div className="flex-1 h-screen flex flex-col p-1 pr-1 md:py-2 md:pr-2 overflow-hidden">
-          <SidebarInset className="flex-1 overflow-hidden rounded-2xl border-[1px] border-neutral-300 bg-surface dark:bg-[#1c1a14] relative">
-            <div className="outlet-container h-full w-full overflow-hidden relative rounded-2xl p-4 lg:p-6">
-              <Outlet />
-            </div>
-          </SidebarInset>
-        </div>
+        <SidebarInset className="flex-1 h-screen overflow-auto bg-surface dark:bg-[#1c1a14]">
+          <div className="h-full w-full p-4 lg:p-6">
+            <Outlet />
+          </div>
+        </SidebarInset>
       </SidebarProvider>
     </div>
   );
