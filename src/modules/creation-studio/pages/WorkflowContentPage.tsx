@@ -1074,7 +1074,7 @@ const WorkflowContentInner = () => {
 
   // Local draggable state — ReactFlow owns positions after initial layout.
   // Pre-seed with a skeleton so ReactFlow never renders with zero nodes on mount.
-  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([
+  const [nodes, setNodes, onNodesChange] = useNodesState([
     { id: "initial-skeleton", type: "skeleton", position: { x: START_X, y: START_Y }, data: {} },
   ]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);

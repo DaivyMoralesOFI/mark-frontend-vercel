@@ -16,7 +16,8 @@
       "Bash(find /Users/daivymorales/Documents/GitHub/mark-frontend/src/modules/creation-studio/components/flow-nodes -name \"*.tsx\" | xargs ls -lah)",
       "Bash(find /Users/daivymorales/Documents/GitHub/mark-frontend/src -type f -name \"*carousel*\" -o -name \"*Carousel*\" 2>/dev/null | grep -v node_modules)",
       "Bash(grep -r \"Carousel\\\\|carousel\" /Users/daivymorales/Documents/GitHub/mark-frontend/src/shared/components/ui --include=\"*.tsx\" --include=\"*.ts\" 2>/dev/null | head -20)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(pnpm run:*)"
     ]
   }
 }
