@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useCallback, useState } from "react";
+import { motion } from "framer-motion";
 import { useParams } from "react-router-dom";
 import ReactFlow, {
   EdgeTypes,
@@ -588,7 +589,12 @@ const ResultNode = ({ data, id, xPos, yPos }: NodeProps) => {
   };
 
   return (
-    <div style={{ width: 380 }}>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.92, y: 16 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ duration: 0.45, ease: [0.34, 1.56, 0.64, 1] }}
+      style={{ width: 380 }}
+    >
       <Handle type="target" position={Position.Left} id="left" style={{ opacity: 0, width: 1, height: 1 }} />
       <Handle type="source" position={Position.Right} id="right" style={{ opacity: 0, width: 1, height: 1 }} />
       <Handle type="source" position={Position.Bottom} id="bottom" style={{ opacity: 0, width: 1, height: 1 }} />
@@ -611,7 +617,7 @@ const ResultNode = ({ data, id, xPos, yPos }: NodeProps) => {
         prompt={data.prompt as string}
         hidePromptBubble={data.hidePromptBubble as boolean}
       />
-    </div>
+    </motion.div>
   );
 };
 
@@ -840,7 +846,10 @@ const CopyNode = ({ data }: NodeProps) => {
   };
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, scale: 0.92, y: 16 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ duration: 0.45, ease: [0.34, 1.56, 0.64, 1] }}
       ref={containerRef}
       style={{ width: 380 }}
       className={cn(
@@ -984,7 +993,7 @@ const CopyNode = ({ data }: NodeProps) => {
       </div>
 
       {!(data.hidePromptBubble as boolean) && <PromptBubble prompt={prompt} />}
-    </div>
+    </motion.div>
   );
 };
 

@@ -249,3 +249,51 @@ export const getAllBrands = async (): Promise<BrandsResponse> => {
 };
 
 export const setNewBrand = async (brand: BrandExtractor) => brand;
+
+export type UpdateBrandDnaPayload = {
+  primary_color?: string;
+  secondary_color?: string;
+  accent_color?: string;
+  complementary_color?: string;
+  font_body_family?: string;
+  font_headings_family?: string;
+  voice_tone?: string;
+  keywords?: string;
+  description?: string;
+  archetype?: string;
+  target_audience?: string;
+};
+
+/** Maps a BrandExtractor draft to the flat PATCH payload the backend expects. */
+export const toBrandDnaPayload = (draft: BrandExtractor): UpdateBrandDnaPayload => ({
+  primary_color: draft.color_system.roles.primary.hex,
+  secondary_color: draft.color_system.roles.secondary.hex,
+  accent_color: draft.color_system.roles.tertiary.hex,
+  complementary_color: draft.color_system.roles.surface.hex,
+  font_body_family: draft.typography.body.font_family,
+  font_headings_family: draft.typography.headings.font_family,
+  voice_tone: draft.brand_voice.communication_style,
+  keywords: draft.brand_voice.tone_of_voice.join(", "),
+  description: draft.brand_voice.positioning_statement,
+  archetype: draft.brand_identity.brand_archetype,
+  target_audience: draft.brand_voice.target_audience,
+});
+
+export const updateBrandDna = async (
+  brandUuid: string,
+  draft: BrandExtractor,
+): Promise<void> => {
+  const endpoint = API_CONFIG.ENDPOINTS.BRANDS.dna(brandUuid);
+  const payload = toBrandDnaPayload(draft);
+
+  try {
+    await DJANGO_CLIENT.patch(endpoint, payload);
+  } catch (error) {
+    if (isApiError(error)) {
+      throw new Error(error.userMessage);
+    }
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to update brand DNA",
+    );
+  }
+};

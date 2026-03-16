@@ -6,18 +6,22 @@ import {
   RotateCcw,
   Save,
   Plus,
+  Pencil,
 } from "lucide-react";
 import { useBrandExtractor, useSetNewBrand } from "../../hooks/useBrands";
 import { useFlowStore } from "../../store/flowStoreSlice";
 
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
+import { useState } from "react";
+import BrandDnaEditPanel from "../panel/BrandDnaEditPanel";
 
 const BottomBrandNavbar = () => {
   const { brandData, resetFlow } = useFlowStore();
   const { mutate: brandExtractor, isPending: isProcessing } =
     useBrandExtractor();
   const { mutate: saveBrand } = useSetNewBrand();
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
   const handleNew = () => {
     resetFlow();
@@ -45,6 +49,14 @@ const BottomBrandNavbar = () => {
   if (!brandData) return null;
 
   return (
+    <>
+    {isEditOpen && (
+      <BrandDnaEditPanel
+        isOpen={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+        brandData={brandData}
+      />
+    )}
     <div className="fixed bottom-0 left-0 w-full px-4 pb-6 flex flex-col items-center z-1000 pointer-events-none">
       <div className="w-full max-w-2xl flex flex-col gap-4 pointer-events-auto">
         <AnimatePresence mode="wait">
@@ -94,6 +106,15 @@ const BottomBrandNavbar = () => {
                 Try again
               </Button>
               <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsEditOpen(true)}
+                className="rounded-full gap-2"
+              >
+                <Pencil className="w-4 h-4" />
+                Edit
+              </Button>
+              <Button
                 variant="secondary"
                 size="sm"
                 onClick={handleSave}
@@ -116,6 +137,7 @@ const BottomBrandNavbar = () => {
         </AnimatePresence>
       </div>
     </div>
+    </>
   );
 };
 

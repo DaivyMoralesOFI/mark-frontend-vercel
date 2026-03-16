@@ -30,7 +30,7 @@ import BrandColorSystemNode from "@/modules/creation-studio/components/flow/Bran
 import BrandVoiceNode from "@/modules/creation-studio/components/flow/BrandVoiceNode";
 
 import { cn } from "@/shared/utils/utils";
-import { Globe, ArrowUp, Loader, Dna, ChevronRight, Loader2, ZoomIn, ZoomOut, Maximize } from "lucide-react";
+import { Globe, ArrowUp, Loader, Dna, ChevronRight, Loader2, ZoomIn, ZoomOut, Maximize, ArrowLeft } from "lucide-react";
 import { CreationsHistorySidebar } from "@/modules/creation-studio/components/sidebar/CreationsHistorySidebar";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -588,6 +588,7 @@ const CreateNewContentPage = () => {
 
   const { data: allBrands, isLoading: brandsLoading } = useBrands();
   const brandData = useFlowStore((s) => s.brandData);
+  const setBrandData = useFlowStore((s) => s.setBrandData);
 
   // Set initial mode based on whether the user has saved brands
   useEffect(() => {
@@ -597,12 +598,6 @@ const CreateNewContentPage = () => {
     setModeInitialized(true);
   }, [brandsLoading, allBrands, modeInitialized]);
 
-  // When brand DNA is created/selected, switch to canvas to start creating content
-  useEffect(() => {
-    if (brandData) {
-      setCreationMode("canvas");
-    }
-  }, [brandData]);
 
   useEffect(() => {
     setIsAlertOpen(true);
@@ -666,6 +661,23 @@ const CreateNewContentPage = () => {
           </div>
           {/* Centered URL input — only visible when no brand data */}
           <BrandDnaUrlInput />
+          {/* Back to brand list button — only visible when viewing a specific brand */}
+          {brandData && (
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="absolute top-4 left-4 z-[1001]"
+            >
+              <button
+                onClick={() => setBrandData(null)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container-high/80 dark:bg-[#1C1C1C] backdrop-blur-xl border border-outline-variant/30 dark:border-outline/20 shadow-sm text-sm font-medium text-on-surface-variant/70 hover:text-on-surface hover:border-outline-variant/60 transition-all duration-200"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                All brands
+              </button>
+            </motion.div>
+          )}
         </>
       )}
 

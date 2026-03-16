@@ -2,6 +2,7 @@ import { Card } from "@/shared/components/ui/Card";
 import { Handle, Position } from "reactflow";
 import { BrandExtractor } from "@/modules/creation-studio/schemas/BrandSchema";
 import { MessageCircle, Target, Megaphone } from "lucide-react";
+import { motion } from "framer-motion";
 
 const BrandVoiceNode = ({ data }: { data: { brand: BrandExtractor } }) => {
     const brand = data?.brand;
@@ -10,7 +11,12 @@ const BrandVoiceNode = ({ data }: { data: { brand: BrandExtractor } }) => {
     const { tone_of_voice, target_audience, communication_style } = brand.brand_voice;
 
     return (
-        <div className="relative flex justify-center items-center text-foreground font-sans">
+        <motion.div
+            initial={{ opacity: 0, x: 30, y: 20 }}
+            animate={{ opacity: 1, x: 0, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2, ease: [0.34, 1.56, 0.64, 1] }}
+            className="relative flex justify-center items-center text-foreground font-sans"
+        >
             <Card className="p-5 flex flex-col gap-4 border border-outline-variant/30 shadow-xl min-w-[240px] max-w-[280px] bg-surface-container-lowest/95 dark:bg-[#121212]/90 backdrop-blur-xl rounded-3xl transition-all hover:border-primary/20">
                 {/* Title */}
                 <div className="flex items-center gap-2 mb-1">
@@ -66,7 +72,7 @@ const BrandVoiceNode = ({ data }: { data: { brand: BrandExtractor } }) => {
             </Card>
 
             <Handle type="target" position={Position.Left} className="opacity-0" />
-        </div>
+        </motion.div>
     );
 };
 

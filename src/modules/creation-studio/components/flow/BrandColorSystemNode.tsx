@@ -2,6 +2,7 @@ import { Card } from "@/shared/components/ui/Card";
 import { Handle, Position } from "reactflow";
 import { BrandExtractor } from "@/modules/creation-studio/schemas/BrandSchema";
 import { Palette } from "lucide-react";
+import { motion } from "framer-motion";
 
 const BrandColorSystemNode = ({ data }: { data: { brand: BrandExtractor } }) => {
     const brand = data?.brand;
@@ -13,7 +14,12 @@ const BrandColorSystemNode = ({ data }: { data: { brand: BrandExtractor } }) => 
     const keyColors = source_palette.slice(0, 3);
 
     return (
-        <div className="relative flex justify-center items-center text-foreground font-sans">
+        <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3, ease: [0.34, 1.56, 0.64, 1] }}
+            className="relative flex justify-center items-center text-foreground font-sans"
+        >
             <Card className="p-5 flex flex-col gap-4 border border-outline-variant/30 shadow-xl min-w-[260px] max-w-[300px] bg-surface-container-lowest/95 dark:bg-[#121212]/90 backdrop-blur-xl rounded-3xl transition-all hover:border-primary/20">
                 {/* Title */}
                 <div className="flex items-center gap-2 mb-1">
@@ -67,7 +73,7 @@ const BrandColorSystemNode = ({ data }: { data: { brand: BrandExtractor } }) => 
             </Card>
 
             <Handle type="target" position={Position.Top} className="opacity-0" />
-        </div>
+        </motion.div>
     );
 };
 

@@ -1,6 +1,7 @@
 import { Card } from "@/shared/components/ui/Card";
 import { Handle, Position } from "reactflow";
 import { BrandExtractor } from "@/modules/creation-studio/schemas/BrandSchema";
+import { motion } from "framer-motion";
 
 const BrandLogoNode = ({ data }: { data: { brand: BrandExtractor } }) => {
     const brand = data?.brand;
@@ -10,7 +11,12 @@ const BrandLogoNode = ({ data }: { data: { brand: BrandExtractor } }) => {
     const format = brand.brand_identity.logo.format?.toUpperCase() || "PNG";
 
     return (
-        <div className="relative flex justify-center items-center text-foreground font-sans">
+        <motion.div
+            initial={{ opacity: 0, scale: 0.8, y: -20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
+            className="relative flex justify-center items-center text-foreground font-sans"
+        >
             <Card className="p-5 flex flex-col items-center gap-4 border border-outline-variant/30 shadow-xl min-w-[220px] max-w-[260px] bg-surface-container-lowest/95 dark:bg-[#121212]/90 backdrop-blur-xl rounded-3xl transition-all hover:border-primary/20">
                 {/* Title */}
                 <div className="flex items-center gap-2 self-start mb-1">
@@ -51,7 +57,7 @@ const BrandLogoNode = ({ data }: { data: { brand: BrandExtractor } }) => {
             <Handle type="source" position={Position.Bottom} id="bottom" className="opacity-0" />
             <Handle type="source" position={Position.Left} id="left" className="opacity-0" />
             <Handle type="source" position={Position.Right} id="right" className="opacity-0" />
-        </div>
+        </motion.div>
     );
 };
 

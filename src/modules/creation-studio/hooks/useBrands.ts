@@ -3,6 +3,7 @@ import {
   getAllBrands,
   setBrandExtractor,
   setNewBrand,
+  updateBrandDna,
 } from "@/modules/creation-studio/services/brandService";
 import { BrandExtractor } from "@/modules/creation-studio/schemas/BrandSchema";
 import { useFlowStore } from "../store/flowStoreSlice";
@@ -56,6 +57,22 @@ export function useSetNewBrand() {
     },
     onError: (err: Error) => {
       toast.error(err.message || "Failed to save brand");
+    },
+  });
+}
+
+export function useUpdateBrandDna() {
+  const { setBrandData } = useFlowStore();
+
+  return useMutation({
+    mutationFn: ({ uuid, draft }: { uuid: string; draft: BrandExtractor }) =>
+      updateBrandDna(uuid, draft),
+    onSuccess: (_data, { draft }) => {
+      setBrandData(draft);
+      toast.success("Brand DNA updated successfully.");
+    },
+    onError: (err: Error) => {
+      toast.error(err.message || "Failed to update brand DNA");
     },
   });
 }

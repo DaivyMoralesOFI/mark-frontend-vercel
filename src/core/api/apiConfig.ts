@@ -25,6 +25,7 @@ export const API_CONFIG = {
     },
     BRANDS: {
       list: "/api/brands/",
+      dna: (brandUuid: string) => `/api/brands/${brandUuid}/dna/`,
     },
   },
 };
