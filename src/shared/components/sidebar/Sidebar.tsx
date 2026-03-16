@@ -48,7 +48,6 @@ import {
   CollapsibleTrigger,
 } from "@/shared/components/ui/Collapsible";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { formatDistanceToNow } from "date-fns";
 
 import { useAuth } from "@/domains/auth/hooks/useAuth";
 import { useBrands } from "@/shared/hooks/useBrands";
@@ -57,22 +56,6 @@ import { LinkedInIcon } from "@/shared/components/icons/LinkedInIcon";
 import { InstagramIcon } from "@/shared/components/icons/InstagramIcon";
 import { TikTokIcon } from "@/shared/components/icons/TikTokIcon";
 import { FacebookIcon } from "@/shared/components/icons/FacebookIcon";
-
-/* ─── Status dot colours ──────────────────────────────────── */
-const STATUS_DOT: Record<string, string> = {
-  pending:    "bg-amber-400",
-  processing: "bg-blue-400 animate-pulse",
-  done:       "bg-emerald-400",
-  failed:     "bg-red-400",
-};
-
-function relativeTime(dateStr: string) {
-  try {
-    return formatDistanceToNow(new Date(dateStr), { addSuffix: true });
-  } catch {
-    return "";
-  }
-}
 
 /* ─── Flat nav items ───────────────────────────────────────── */
 const NAV_ITEMS = [
